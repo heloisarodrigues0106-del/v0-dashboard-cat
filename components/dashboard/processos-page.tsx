@@ -305,7 +305,7 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {valores.map((v, idx) => {
+                  {valores.map((v) => {
                     const totalProvavel =
                       v.principal_provavel +
                       v.correcao_monetaria_provavel +
@@ -319,7 +319,7 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
                       v.correcao_monetaria_remoto +
                       v.juros_remoto
                     return (
-                      <TableRow key={idx}>
+                      <TableRow key={`${v.numero_processo}-${v.quarter}-${v.ano}`}>
                         <TableCell className="font-medium">
                           {v.quarter}/{v.ano}
                         </TableCell>
