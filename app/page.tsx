@@ -9,6 +9,7 @@ import { FinancialAnalysis } from "@/components/dashboard/financial-analysis"
 import { ClaimsAnalysis } from "@/components/dashboard/claims-analysis"
 import { ProcessesTable } from "@/components/dashboard/processes-table"
 import { ProcessosPage } from "@/components/dashboard/processos-page"
+import { ConfiguracoesPage } from "@/components/dashboard/configuracoes-page"
 
 export default function DashboardPage() {
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
@@ -65,11 +66,7 @@ export default function DashboardPage() {
 
           {activeNavItem === "configuracoes" && (
             <div className="px-8 pt-6">
-              <div className="flex items-center justify-center h-64 bg-card rounded-lg border">
-                <p className="text-muted-foreground">
-                  Página de Configurações em desenvolvimento
-                </p>
-              </div>
+              <ConfiguracoesPage />
             </div>
           )}
         </div>
