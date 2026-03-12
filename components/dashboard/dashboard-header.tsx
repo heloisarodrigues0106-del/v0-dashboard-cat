@@ -11,17 +11,21 @@ import {
 } from "@/components/ui/breadcrumb"
 import { FileDown } from "lucide-react"
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  breadcrumb?: string
+}
+
+export function DashboardHeader({ breadcrumb = "Dashboard" }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card px-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink href="#">LexDash</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Visão Executiva</BreadcrumbPage>
+            <BreadcrumbPage>{breadcrumb}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

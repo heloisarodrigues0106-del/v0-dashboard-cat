@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
   FileText,
-  Users,
-  BarChart3,
   Settings,
   Scale
 } from "lucide-react"
@@ -18,8 +16,6 @@ interface SidebarNavProps {
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "processos", label: "Processos", icon: FileText },
-  { id: "clientes", label: "Clientes", icon: Users },
-  { id: "relatorios", label: "Relatórios", icon: BarChart3 },
   { id: "configuracoes", label: "Configurações", icon: Settings }
 ]
 

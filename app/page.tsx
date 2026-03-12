@@ -8,9 +8,23 @@ import { KpiCards } from "@/components/dashboard/kpi-cards"
 import { FinancialAnalysis } from "@/components/dashboard/financial-analysis"
 import { ClaimsAnalysis } from "@/components/dashboard/claims-analysis"
 import { ProcessesTable } from "@/components/dashboard/processes-table"
+import { ProcessosPage } from "@/components/dashboard/processos-page"
 
 export default function DashboardPage() {
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
+
+  const getBreadcrumb = () => {
+    switch (activeNavItem) {
+      case "dashboard":
+        return "Dashboard"
+      case "processos":
+        return "Processos"
+      case "configuracoes":
+        return "Configurações"
+      default:
+        return "Dashboard"
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -20,24 +34,44 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="ml-64 flex-1">
         {/* Header */}
-        <DashboardHeader />
+        <DashboardHeader breadcrumb={getBreadcrumb()} />
 
-        {/* Filters */}
-        <FiltersSection />
-
-        {/* Content Sections */}
+        {/* Content based on active nav item */}
         <div className="pb-8">
-          {/* KPI Cards */}
-          <KpiCards />
+          {activeNavItem === "dashboard" && (
+            <>
+              {/* Filters */}
+              <FiltersSection />
 
-          {/* Financial Risk Analysis */}
-          <FinancialAnalysis />
+              {/* KPI Cards */}
+              <KpiCards />
 
-          {/* Claims Analysis */}
-          <ClaimsAnalysis />
+              {/* Financial Risk Analysis */}
+              <FinancialAnalysis />
 
-          {/* Processes Table */}
-          <ProcessesTable />
+              {/* Claims Analysis */}
+              <ClaimsAnalysis />
+
+              {/* Processes Table */}
+              <ProcessesTable />
+            </>
+          )}
+
+          {activeNavItem === "processos" && (
+            <div className="px-8 pt-6">
+              <ProcessosPage />
+            </div>
+          )}
+
+          {activeNavItem === "configuracoes" && (
+            <div className="px-8 pt-6">
+              <div className="flex items-center justify-center h-64 bg-card rounded-lg border">
+                <p className="text-muted-foreground">
+                  Página de Configurações em desenvolvimento
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

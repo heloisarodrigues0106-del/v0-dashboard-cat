@@ -1,28 +1,66 @@
 // Mock data based on tb_processo, tb_valores, tb_pedido_inicial, tb_pedido_sentenca
 
 export interface Processo {
-  id: string
   numero_processo: string
-  reclamante: string
+  nome_reclamante: string
+  fopag: string
+  status_reclamante: "Ativo" | "Demitido" | "Aposentado"
+  funcao_reclamante: string
   trt: string
   comarca: string
-  fase_atual: string
-  status: "Ativo" | "Encerrado" | "Suspenso" | "Arquivado"
-  data_distribuicao: string
-  data_atualizacao: string
+  vara: string
+  data_recebimento: string
+  data_arquivamento: string | null
+  status_processo: "Ativo" | "Encerrado" | "Suspenso" | "Arquivado"
+  advogado_reclamante: string
+  processo_apenso: string | null
+  fase_processo_atual: string
+}
+
+export interface PedidoInicial {
+  numero_processo: string
+  do_at: boolean
+  reintegracao: boolean
+  periculosidade: boolean
+  insalubridade: boolean
+  danos_morais: boolean
+  horas_extras: boolean
+  intrajornada: boolean
+  horas_itinere: boolean
+  acumulo_funcao: boolean
+  equip_salarial: boolean
+  rec_vinculo: boolean
+  outros: string | null
+}
+
+export interface PedidoSentenca {
+  numero_processo: string
+  do_at: boolean
+  reintegracao: boolean
+  periculosidade: boolean
+  insalubridade: boolean
+  danos_morais: boolean
+  horas_extras: boolean
+  intrajornada: boolean
+  horas_itinere: boolean
+  acumulo_funcao: boolean
+  equip_salarial: boolean
+  rec_vinculo: boolean
+  outros: string | null
 }
 
 export interface ValorRisco {
-  trimestre: string
+  numero_processo: string
+  quarter: string
   ano: number
   principal_provavel: number
-  correcao_provavel: number
+  correcao_monetaria_provavel: number
   juros_provavel: number
   principal_possivel: number
-  correcao_possivel: number
+  correcao_monetaria_possivel: number
   juros_possivel: number
   principal_remoto: number
-  correcao_remoto: number
+  correcao_monetaria_remoto: number
   juros_remoto: number
 }
 
@@ -32,120 +70,448 @@ export interface PedidoComparativo {
   sentenca: number
 }
 
+// Processos completos
 export const processos: Processo[] = [
   {
-    id: "1",
     numero_processo: "0001234-56.2024.5.02.0001",
-    reclamante: "Maria Silva Santos",
+    nome_reclamante: "Maria Silva Santos",
+    fopag: "FOPAG-001",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Auxiliar Administrativo",
     trt: "TRT-2",
     comarca: "São Paulo",
-    fase_atual: "Instrução",
-    status: "Ativo",
-    data_distribuicao: "2024-01-15",
-    data_atualizacao: "2024-03-10"
+    vara: "1ª Vara do Trabalho",
+    data_recebimento: "2024-01-15",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dr. Carlos Mendes",
+    processo_apenso: null,
+    fase_processo_atual: "Instrução"
   },
   {
-    id: "2",
     numero_processo: "0002345-67.2024.5.02.0002",
-    reclamante: "João Pedro Oliveira",
+    nome_reclamante: "João Pedro Oliveira",
+    fopag: "FOPAG-002",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Operador de Produção",
     trt: "TRT-2",
     comarca: "Campinas",
-    fase_atual: "Sentença",
-    status: "Ativo",
-    data_distribuicao: "2024-02-20",
-    data_atualizacao: "2024-03-08"
+    vara: "2ª Vara do Trabalho",
+    data_recebimento: "2024-02-20",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dra. Fernanda Lima",
+    processo_apenso: null,
+    fase_processo_atual: "Sentença"
   },
   {
-    id: "3",
     numero_processo: "0003456-78.2024.5.15.0003",
-    reclamante: "Ana Clara Ferreira",
+    nome_reclamante: "Ana Clara Ferreira",
+    fopag: "FOPAG-003",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Analista de RH",
     trt: "TRT-15",
     comarca: "Ribeirão Preto",
-    fase_atual: "Recurso Ordinário",
-    status: "Ativo",
-    data_distribuicao: "2023-11-05",
-    data_atualizacao: "2024-03-05"
+    vara: "3ª Vara do Trabalho",
+    data_recebimento: "2023-11-05",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dr. Roberto Alves",
+    processo_apenso: "0001234-56.2024.5.02.0001",
+    fase_processo_atual: "Recurso Ordinário"
   },
   {
-    id: "4",
     numero_processo: "0004567-89.2023.5.02.0004",
-    reclamante: "Carlos Eduardo Lima",
+    nome_reclamante: "Carlos Eduardo Lima",
+    fopag: "FOPAG-004",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Supervisor de Logística",
     trt: "TRT-2",
     comarca: "São Paulo",
-    fase_atual: "Execução",
-    status: "Ativo",
-    data_distribuicao: "2023-08-12",
-    data_atualizacao: "2024-02-28"
+    vara: "4ª Vara do Trabalho",
+    data_recebimento: "2023-08-12",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dr. Paulo Rodrigues",
+    processo_apenso: null,
+    fase_processo_atual: "Execução"
   },
   {
-    id: "5",
     numero_processo: "0005678-90.2024.5.02.0005",
-    reclamante: "Beatriz Mendes Costa",
+    nome_reclamante: "Beatriz Mendes Costa",
+    fopag: "FOPAG-005",
+    status_reclamante: "Ativo",
+    funcao_reclamante: "Assistente Financeiro",
     trt: "TRT-2",
     comarca: "Santos",
-    fase_atual: "Acordo",
-    status: "Suspenso",
-    data_distribuicao: "2024-01-08",
-    data_atualizacao: "2024-03-01"
+    vara: "1ª Vara do Trabalho",
+    data_recebimento: "2024-01-08",
+    data_arquivamento: null,
+    status_processo: "Suspenso",
+    advogado_reclamante: "Dra. Mariana Souza",
+    processo_apenso: null,
+    fase_processo_atual: "Acordo"
   },
   {
-    id: "6",
     numero_processo: "0006789-01.2023.5.15.0006",
-    reclamante: "Fernando Alves Souza",
+    nome_reclamante: "Fernando Alves Souza",
+    fopag: "FOPAG-006",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Técnico de Manutenção",
     trt: "TRT-15",
     comarca: "Campinas",
-    fase_atual: "Arquivado",
-    status: "Arquivado",
-    data_distribuicao: "2023-03-20",
-    data_atualizacao: "2024-01-15"
+    vara: "5ª Vara do Trabalho",
+    data_recebimento: "2023-03-20",
+    data_arquivamento: "2024-01-15",
+    status_processo: "Arquivado",
+    advogado_reclamante: "Dr. André Santos",
+    processo_apenso: null,
+    fase_processo_atual: "Arquivado"
   },
   {
-    id: "7",
     numero_processo: "0007890-12.2024.5.02.0007",
-    reclamante: "Luciana Ribeiro Dias",
+    nome_reclamante: "Luciana Ribeiro Dias",
+    fopag: "FOPAG-007",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Coordenadora de Vendas",
     trt: "TRT-2",
     comarca: "São Paulo",
-    fase_atual: "Audiência Inicial",
-    status: "Ativo",
-    data_distribuicao: "2024-03-01",
-    data_atualizacao: "2024-03-10"
+    vara: "6ª Vara do Trabalho",
+    data_recebimento: "2024-03-01",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dr. Ricardo Pereira",
+    processo_apenso: null,
+    fase_processo_atual: "Audiência Inicial"
   },
   {
-    id: "8",
     numero_processo: "0008901-23.2024.5.02.0008",
-    reclamante: "Roberto Carvalho Neto",
+    nome_reclamante: "Roberto Carvalho Neto",
+    fopag: "FOPAG-008",
+    status_reclamante: "Aposentado",
+    funcao_reclamante: "Gerente de Operações",
     trt: "TRT-2",
     comarca: "Guarulhos",
-    fase_atual: "Perícia",
-    status: "Ativo",
-    data_distribuicao: "2024-02-10",
-    data_atualizacao: "2024-03-09"
+    vara: "2ª Vara do Trabalho",
+    data_recebimento: "2024-02-10",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dra. Juliana Costa",
+    processo_apenso: null,
+    fase_processo_atual: "Perícia"
   },
   {
-    id: "9",
     numero_processo: "0009012-34.2023.5.15.0009",
-    reclamante: "Patrícia Gomes Martins",
+    nome_reclamante: "Patrícia Gomes Martins",
+    fopag: "FOPAG-009",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Analista de Sistemas",
     trt: "TRT-15",
     comarca: "Sorocaba",
-    fase_atual: "Encerrado",
-    status: "Encerrado",
-    data_distribuicao: "2023-06-15",
-    data_atualizacao: "2024-02-20"
+    vara: "1ª Vara do Trabalho",
+    data_recebimento: "2023-06-15",
+    data_arquivamento: "2024-02-20",
+    status_processo: "Encerrado",
+    advogado_reclamante: "Dr. Marcos Oliveira",
+    processo_apenso: null,
+    fase_processo_atual: "Encerrado"
   },
   {
-    id: "10",
     numero_processo: "0010123-45.2024.5.02.0010",
-    reclamante: "Marcos Vinícius Rocha",
+    nome_reclamante: "Marcos Vinícius Rocha",
+    fopag: "FOPAG-010",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Engenheiro de Produção",
     trt: "TRT-2",
     comarca: "São Paulo",
-    fase_atual: "Instrução",
-    status: "Ativo",
-    data_distribuicao: "2024-02-28",
-    data_atualizacao: "2024-03-11"
+    vara: "7ª Vara do Trabalho",
+    data_recebimento: "2024-02-28",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dra. Camila Ferreira",
+    processo_apenso: null,
+    fase_processo_atual: "Instrução"
+  },
+  {
+    numero_processo: "0011234-56.2024.5.02.0011",
+    nome_reclamante: "Renata Cristina Almeida",
+    fopag: "FOPAG-011",
+    status_reclamante: "Demitido",
+    funcao_reclamante: "Recepcionista",
+    trt: "TRT-2",
+    comarca: "São Paulo",
+    vara: "8ª Vara do Trabalho",
+    data_recebimento: "2024-03-05",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dr. Thiago Moreira",
+    processo_apenso: null,
+    fase_processo_atual: "Citação"
+  },
+  {
+    numero_processo: "0012345-67.2024.5.15.0012",
+    nome_reclamante: "Gustavo Henrique Prado",
+    fopag: "FOPAG-012",
+    status_reclamante: "Ativo",
+    funcao_reclamante: "Motorista",
+    trt: "TRT-15",
+    comarca: "Piracicaba",
+    vara: "1ª Vara do Trabalho",
+    data_recebimento: "2024-01-22",
+    data_arquivamento: null,
+    status_processo: "Ativo",
+    advogado_reclamante: "Dra. Letícia Ramos",
+    processo_apenso: null,
+    fase_processo_atual: "Instrução"
   }
 ]
 
+// Pedidos iniciais por processo
+export const pedidosIniciais: PedidoInicial[] = [
+  {
+    numero_processo: "0001234-56.2024.5.02.0001",
+    do_at: true,
+    reintegracao: false,
+    periculosidade: false,
+    insalubridade: true,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: true,
+    horas_itinere: false,
+    acumulo_funcao: false,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: null
+  },
+  {
+    numero_processo: "0002345-67.2024.5.02.0002",
+    do_at: false,
+    reintegracao: false,
+    periculosidade: true,
+    insalubridade: false,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: false,
+    horas_itinere: true,
+    acumulo_funcao: true,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: "Adicional noturno"
+  },
+  {
+    numero_processo: "0003456-78.2024.5.15.0003",
+    do_at: false,
+    reintegracao: true,
+    periculosidade: false,
+    insalubridade: false,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: true,
+    horas_itinere: false,
+    acumulo_funcao: false,
+    equip_salarial: true,
+    rec_vinculo: false,
+    outros: null
+  },
+  {
+    numero_processo: "0004567-89.2023.5.02.0004",
+    do_at: true,
+    reintegracao: false,
+    periculosidade: true,
+    insalubridade: true,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: true,
+    horas_itinere: true,
+    acumulo_funcao: true,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: "FGTS não depositado"
+  },
+  {
+    numero_processo: "0005678-90.2024.5.02.0005",
+    do_at: false,
+    reintegracao: false,
+    periculosidade: false,
+    insalubridade: false,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: false,
+    horas_itinere: false,
+    acumulo_funcao: false,
+    equip_salarial: true,
+    rec_vinculo: true,
+    outros: null
+  }
+]
+
+// Pedidos deferidos em sentença
+export const pedidosSentenca: PedidoSentenca[] = [
+  {
+    numero_processo: "0002345-67.2024.5.02.0002",
+    do_at: false,
+    reintegracao: false,
+    periculosidade: true,
+    insalubridade: false,
+    danos_morais: false,
+    horas_extras: true,
+    intrajornada: false,
+    horas_itinere: false,
+    acumulo_funcao: true,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: null
+  },
+  {
+    numero_processo: "0006789-01.2023.5.15.0006",
+    do_at: false,
+    reintegracao: false,
+    periculosidade: false,
+    insalubridade: false,
+    danos_morais: false,
+    horas_extras: true,
+    intrajornada: true,
+    horas_itinere: false,
+    acumulo_funcao: false,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: null
+  },
+  {
+    numero_processo: "0009012-34.2023.5.15.0009",
+    do_at: false,
+    reintegracao: false,
+    periculosidade: false,
+    insalubridade: true,
+    danos_morais: true,
+    horas_extras: true,
+    intrajornada: false,
+    horas_itinere: false,
+    acumulo_funcao: false,
+    equip_salarial: false,
+    rec_vinculo: false,
+    outros: null
+  }
+]
+
+// Valores de risco por processo e trimestre
 export const valoresRisco: ValorRisco[] = [
+  {
+    numero_processo: "0001234-56.2024.5.02.0001",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 85000,
+    correcao_monetaria_provavel: 8500,
+    juros_provavel: 5950,
+    principal_possivel: 45000,
+    correcao_monetaria_possivel: 4500,
+    juros_possivel: 3150,
+    principal_remoto: 25000,
+    correcao_monetaria_remoto: 2500,
+    juros_remoto: 1750
+  },
+  {
+    numero_processo: "0002345-67.2024.5.02.0002",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 120000,
+    correcao_monetaria_provavel: 12000,
+    juros_provavel: 8400,
+    principal_possivel: 65000,
+    correcao_monetaria_possivel: 6500,
+    juros_possivel: 4550,
+    principal_remoto: 35000,
+    correcao_monetaria_remoto: 3500,
+    juros_remoto: 2450
+  },
+  {
+    numero_processo: "0003456-78.2024.5.15.0003",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 95000,
+    correcao_monetaria_provavel: 9500,
+    juros_provavel: 6650,
+    principal_possivel: 55000,
+    correcao_monetaria_possivel: 5500,
+    juros_possivel: 3850,
+    principal_remoto: 30000,
+    correcao_monetaria_remoto: 3000,
+    juros_remoto: 2100
+  },
+  {
+    numero_processo: "0004567-89.2023.5.02.0004",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 250000,
+    correcao_monetaria_provavel: 25000,
+    juros_provavel: 17500,
+    principal_possivel: 150000,
+    correcao_monetaria_possivel: 15000,
+    juros_possivel: 10500,
+    principal_remoto: 80000,
+    correcao_monetaria_remoto: 8000,
+    juros_remoto: 5600
+  },
+  {
+    numero_processo: "0001234-56.2024.5.02.0001",
+    quarter: "Q2",
+    ano: 2024,
+    principal_provavel: 88000,
+    correcao_monetaria_provavel: 9200,
+    juros_provavel: 6440,
+    principal_possivel: 47000,
+    correcao_monetaria_possivel: 4900,
+    juros_possivel: 3430,
+    principal_remoto: 26000,
+    correcao_monetaria_remoto: 2700,
+    juros_remoto: 1890
+  },
+  {
+    numero_processo: "0007890-12.2024.5.02.0007",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 75000,
+    correcao_monetaria_provavel: 7500,
+    juros_provavel: 5250,
+    principal_possivel: 40000,
+    correcao_monetaria_possivel: 4000,
+    juros_possivel: 2800,
+    principal_remoto: 20000,
+    correcao_monetaria_remoto: 2000,
+    juros_remoto: 1400
+  },
+  {
+    numero_processo: "0008901-23.2024.5.02.0008",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 180000,
+    correcao_monetaria_provavel: 18000,
+    juros_provavel: 12600,
+    principal_possivel: 95000,
+    correcao_monetaria_possivel: 9500,
+    juros_possivel: 6650,
+    principal_remoto: 50000,
+    correcao_monetaria_remoto: 5000,
+    juros_remoto: 3500
+  },
+  {
+    numero_processo: "0010123-45.2024.5.02.0010",
+    quarter: "Q1",
+    ano: 2024,
+    principal_provavel: 110000,
+    correcao_monetaria_provavel: 11000,
+    juros_provavel: 7700,
+    principal_possivel: 60000,
+    correcao_monetaria_possivel: 6000,
+    juros_possivel: 4200,
+    principal_remoto: 32000,
+    correcao_monetaria_remoto: 3200,
+    juros_remoto: 2240
+  }
+]
+
+// Dados agregados para gráficos do dashboard
+export const valoresRiscoAgregados = [
   {
     trimestre: "Q1",
     ano: 2024,
@@ -241,7 +607,46 @@ export const kpis = {
 }
 
 export const trts = ["TRT-2", "TRT-15", "TRT-1", "TRT-3", "TRT-4"]
-export const comarcas = ["São Paulo", "Campinas", "Ribeirão Preto", "Santos", "Guarulhos", "Sorocaba"]
+export const comarcas = ["São Paulo", "Campinas", "Ribeirão Preto", "Santos", "Guarulhos", "Sorocaba", "Piracicaba"]
+export const varas = [
+  "1ª Vara do Trabalho",
+  "2ª Vara do Trabalho",
+  "3ª Vara do Trabalho",
+  "4ª Vara do Trabalho",
+  "5ª Vara do Trabalho",
+  "6ª Vara do Trabalho",
+  "7ª Vara do Trabalho",
+  "8ª Vara do Trabalho"
+]
 export const statusOptions = ["Ativo", "Encerrado", "Suspenso", "Arquivado"]
+export const statusReclamanteOptions = ["Ativo", "Demitido", "Aposentado"]
+export const fasesProcesso = [
+  "Citação",
+  "Audiência Inicial",
+  "Instrução",
+  "Perícia",
+  "Sentença",
+  "Recurso Ordinário",
+  "Execução",
+  "Acordo",
+  "Arquivado",
+  "Encerrado"
+]
 export const trimestres = ["Q1", "Q2", "Q3", "Q4"]
 export const anos = [2023, 2024, 2025]
+
+// Labels dos pedidos para exibição
+export const pedidoLabels: Record<string, string> = {
+  do_at: "DO/AT",
+  reintegracao: "Reintegração",
+  periculosidade: "Periculosidade",
+  insalubridade: "Insalubridade",
+  danos_morais: "Danos Morais",
+  horas_extras: "Horas Extras",
+  intrajornada: "Intrajornada",
+  horas_itinere: "Horas In Itinere",
+  acumulo_funcao: "Acúmulo de Função",
+  equip_salarial: "Equiparação Salarial",
+  rec_vinculo: "Reconhecimento de Vínculo",
+  outros: "Outros"
+}
