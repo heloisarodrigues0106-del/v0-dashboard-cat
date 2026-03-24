@@ -1,76 +1,39 @@
-"use client"
+import { createServerSupabaseClient } from '@/lib/supabase-server'
+import DashboardClient from './dashboard-client'
 
-import { useState } from "react"
-import { SidebarNav } from "@/components/dashboard/sidebar-nav"
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { FiltersSection } from "@/components/dashboard/filters-section"
-import { KpiCards } from "@/components/dashboard/kpi-cards"
-import { FinancialAnalysis } from "@/components/dashboard/financial-analysis"
-import { ClaimsAnalysis } from "@/components/dashboard/claims-analysis"
-import { ProcessesTable } from "@/components/dashboard/processes-table"
-import { ProcessosPage } from "@/components/dashboard/processos-page"
-import { ConfiguracoesPage } from "@/components/dashboard/configuracoes-page"
+export const dynamic = 'force-dynamic'
 
-export default function DashboardPage() {
-  const [activeNavItem, setActiveNavItem] = useState("dashboard")
+export default async function DashboardPage() {
+  const supabase = createServerSupabaseClient()
+  
+  const [
+    { data: processos, error: errProc },
+    { data: pedidosInicial },
+    { data: pedidosSentenca },
+    { data: pedidosAcordao },
+    { data: laudos },
+    { data: valores }
+  ] = await Promise.all([
+    supabase.from('tb_processo').select('*'),
+    supabase.from('tb_pedidos_inicial').select('*'),
+    supabase.from('tb_pedidos_sentenca').select('*'),
+    supabase.from('tb_pedidos_acordao').select('*'),
+    supabase.from('tb_laudo').select('*'),
+    supabase.from('tb_valores').select('*')
+  ])
 
-  const getBreadcrumb = () => {
-    switch (activeNavItem) {
-      case "dashboard":
-        return "Dashboard"
-      case "processos":
-        return "Processos"
-      case "configuracoes":
-        return "Configurações"
-      default:
-        return "Dashboard"
-    }
+  if (errProc) {
+    console.error('Erro ao buscar processos no Supabase:', errProc)
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <SidebarNav activeItem={activeNavItem} onItemClick={setActiveNavItem} />
-
-      {/* Main Content */}
-      <main className="ml-64 flex-1">
-        {/* Header */}
-        <DashboardHeader breadcrumb={getBreadcrumb()} />
-
-        {/* Content based on active nav item */}
-        <div className="pb-8">
-          {activeNavItem === "dashboard" && (
-            <>
-              {/* Filters */}
-              <FiltersSection />
-
-              {/* KPI Cards */}
-              <KpiCards />
-
-              {/* Financial Risk Analysis */}
-              <FinancialAnalysis />
-
-              {/* Claims Analysis */}
-              <ClaimsAnalysis />
-
-              {/* Processes Table */}
-              <ProcessesTable />
-            </>
-          )}
-
-          {activeNavItem === "processos" && (
-            <div className="px-8 pt-6">
-              <ProcessosPage />
-            </div>
-          )}
-
-          {activeNavItem === "configuracoes" && (
-            <div className="px-8 pt-6">
-              <ConfiguracoesPage />
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+    <DashboardClient 
+      processos={processos || []}
+      pedidosInicial={pedidosInicial || []}
+      pedidosSentenca={pedidosSentenca || []}
+      pedidosAcordao={pedidosAcordao || []}
+      laudos={laudos || []}
+      valores={valores || []}
+    />
   )
 }

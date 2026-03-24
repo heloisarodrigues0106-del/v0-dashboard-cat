@@ -1,0 +1,6 @@
+{
+  "message": "TypeError: fetch failed",
+  "details": "TypeError: fetch failed\n\nCaused by: Error: self-signed certificate in certificate chain (SELF_SIGNED_CERT_IN_CHAIN)\nError: self-signed certificate in certificate chain\n    at TLSSocket.onConnectSecure (node:internal/tls/wrap:1649:34)\n    at TLSSocket.emit (node:events:508:28)\n    at TLSSocket._finishInit (node:internal/tls/wrap:1095:8)\n    at ssl.onhandshakedone (node:internal/tls/wrap:881:12)",
+  "hint": "",
+  "code": ""
+}

@@ -1,0 +1,17 @@
+{
+  "Insalubridade": [
+    true,
+    false
+  ],
+  "Periculosidade": [
+    false
+  ],
+  "Mental": [
+    false
+  ],
+  "Ergo": [
+    "CONCAUSA",
+    "CAUSA",
+    null
+  ]
+}

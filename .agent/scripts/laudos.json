@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "numero_processo": "0011417-46.2023.5.15.0051",
+    "do_mental": false,
+    "grau_mental": null,
+    "do_ergonomica": "CONCAUSA",
+    "grau_ergonomico": null,
+    "incapacidade": "CAPAZ",
+    "acidente_trabalho": false,
+    "periculosidade": false,
+    "insalubridade": true,
+    "grau_insalubridade": null
+  },
+  {
+    "id": 2,
+    "numero_processo": "0012010-75.2023.5.15.0051",
+    "do_mental": false,
+    "grau_mental": null,
+    "do_ergonomica": "CONCAUSA",
+    "grau_ergonomico": null,
+    "incapacidade": "INCAPACIDADEPARCIAL",
+    "acidente_trabalho": false,
+    "periculosidade": false,
+    "insalubridade": false,
+    "grau_insalubridade": null
+  },
+  {
+    "id": 3,
+    "numero_processo": "0012018-52.2023.5.15.0051",
+    "do_mental": false,
+    "grau_mental": null,
+    "do_ergonomica": "CAUSA",
+    "grau_ergonomico": null,
+    "incapacidade": "INCAPACIDADEPARCIAL",
+    "acidente_trabalho": false,
+    "periculosidade": false,
+    "insalubridade": true,
+    "grau_insalubridade": null
+  },
+  {
+    "id": 4,
+    "numero_processo": "0012094-12.2023.5.15.0137",
+    "do_mental": false,
+    "grau_mental": null,
+    "do_ergonomica": "CONCAUSA",
+    "grau_ergonomico": null,
+    "incapacidade": "INCAPAZ",
+    "acidente_trabalho": false,
+    "periculosidade": false,
+    "insalubridade": false,
+    "grau_insalubridade": null
+  },
+  {
+    "id": 5,
+    "numero_processo": "0012103-71.2023.5.15.0137",
+    "do_mental": false,
+    "grau_mental": null,
+    "do_ergonomica": null,
+    "grau_ergonomico": null,
+    "incapacidade": null,
+    "acidente_trabalho": false,
+    "periculosidade": false,
+    "insalubridade": false,
+    "grau_insalubridade": null
+  }
+]

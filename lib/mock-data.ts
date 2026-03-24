@@ -4,17 +4,17 @@ export interface Processo {
   numero_processo: string
   nome_reclamante: string
   fopag: string
-  status_reclamante: "Ativo" | "Demitido" | "Aposentado"
+  status_reclamante: "Ativo" | "Demitido" | "Aposentado" | string
   funcao_reclamante: string
   trt: string
   comarca: string
   vara: string
-  data_recebimento: string
+  data_ajuizamento: string
   data_arquivamento: string | null
-  status_processo: "Ativo" | "Encerrado" | "Suspenso" | "Arquivado"
+  status: "Ativo" | "Encerrado" | "Suspenso" | "Arquivado" | string
   advogado_reclamante: string
   processo_apenso: string | null
-  fase_processo_atual: string
+  fase_processual: string
 }
 
 export interface PedidoInicial {
@@ -81,12 +81,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "São Paulo",
     vara: "1ª Vara do Trabalho",
-    data_recebimento: "2024-01-15",
+    data_ajuizamento: "2024-01-15",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dr. Carlos Mendes",
     processo_apenso: null,
-    fase_processo_atual: "Instrução"
+    fase_processual: "Instrução"
   },
   {
     numero_processo: "0002345-67.2024.5.02.0002",
@@ -97,12 +97,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "Campinas",
     vara: "2ª Vara do Trabalho",
-    data_recebimento: "2024-02-20",
+    data_ajuizamento: "2024-02-20",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dra. Fernanda Lima",
     processo_apenso: null,
-    fase_processo_atual: "Sentença"
+    fase_processual: "Sentença"
   },
   {
     numero_processo: "0003456-78.2024.5.15.0003",
@@ -113,12 +113,12 @@ export const processos: Processo[] = [
     trt: "TRT-15",
     comarca: "Ribeirão Preto",
     vara: "3ª Vara do Trabalho",
-    data_recebimento: "2023-11-05",
+    data_ajuizamento: "2023-11-05",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dr. Roberto Alves",
     processo_apenso: "0001234-56.2024.5.02.0001",
-    fase_processo_atual: "Recurso Ordinário"
+    fase_processual: "Recurso Ordinário"
   },
   {
     numero_processo: "0004567-89.2023.5.02.0004",
@@ -129,12 +129,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "São Paulo",
     vara: "4ª Vara do Trabalho",
-    data_recebimento: "2023-08-12",
+    data_ajuizamento: "2023-08-12",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dr. Paulo Rodrigues",
     processo_apenso: null,
-    fase_processo_atual: "Execução"
+    fase_processual: "Execução"
   },
   {
     numero_processo: "0005678-90.2024.5.02.0005",
@@ -145,12 +145,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "Santos",
     vara: "1ª Vara do Trabalho",
-    data_recebimento: "2024-01-08",
+    data_ajuizamento: "2024-01-08",
     data_arquivamento: null,
-    status_processo: "Suspenso",
+    status: "Suspenso",
     advogado_reclamante: "Dra. Mariana Souza",
     processo_apenso: null,
-    fase_processo_atual: "Acordo"
+    fase_processual: "Acordo"
   },
   {
     numero_processo: "0006789-01.2023.5.15.0006",
@@ -161,12 +161,12 @@ export const processos: Processo[] = [
     trt: "TRT-15",
     comarca: "Campinas",
     vara: "5ª Vara do Trabalho",
-    data_recebimento: "2023-03-20",
+    data_ajuizamento: "2023-03-20",
     data_arquivamento: "2024-01-15",
-    status_processo: "Arquivado",
+    status: "Arquivado",
     advogado_reclamante: "Dr. André Santos",
     processo_apenso: null,
-    fase_processo_atual: "Arquivado"
+    fase_processual: "Arquivado"
   },
   {
     numero_processo: "0007890-12.2024.5.02.0007",
@@ -177,12 +177,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "São Paulo",
     vara: "6ª Vara do Trabalho",
-    data_recebimento: "2024-03-01",
+    data_ajuizamento: "2024-03-01",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dr. Ricardo Pereira",
     processo_apenso: null,
-    fase_processo_atual: "Audiência Inicial"
+    fase_processual: "Audiência Inicial"
   },
   {
     numero_processo: "0008901-23.2024.5.02.0008",
@@ -193,12 +193,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "Guarulhos",
     vara: "2ª Vara do Trabalho",
-    data_recebimento: "2024-02-10",
+    data_ajuizamento: "2024-02-10",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dra. Juliana Costa",
     processo_apenso: null,
-    fase_processo_atual: "Perícia"
+    fase_processual: "Perícia"
   },
   {
     numero_processo: "0009012-34.2023.5.15.0009",
@@ -209,12 +209,12 @@ export const processos: Processo[] = [
     trt: "TRT-15",
     comarca: "Sorocaba",
     vara: "1ª Vara do Trabalho",
-    data_recebimento: "2023-06-15",
+    data_ajuizamento: "2023-06-15",
     data_arquivamento: "2024-02-20",
-    status_processo: "Encerrado",
+    status: "Encerrado",
     advogado_reclamante: "Dr. Marcos Oliveira",
     processo_apenso: null,
-    fase_processo_atual: "Encerrado"
+    fase_processual: "Encerrado"
   },
   {
     numero_processo: "0010123-45.2024.5.02.0010",
@@ -225,12 +225,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "São Paulo",
     vara: "7ª Vara do Trabalho",
-    data_recebimento: "2024-02-28",
+    data_ajuizamento: "2024-02-28",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dra. Camila Ferreira",
     processo_apenso: null,
-    fase_processo_atual: "Instrução"
+    fase_processual: "Instrução"
   },
   {
     numero_processo: "0011234-56.2024.5.02.0011",
@@ -241,12 +241,12 @@ export const processos: Processo[] = [
     trt: "TRT-2",
     comarca: "São Paulo",
     vara: "8ª Vara do Trabalho",
-    data_recebimento: "2024-03-05",
+    data_ajuizamento: "2024-03-05",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dr. Thiago Moreira",
     processo_apenso: null,
-    fase_processo_atual: "Citação"
+    fase_processual: "Citação"
   },
   {
     numero_processo: "0012345-67.2024.5.15.0012",
@@ -257,12 +257,12 @@ export const processos: Processo[] = [
     trt: "TRT-15",
     comarca: "Piracicaba",
     vara: "1ª Vara do Trabalho",
-    data_recebimento: "2024-01-22",
+    data_ajuizamento: "2024-01-22",
     data_arquivamento: null,
-    status_processo: "Ativo",
+    status: "Ativo",
     advogado_reclamante: "Dra. Letícia Ramos",
     processo_apenso: null,
-    fase_processo_atual: "Instrução"
+    fase_processual: "Instrução"
   }
 ]
 

@@ -54,7 +54,6 @@ import {
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
-  processos,
   pedidosIniciais,
   pedidosSentenca,
   valoresRisco,
@@ -153,13 +152,13 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Status</span>
-                <Badge variant="outline" className={getStatusColor(processo.status_processo)}>
-                  {processo.status_processo}
+                <Badge variant="outline" className={getStatusColor(processo.status)}>
+                  {processo.status}
                 </Badge>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Fase Atual</span>
-                <span className="text-sm font-medium">{processo.fase_processo_atual}</span>
+                <span className="text-sm font-medium">{processo.fase_processual}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">FOPAG</span>
@@ -208,9 +207,9 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Data Recebimento</span>
+                <span className="text-sm text-muted-foreground">Data Ajuizamento</span>
                 <span className="text-sm font-medium">
-                  {formatDate(processo.data_recebimento)}
+                  {formatDate(processo.data_ajuizamento)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -398,7 +397,7 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
   )
 }
 
-export function ProcessosPage() {
+export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTrt, setSelectedTrt] = useState<string>("all")
   const [selectedComarca, setSelectedComarca] = useState<string>("all")
@@ -422,11 +421,11 @@ export function ProcessosPage() {
         selectedComarca === "all" || processo.comarca === selectedComarca
       const matchesVara = selectedVara === "all" || processo.vara === selectedVara
       const matchesStatus =
-        selectedStatus === "all" || processo.status_processo === selectedStatus
+        selectedStatus === "all" || processo.status === selectedStatus
       const matchesFase =
-        selectedFase === "all" || processo.fase_processo_atual === selectedFase
+        selectedFase === "all" || processo.fase_processual === selectedFase
 
-      const processoDate = new Date(processo.data_recebimento)
+      const processoDate = new Date(processo.data_ajuizamento)
       const matchesDataInicio = !dataInicio || processoDate >= dataInicio
       const matchesDataFim = !dataFim || processoDate <= dataFim
 
@@ -746,18 +745,18 @@ export function ProcessosPage() {
                       </TableCell>
                       <TableCell className="text-sm">{processo.vara}</TableCell>
                       <TableCell className="text-sm">
-                        {processo.fase_processo_atual}
+                        {processo.fase_processual}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className={getStatusColor(processo.status_processo)}
+                          className={getStatusColor(processo.status)}
                         >
-                          {processo.status_processo}
+                          {processo.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm">
-                        {formatDate(processo.data_recebimento)}
+                        {formatDate(processo.data_ajuizamento)}
                       </TableCell>
                       <TableCell className="text-right">
                         <Dialog>
