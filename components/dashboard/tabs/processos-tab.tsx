@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { ProcessesTable } from "@/components/dashboard/processes-table"
+import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
 
 const PEDIDO_KEYS = [
   { key: "reintegracao", label: "Reintegração" },
@@ -24,12 +25,14 @@ export function ProcessosTab({
   processos, 
   pedidosInicial, 
   pedidosSentenca, 
-  pedidosAcordao 
+  pedidosAcordao,
+  laudos = []
 }: { 
   processos: any[], 
   pedidosInicial: any[], 
   pedidosSentenca: any[], 
-  pedidosAcordao: any[] 
+  pedidosAcordao: any[],
+  laudos?: any[]
 }) {
   
   // Aggregate data for the matrix chart
@@ -117,7 +120,10 @@ export function ProcessosTab({
       </Card>
 
       {/* Relocar a tabela original de Processos para cá */}
-      <ProcessesTable processos={processos} />
+      <ProcessesTable processos={processos} laudos={laudos} />
+
+      {/* Seção Mapeamento de Testemunhas */}
+      <MapeamentoTestemunhas processos={processos} />
     </div>
   )
 }

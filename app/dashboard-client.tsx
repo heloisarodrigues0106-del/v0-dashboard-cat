@@ -254,7 +254,8 @@ export default function DashboardClient({
                 processos={filteredProcessos} 
                 pedidosInicial={filteredPedidosInicial} 
                 pedidosSentenca={filteredPedidosSentenca} 
-                pedidosAcordao={filteredPedidosAcordao} 
+                pedidosAcordao={filteredPedidosAcordao}
+                laudos={filteredLaudos}
               />
             </div>
           )}
