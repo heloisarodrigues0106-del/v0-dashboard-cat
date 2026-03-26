@@ -425,9 +425,32 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
       const matchesFase =
         selectedFase === "all" || processo.fase_processual === selectedFase
 
-      const processoDate = new Date(processo.data_ajuizamento)
-      const matchesDataInicio = !dataInicio || processoDate >= dataInicio
-      const matchesDataFim = !dataFim || processoDate <= dataFim
+      // Helper para converter string "YYYY-MM-DD" para Data local (no início do dia)
+      const parseToLocalDate = (dateStr: string) => {
+        if (!dateStr) return null;
+        const [year, month, day] = dateStr.split('T')[0].split('-');
+        return new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+      };
+
+      const processoDate = parseToLocalDate(processo.data_ajuizamento)
+      let matchesDataInicio = true;
+      let matchesDataFim = true;
+      
+      if (processoDate) {
+         if (dataInicio) {
+           const inicio = new Date(dataInicio)
+           inicio.setHours(0,0,0,0)
+           matchesDataInicio = processoDate >= inicio
+         }
+         if (dataFim) {
+           const fim = new Date(dataFim)
+           fim.setHours(23,59,59,999)
+           matchesDataFim = processoDate <= fim
+         }
+      } else {
+         matchesDataInicio = !dataInicio;
+         matchesDataFim = !dataFim;
+      }
 
       return (
         matchesSearch &&

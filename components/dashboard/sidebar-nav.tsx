@@ -10,7 +10,8 @@ import {
   Landmark,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  Handshake
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -24,6 +25,7 @@ interface SidebarNavProps {
 const navItems = [
   { id: "dashboard", label: "Visão Geral", icon: LayoutDashboard },
   { id: "processos", label: "Processos", icon: FileText },
+  { id: "acordos", label: "Acordos", icon: Handshake },
   { id: "laudos", label: "Laudos", icon: FileSignature },
   { id: "valores", label: "Valores", icon: Landmark },
   { id: "configuracoes", label: "Configurações", icon: Settings }

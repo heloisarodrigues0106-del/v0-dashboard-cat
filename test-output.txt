@@ -1,0 +1,35 @@
+[dotenv@17.3.1] injecting env (3) from .env.local -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+Column keys: [
+  'numero_processo',
+  'nome_reclamante',
+  'status_reclamante',
+  'funcao_reclamante',
+  'comarca',
+  'vara',
+  'data_ajuizamento',
+  'data_arquivamento',
+  'fase_processual',
+  'advogado_reclamante',
+  'processo_apenso',
+  'tipo_acao',
+  'data_admissao_reclamante',
+  'data_demissao_reclamante',
+  'modalidade_rescisao',
+  'reclamada',
+  'centro_custo',
+  'empresa_terceirizada',
+  'numero_processo_apenso',
+  'perito_medico_psiquiatra',
+  'perito_ergonomico',
+  'perito_tecnico',
+  'honorario_pericia',
+  'testemunha_reclamada',
+  'testemunha_reclamante',
+  'instancia',
+  'status',
+  'valor_acordo',
+  'valor_causa',
+  'uf'
+]
+data_ajuizamento values: [ '2019-11-19', '2023-10-27', '2023-10-30' ]
+data_arquivamento values: [ null, null, null ]
