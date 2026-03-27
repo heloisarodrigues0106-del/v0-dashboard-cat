@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { SidebarNav } from "@/components/dashboard/sidebar-nav"
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 
 // Importações dos novos componentes de Abas (agora rotas do sidebar)
@@ -33,6 +34,7 @@ export default function DashboardClient({
 }) {
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Filtros Globais de Data
   const [dataAjuizamentoInicio, setDataAjuizamentoInicio] = useState<Date | undefined>()
@@ -197,18 +199,32 @@ export default function DashboardClient({
 
   return (
     <div className="flex min-h-screen bg-background">
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
+
       {/* Sidebar */}
       <SidebarNav 
         activeItem={activeNavItem} 
         onItemClick={setActiveNavItem} 
         isCollapsed={isCollapsed}
         onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        isMobileOpen={isMobileMenuOpen}
+        onMobileClose={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content */}
-      <main className={cn("flex-1 transition-all duration-300", isCollapsed ? "ml-20" : "ml-64")}>
+      <main className={cn(
+        "flex-1 transition-all duration-300",
+        // Desktop: offset by sidebar width
+        isCollapsed ? "md:ml-20" : "md:ml-64",
+        // Mobile: no offset (sidebar overlays)
+        "ml-0"
+      )}>
         {/* Header */}
-        <DashboardHeader breadcrumb={getBreadcrumb()} />
+        <DashboardHeader 
+          breadcrumb={getBreadcrumb()} 
+          onMenuClick={() => setIsMobileMenuOpen(true)}
+        />
 
         {/* Global Filters */}
         {activeNavItem !== "configuracoes" && (
@@ -242,14 +258,14 @@ export default function DashboardClient({
           
           {/* 1. Visão Geral (Antigo Dashboard com Cards) */}
           {activeNavItem === "dashboard" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
               <VisaoGeralTab processos={filteredProcessos} pedidos={filteredPedidosInicial} />
             </div>
           )}
 
           {/* 2. Processos */}
           {activeNavItem === "processos" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
               <ProcessosTab 
                 processos={filteredProcessos} 
                 pedidosInicial={filteredPedidosInicial} 
@@ -262,28 +278,28 @@ export default function DashboardClient({
 
           {/* 3. Acordos */}
           {activeNavItem === "acordos" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
                <AcordosTab processos={filteredProcessos} />
             </div>
           )}
 
           {/* 4. Laudos */}
           {activeNavItem === "laudos" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
                <LaudosTab laudos={filteredLaudos} />
             </div>
           )}
 
           {/* 4. Valores */}
           {activeNavItem === "valores" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
                <ValoresTab valores={filteredValores} />
             </div>
           )}
 
           {/* 5. Configurações */}
           {activeNavItem === "configuracoes" && (
-            <div className="px-8 pt-6 animate-in fade-in-50 duration-500">
+            <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
               <ConfiguracoesPage />
             </div>
           )}

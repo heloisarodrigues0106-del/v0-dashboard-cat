@@ -1,28 +1,35 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
+import { ServiceWorkerRegistration } from '@/components/sw-registration'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'LexDash - Dashboard Jurídico Executivo',
+  title: 'Dashboard CAT',
   description: 'Painel executivo para gestão de processos trabalhistas e análise de risco jurídico',
   generator: 'v0.app',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Dashboard CAT',
+  },
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
+        url: '/caterpillar-logo.svg',
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/pwa-icon-192.png',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#F6D000',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
@@ -34,6 +41,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="font-sans antialiased">
         {children}
+        <ServiceWorkerRegistration />
         <Analytics />
       </body>
     </html>
