@@ -216,7 +216,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                         <div className="space-y-2">
                           <h4 className="font-semibold text-slate-600 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                             Atua como Testemunha
                           </h4>
                           <div className="flex flex-col gap-2">

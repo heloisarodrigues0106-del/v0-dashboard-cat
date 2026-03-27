@@ -133,7 +133,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
             <CardTitle className="text-sm font-medium text-muted-foreground">Média de Desconto</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-700">{formatPercent(metrics.mediaDesconto)}</div>
+            <div className="text-2xl font-bold text-amber-700">{formatPercent(metrics.mediaDesconto)}</div>
           </CardContent>
         </Card>
       </div>
@@ -165,7 +165,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                     formatter={(value: number, name: string) => [formatCurrency(value), name === 'total' ? 'Total' : 'Média']}
                   />
                   <Legend verticalAlign="bottom" height={36} formatter={(value) => <span className="text-sm font-medium capitalize">{value}</span>} />
-                  <Bar yAxisId="left" dataKey="total" fill="#2563eb" radius={[4, 4, 0, 0]} maxBarSize={150} />
+                  <Bar yAxisId="left" dataKey="total" fill="#F6D000" radius={[4, 4, 0, 0]} maxBarSize={150} />
                   <Line yAxisId="left" type="monotone" dataKey="media" stroke="#0f172a" strokeWidth={2} dot={{ r: 4, fill: "#0f172a" }} />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -210,7 +210,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                     formatter={(value: number, name: string) => [formatCurrency(value), name]}
                   />
-                  <Scatter name="Valor Pedido" data={scatterData} fill="#1d4ed8" />
+                  <Scatter name="Valor Pedido" data={scatterData} fill="#F6D000" />
                   <Legend verticalAlign="bottom" height={36} formatter={(val) => <span className="text-sm font-medium">Valor Pedido</span>}/>
                 </ScatterChart>
               </ResponsiveContainer>

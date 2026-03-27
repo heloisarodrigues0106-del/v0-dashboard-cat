@@ -145,7 +145,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
   const maxUfCount = Math.max(...Object.values(mapData).map(d => d.count), 1)
   const colorScale = scaleLinear<string>()
     .domain([0, maxUfCount])
-    .range(["#eff6ff", "#1d4ed8"]) // blue-50 to blue-700
+    .range(["#fefce8", "#b45309"]) // yellow-50 to amber-700
 
   return (
     <div className="space-y-6">
@@ -192,7 +192,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         <Card className="flex flex-col border-2 border-muted md:col-span-1">
           <CardHeader className="bg-muted/30 border-b">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-blue-500" />
+              <MapPin className="h-4 w-4 text-amber-500" />
               Top 5 Localidades
             </CardTitle>
           </CardHeader>
@@ -203,7 +203,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
               return (
                 <div 
                   key={idx} 
-                  className="relative p-3 rounded-lg border bg-background shadow-sm overflow-hidden group cursor-pointer hover:border-blue-300 transition-colors"
+                  className="relative p-3 rounded-lg border bg-background shadow-sm overflow-hidden group cursor-pointer hover:border-amber-300 transition-colors"
                   onMouseEnter={() => {
                     if (city.uf && mapData[city.uf]) {
                       setHoveredUF({ sigla: city.uf, details: mapData[city.uf] })
@@ -213,7 +213,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 >
                   {/* Fundo de barra de progresso */}
                   <div 
-                    className="absolute inset-y-0 left-0 bg-blue-100/30 transition-all duration-500 ease-in-out" 
+                    className="absolute inset-y-0 left-0 bg-amber-100/30 transition-all duration-500 ease-in-out" 
                     style={{ width: `${widthPerc}%`, zIndex: 0 }}
                   />
                   
@@ -250,13 +250,13 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 className="absolute top-6 right-6 z-10 w-64 p-5 bg-background border rounded-lg shadow-xl animate-in fade-in-50 zoom-in-95 pointer-events-none"
               >
                 <div className="flex items-center gap-3 border-b pb-3 mb-3">
-                  <MapPin className="h-5 w-5 text-blue-600" />
+                  <MapPin className="h-5 w-5 text-amber-600" />
                   <h4 className="font-bold text-lg text-foreground">{hoveredUF.sigla}</h4>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground text-sm font-medium">Processos:</span>
-                    <span className="font-bold text-base bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full">
+                    <span className="font-bold text-base bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">
                       {hoveredUF.details.count}
                     </span>
                   </div>
@@ -291,7 +291,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     const d = mapData[mappedSigla]
                     const fillValue = d && d.count > 0 ? colorScale(d.count) : "#e2e8f0"
                     const isHovered = hoveredUF?.sigla === mappedSigla
-                    const actualFill = isHovered ? "#3b82f6" : fillValue
+                    const actualFill = isHovered ? "#F6D000" : fillValue
                     
                     return (
                       <Geography
@@ -308,7 +308,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         }}
                         style={{
                           default: { outline: "none", transition: "all 250ms" },
-                          hover: { fill: "#3b82f6", outline: "none", cursor: "pointer", transition: "all 250ms" },
+                          hover: { fill: "#F6D000", outline: "none", cursor: "pointer", transition: "all 250ms" },
                           pressed: { outline: "none" },
                         }}
                       />
@@ -327,7 +327,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              Processos Ativos por Fase <Badge variant="secondary" className="font-normal bg-blue-100 text-blue-700">Total</Badge>
+              Processos Ativos por Fase <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -336,8 +336,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 <BarChart data={ranks.fases} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
                   <defs>
                     <linearGradient id="colorFases" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                      <stop offset="100%" stopColor="#a855f7" stopOpacity={1}/>
+                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
@@ -366,8 +366,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 <BarChart data={ranks.tiposAcao} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
                   <defs>
                     <linearGradient id="colorTiposAcao" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                      <stop offset="100%" stopColor="#2563eb" stopOpacity={1}/>
+                      <stop offset="0%" stopColor="#111111" stopOpacity={0.85}/>
+                      <stop offset="100%" stopColor="#333333" stopOpacity={1}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
@@ -409,7 +409,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       isAnimationActive={true}
                     >
                       {ranks.instancias.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][index % 5]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
+                        <Cell key={`cell-${index}`} fill={['#F6D000', '#111111', '#d97706', '#78716c', '#b45309'][index % 5]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
                       ))}
                       <Label
                         value={kpis.totalProcessos.toLocaleString("pt-BR")}
@@ -481,7 +481,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         let fColor = "#94a3b8";
                         const nm = entry.name.toUpperCase();
                         if (nm.includes("PARCIALMENTE PROCEDENTE")) fColor = "#10b981";
-                        else if (nm.includes("PROCEDENTE")) fColor = "#a855f7";
+                        else if (nm.includes("PROCEDENTE")) fColor = "#F6D000";
                         else if (nm.includes("ACORDO")) fColor = "#f97316";
                         else if (nm.includes("ARQUIVADO")) fColor = "#86efac";
                         else if (nm.includes("IMPROCEDENTE")) fColor = "#ef4444";
@@ -543,7 +543,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Volume de processos distribuídos <Badge variant="secondary" className="font-normal bg-blue-100 text-blue-700 hover:bg-blue-100">Total</Badge>
+            Volume de processos distribuídos <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700 hover:bg-amber-100">Total</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -564,7 +564,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                   formatter={(value: number) => [<span className="font-medium">{`${value.toLocaleString('pt-BR')} processos`}</span>, '']}
                   labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
                 />
-                <Bar dataKey="count" fill="#e77b63" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                <Bar dataKey="count" fill="#F6D000" radius={[4, 4, 0, 0]} maxBarSize={50}>
                   <LabelList 
                     dataKey="count" 
                     position="top" 

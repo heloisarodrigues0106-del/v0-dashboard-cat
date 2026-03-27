@@ -163,8 +163,8 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
   ].filter(d => d.value > 0)
 
   const mentalData = [
-    { name: "Causa", value: stats.mentalStatus.Causa, color: "#3b82f6" },
-    { name: "Concausa", value: stats.mentalStatus.Concausa, color: "#8b5cf6" },
+    { name: "Causa", value: stats.mentalStatus.Causa, color: "#F6D000" },
+    { name: "Concausa", value: stats.mentalStatus.Concausa, color: "#d97706" },
     { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: "#9ca3af" }
   ].filter(d => d.value > 0)
 
@@ -279,7 +279,7 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
                        dataKey="value"
                      >
                        {tiposData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={['#3b82f6', '#f59e0b', '#9ca3af'][index % 3]} />
+                         <Cell key={`cell-${index}`} fill={['#F6D000', '#d97706', '#9ca3af'][index % 3]} />
                        ))}
                      </Pie>
                      <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />

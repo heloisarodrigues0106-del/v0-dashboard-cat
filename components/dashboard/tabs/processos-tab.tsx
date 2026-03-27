@@ -74,7 +74,7 @@ export function ProcessosTab({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Volume de processos por pedidos <Badge variant="secondary" className="font-normal bg-blue-100 text-blue-700 hover:bg-blue-100">Total</Badge>
+            Volume de processos por pedidos <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700 hover:bg-amber-100">Total</Badge>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Comparativo de ocorrências pleiteadas na Inicial vs procedentes na Sentença vs Acórdão
@@ -112,7 +112,7 @@ export function ProcessosTab({
                 <Legend verticalAlign="top" height={40} wrapperStyle={{ paddingBottom: "20px" }} />
                 <Bar dataKey="Inicial" fill="#e77b63" radius={[0, 4, 4, 0]} barSize={12} />
                 <Bar dataKey="Sentença" fill="#10b981" radius={[0, 4, 4, 0]} barSize={12} />
-                <Bar dataKey="Acórdão" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={12} />
+                <Bar dataKey="Acórdão" fill="#F6D000" radius={[0, 4, 4, 0]} barSize={12} />
               </BarChart>
             </ResponsiveContainer>
           </div>

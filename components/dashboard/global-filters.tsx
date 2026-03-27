@@ -291,7 +291,7 @@ export function GlobalFilters({
             )}
             
             <SheetClose asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-8 transition-all duration-300 transform active:scale-95 shadow-md font-medium">
+              <Button className="bg-[#F6D000] hover:bg-[#d4a800] text-[#111111] rounded-md px-8 transition-all duration-300 transform active:scale-95 shadow-md font-medium">
                 Aplicar e Fechar
               </Button>
             </SheetClose>
