@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { SidebarNav } from "@/components/dashboard/sidebar-nav"
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
@@ -15,6 +16,7 @@ import { GlobalFilters } from "@/components/dashboard/global-filters"
 
 // Páginas secundárias
 import { ConfiguracoesPage } from "@/components/dashboard/configuracoes-page"
+import { createClient } from "@/lib/supabase-client"
 import { cn } from "@/lib/utils"
 
 export default function DashboardClient({ 
@@ -32,9 +34,16 @@ export default function DashboardClient({
   laudos: any[],
   valores: any[]
 }) {
+  const router = useRouter()
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleLogout = useCallback(async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push("/")
+  }, [router])
 
   // Filtros Globais de Data
   const [dataAjuizamentoInicio, setDataAjuizamentoInicio] = useState<Date | undefined>()
@@ -210,6 +219,7 @@ export default function DashboardClient({
         onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         isMobileOpen={isMobileMenuOpen}
         onMobileClose={() => setIsMobileMenuOpen(false)}
+        onLogout={handleLogout}
       />
 
       {/* Main Content */}

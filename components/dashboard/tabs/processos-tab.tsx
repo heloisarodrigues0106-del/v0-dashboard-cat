@@ -1,4 +1,6 @@
-import { useMemo } from "react"
+"use client"
+
+import { useMemo, useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
@@ -20,6 +22,58 @@ const PEDIDO_KEYS = [
   { key: "danos_materiais", label: "Danos Materiais" },
   { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
 ]
+
+function MobileBarChart({ data }: { data: any[] }) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
+  return (
+    <div className="w-full mt-4 overflow-x-auto -mx-2 px-2" style={{ minHeight: isMobile ? 400 : 600 }}>
+      <div style={{ width: isMobile ? "100%" : "100%", height: isMobile ? 400 : 600 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={isMobile ? { top: 0, right: 10, left: 0, bottom: 5 } : { top: 0, right: 30, left: 50, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="hsl(var(--border))" />
+            <XAxis 
+              type="number" 
+              stroke="hsl(var(--muted-foreground))"
+              tickFormatter={(value) => value >= 1000000 ? `${(value/1000000).toFixed(1)}mi` : value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString()}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+            />
+            <YAxis 
+              dataKey="name" 
+              type="category" 
+              width={isMobile ? 90 : 180}
+              stroke="hsl(var(--foreground))" 
+              tick={{ fontSize: isMobile ? 10 : 12 }} 
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip 
+              cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }}
+              contentStyle={{ backgroundColor: "#1f2937", color: "#fff", borderRadius: "8px", border: "none", fontSize: 12 }}
+              labelStyle={{ color: "#9ca3af", marginBottom: "8px" }}
+              itemStyle={{ paddingTop: "2px", paddingBottom: "2px" }}
+            />
+            <Legend verticalAlign="top" height={40} wrapperStyle={{ paddingBottom: "10px", fontSize: isMobile ? 11 : 14 }} />
+            <Bar dataKey="Inicial" fill="#e77b63" radius={[0, 4, 4, 0]} barSize={isMobile ? 8 : 12} />
+            <Bar dataKey="Sentença" fill="#10b981" radius={[0, 4, 4, 0]} barSize={isMobile ? 8 : 12} />
+            <Bar dataKey="Acórdão" fill="#F6D000" radius={[0, 4, 4, 0]} barSize={isMobile ? 8 : 12} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
 
 export function ProcessosTab({ 
   processos, 
@@ -81,41 +135,7 @@ export function ProcessosTab({
           </p>
         </CardHeader>
         <CardContent>
-          <div className="h-[600px] w-full mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={matrixData}
-                layout="vertical"
-                margin={{ top: 0, right: 30, left: 50, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="hsl(var(--border))" />
-                <XAxis 
-                   type="number" 
-                   stroke="hsl(var(--muted-foreground))"
-                   tickFormatter={(value) => value >= 1000000 ? `${(value/1000000).toFixed(1)}mi` : value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString()}
-                />
-                <YAxis 
-                   dataKey="name" 
-                   type="category" 
-                   width={180}
-                   stroke="hsl(var(--foreground))" 
-                   tick={{fontSize: 12}} 
-                   axisLine={false}
-                   tickLine={false}
-                />
-                <Tooltip 
-                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }}
-                  contentStyle={{ backgroundColor: "#1f2937", color: "#fff", borderRadius: "8px", border: "none" }}
-                  labelStyle={{ color: "#9ca3af", marginBottom: "8px" }}
-                  itemStyle={{ paddingTop: "2px", paddingBottom: "2px" }}
-                />
-                <Legend verticalAlign="top" height={40} wrapperStyle={{ paddingBottom: "20px" }} />
-                <Bar dataKey="Inicial" fill="#e77b63" radius={[0, 4, 4, 0]} barSize={12} />
-                <Bar dataKey="Sentença" fill="#10b981" radius={[0, 4, 4, 0]} barSize={12} />
-                <Bar dataKey="Acórdão" fill="#F6D000" radius={[0, 4, 4, 0]} barSize={12} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <MobileBarChart data={matrixData} />
         </CardContent>
       </Card>
 

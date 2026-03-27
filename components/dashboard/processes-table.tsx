@@ -63,7 +63,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
   const currentProcesses = processos.slice(startIndex, endIndex)
 
   return (
-    <section className="px-6 py-6">
+    <section className="px-0 md:px-6 py-6">
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-card-foreground">
@@ -71,7 +71,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-border">
+          <div className="rounded-lg border border-border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
@@ -280,8 +280,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
 
           {/* Pagination */}
           <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Mostrando {startIndex + 1} a {Math.min(endIndex, processos.length)} de {processos.length} processos
+            <p className="text-xs md:text-sm text-muted-foreground">
+              {startIndex + 1}-{Math.min(endIndex, processos.length)} de {processos.length}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -293,7 +293,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                 <ChevronLeft className="h-4 w-4" />
                 Anterior
               </Button>
-              <div className="flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <Button
                     key={page}

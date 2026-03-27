@@ -83,10 +83,10 @@ export function ValoresTab({ valores }: { valores: any[] }) {
   return (
     <Tabs defaultValue="provavel" onValueChange={setRiscoAtivo} className="w-full space-y-6">
       
-      <TabsList className="grid w-full grid-cols-3 max-w-2xl bg-muted/30">
-        <TabsTrigger value="provavel" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Risco Provável</TabsTrigger>
-        <TabsTrigger value="possivel" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Risco Possível</TabsTrigger>
-        <TabsTrigger value="remoto" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">Risco Remoto</TabsTrigger>
+      <TabsList className="w-full overflow-x-auto flex bg-muted/30">
+        <TabsTrigger value="provavel" className="flex-1 min-w-[110px] data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs md:text-sm">Risco Provável</TabsTrigger>
+        <TabsTrigger value="possivel" className="flex-1 min-w-[110px] data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs md:text-sm">Risco Possível</TabsTrigger>
+        <TabsTrigger value="remoto" className="flex-1 min-w-[110px] data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs md:text-sm">Risco Remoto</TabsTrigger>
       </TabsList>
 
       <TabsContent value={riscoAtivo} className="space-y-6 mt-0">
@@ -100,7 +100,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
               <DollarSign className="h-4 w-4 text-muted-foreground/50" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-muted-foreground">{formatCurrency(kpis.quarter.anterior)}</div>
+              <div className="text-xl md:text-2xl font-bold text-muted-foreground">{formatCurrency(kpis.quarter.anterior)}</div>
             </CardContent>
           </Card>
           
@@ -110,7 +110,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(kpis.quarter.atual)}</div>
+              <div className="text-xl md:text-2xl font-bold">{formatCurrency(kpis.quarter.atual)}</div>
             </CardContent>
           </Card>
 
@@ -119,7 +119,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
               <CardTitle className={`text-sm font-medium ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-muted-foreground"}`}>Variação do Período</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className={`text-2xl font-bold ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
+                <div className={`text-xl md:text-2xl font-bold ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
                   {diffQuarter > 0 ? '+' : ''}{formatCurrency(diffQuarter)}
                 </div>
                 <div className="text-xs mt-1 font-medium flex items-center gap-1 text-muted-foreground">
@@ -132,7 +132,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
 
       {/* Gestão de Custos e Garantias */}
       <h3 className="text-lg font-medium mt-8">Gestão de Garantias e Custos</h3>
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-medium">Custas Processuais</CardTitle>
@@ -175,7 +175,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       {/* Análise de Processos Drill-down */}
       <h3 className="text-lg font-medium mt-8">Detalhamento Individual da Variação</h3>
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -218,7 +218,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                         <TableCell colSpan={6} className="p-6">
                           <div className="space-y-4 max-w-4xl mx-auto">
                             <h4 className="font-semibold text-sm mb-2 text-muted-foreground uppercase tracking-wider">Abertura de Valores</h4>
-                            <div className="grid grid-cols-4 gap-4 text-sm bg-background border rounded-lg p-4 shadow-sm">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-background border rounded-lg p-4 shadow-sm">
                                <div>
                                  <span className="text-muted-foreground block text-xs uppercase">Principal</span>
                                  <div className="font-medium mt-1">Ant: {formatCurrency(item.principalAnterior)}</div>

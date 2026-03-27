@@ -11,7 +11,8 @@ import {
   ChevronLeft,
   Menu,
   X,
-  Handshake
+  Handshake,
+  LogOut
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
@@ -23,6 +24,7 @@ interface SidebarNavProps {
   onToggleCollapse?: () => void
   isMobileOpen?: boolean
   onMobileClose?: () => void
+  onLogout?: () => void
 }
 
 const navItems = [
@@ -40,7 +42,8 @@ export function SidebarNav({
   isCollapsed = false,
   onToggleCollapse,
   isMobileOpen = false,
-  onMobileClose
+  onMobileClose,
+  onLogout
 }: SidebarNavProps) {
   const handleItemClick = (id: string) => {
     onItemClick?.(id)
@@ -141,7 +144,7 @@ export function SidebarNav({
           </nav>
 
           {/* Footer */}
-          <div className="border-t border-sidebar-border p-4">
+          <div className="border-t border-sidebar-border p-4 space-y-3">
             <div className={cn("flex items-center gap-3", !isMobileOpen && isCollapsed && "justify-center")}>
               <div className="h-9 w-9 shrink-0 rounded-full bg-sidebar-accent flex items-center justify-center">
                 <span className="text-sm font-medium">AS</span>
@@ -153,6 +156,20 @@ export function SidebarNav({
                 </div>
               )}
             </div>
+            
+            {/* Logout Button */}
+            <button
+              onClick={onLogout}
+              title={!isMobileOpen && isCollapsed ? "Sair" : undefined}
+              className={cn(
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "text-sidebar-foreground/60 hover:bg-destructive/10 hover:text-destructive",
+                !isMobileOpen && isCollapsed ? "justify-center" : "justify-start"
+              )}
+            >
+              <LogOut className="h-4 w-4 shrink-0" />
+              {(isMobileOpen || !isCollapsed) && <span>Sair da conta</span>}
+            </button>
           </div>
         </div>
       </aside>
