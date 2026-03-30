@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { FileText, DollarSign, MapPin, Archive, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { FileText, DollarSign, MapPin, Archive, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, PieChart, Pie, Cell, Legend, Label } from "recharts"
 import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
@@ -33,17 +33,18 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     let valorTotal = 0
     let processCount = processos.length
 
+    // Status groups as requested by user
+    const statusAtivos = ['PROCEDENTE', 'PARCIALMENTE PROCEDENTE', 'SOBRESTADO', 'IMPROCEDENTE', 'ACORDO']
+    const statusArquivados = ['ARQUIVADO', 'EXTINTO SEM MÉRITO']
+
+    let processosAtivosCount = 0
     let processosArquivadosCount = 0
-    processos.forEach(p => {
-      if (p.data_arquivamento) {
-        processosArquivadosCount++
-      }
-    })
 
     const dictAdvogados: Record<string, number> = {}
     const dictFuncoes: Record<string, number> = {}
     const dictFases: Record<string, number> = {}
     const dictComarcas: Record<string, { count: number, uf: string, recent: number }> = {}
+    
     let maxDateMs = 0;
     processos.forEach(p => {
        if (p.data_ajuizamento) {
@@ -53,6 +54,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
          } catch(e) {}
        }
     })
+
     const dictUF: Record<string, { count: number, valorTotal: number }> = {}
     const dictAnos: Record<string, number> = {}
     const dictTipoAcao: Record<string, number> = {}
@@ -61,6 +63,15 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
     processos.forEach(p => {
       valorTotal += (p.valor_causa || 0)
+
+      const statusVal = (p.status || p.status_processo || "").toUpperCase().trim()
+      
+      // Update Active/Archived count based on status
+      if (statusAtivos.includes(statusVal)) {
+        processosAtivosCount++
+      } else if (statusArquivados.includes(statusVal)) {
+        processosArquivadosCount++
+      }
 
       if (p.advogado_reclamante) dictAdvogados[p.advogado_reclamante] = (dictAdvogados[p.advogado_reclamante] || 0) + 1
       if (p.funcao_reclamante) dictFuncoes[p.funcao_reclamante] = (dictFuncoes[p.funcao_reclamante] || 0) + 1
@@ -86,7 +97,6 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       
       if (p.data_ajuizamento) {
         try {
-          // Extrair o ano direto da string (YYYY-MM-DD) para evitar problemas de fuso horário
           const anoStr = typeof p.data_ajuizamento === 'string' ? p.data_ajuizamento.split('-')[0] : null;
           if (anoStr) {
             const ano = parseInt(anoStr, 10);
@@ -100,7 +110,6 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       if (p.tipo_acao) dictTipoAcao[p.tipo_acao] = (dictTipoAcao[p.tipo_acao] || 0) + 1
       if (p.instancia) dictInstancias[p.instancia] = (dictInstancias[p.instancia] || 0) + 1
 
-      const statusVal = p.status || p.status_processo
       if (statusVal) dictStatus[statusVal] = (dictStatus[statusVal] || 0) + 1
 
       let uf = p.uf?.toUpperCase()
@@ -123,6 +132,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     return {
       kpis: {
         totalProcessos: processCount,
+        processosAtivos: processosAtivosCount,
         processosArquivados: processosArquivadosCount,
         valorCausa: valorTotal,
         topComarcasString: topComarcasDetalhes.map(c => c.name).join(', ') || 'N/A',
@@ -151,7 +161,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     <div className="space-y-6">
       
       {/* 1. KPIs */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Processos</CardTitle>
@@ -159,7 +169,18 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{kpis.totalProcessos}</div>
-            <p className="text-xs text-muted-foreground">Processos ativos na base</p>
+            <p className="text-xs text-muted-foreground">Somatória de todas as linhas</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Processos Ativos</CardTitle>
+            <Activity className="h-4 w-4 text-[#F6D000]" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-[#F6D000]">{kpis.processosAtivos}</div>
+            <p className="text-xs text-muted-foreground">Considerando o status ativo</p>
           </CardContent>
         </Card>
 
@@ -170,13 +191,13 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{kpis.processosArquivados}</div>
-            <p className="text-xs text-muted-foreground">Baseados na data de arquivamento</p>
+            <p className="text-xs text-muted-foreground">Arquivados ou Extintos</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total da Causa</CardTitle>
+            <CardTitle className="text-sm font-medium">Valor Total das Causas</CardTitle>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
@@ -579,43 +600,87 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       </Card>
 
       {/* 4. Rankings Inferiores */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 mt-6">
         {/* Advogados */}
-        <Card>
+        <Card className="flex flex-col shadow-sm rounded-xl">
           <CardHeader>
-            <CardTitle className="text-sm font-bold">Top Advogados (Reclamante)</CardTitle>
+            <CardTitle className="font-bold flex items-center gap-2 font-inter">
+              Ranking Advogado Adverso <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {ranks.advogados.map((item, i) => (
-                 <div key={i} className="flex items-center justify-between text-sm">
-                   <div className="flex items-center gap-2 truncate">
-                      <span className="text-muted-foreground w-4">{i+1}º</span>
-                      <span className="truncate">{item.name}</span>
-                   </div>
-                   <span className="font-semibold">{item.count}</span>
-                 </div>
-              ))}
+          <CardContent className="flex-1">
+            <div className="h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={ranks.advogados} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="colorAdvogados" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    width={180} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    stroke="hsl(var(--foreground))" 
+                    tick={{fontSize: 11, fontWeight: 500}} 
+                    tickFormatter={(val) => val.length > 25 ? val.substring(0, 25) + '...' : val}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
+                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} 
+                  />
+                  <Bar dataKey="count" fill="url(#colorAdvogados)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
          {/* Funções */}
-         <Card>
+        <Card className="flex flex-col shadow-sm rounded-xl">
           <CardHeader>
-            <CardTitle className="text-sm font-bold">Top Funções (Reclamante)</CardTitle>
+            <CardTitle className="font-bold flex items-center gap-2 font-inter">
+              Ajuizamento por Cargo <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {ranks.funcoes.map((item, i) => (
-                 <div key={i} className="flex items-center justify-between text-sm">
-                   <div className="flex items-center gap-2 truncate">
-                      <span className="text-muted-foreground w-4">{i+1}º</span>
-                      <span className="truncate">{item.name}</span>
-                   </div>
-                   <span className="font-semibold">{item.count}</span>
-                 </div>
-              ))}
+          <CardContent className="flex-1">
+            <div className="h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={ranks.funcoes} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="colorFuncoes" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    width={180} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    stroke="hsl(var(--foreground))" 
+                    tick={{fontSize: 11, fontWeight: 500}} 
+                    tickFormatter={(val) => val.length > 25 ? val.substring(0, 25) + '...' : val}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
+                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} 
+                  />
+                  <Bar dataKey="count" fill="url(#colorFuncoes)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
