@@ -173,18 +173,18 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       </div>
 
       {/* Análise de Processos Drill-down */}
-      <h3 className="text-lg font-medium mt-8">Detalhamento Individual da Variação</h3>
+      <h3 className="text-lg font-bold mt-8 mb-4">Detalhamento Individual da Variação</h3>
       <Card>
         <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]"></TableHead>
-                <TableHead>Número do Processo</TableHead>
-                <TableHead className="text-right">Quarter Anterior</TableHead>
-                <TableHead className="text-right">Quarter Atual</TableHead>
-                <TableHead className="text-right">Diferença</TableHead>
-                <TableHead className="text-center">Status</TableHead>
+              <TableRow className="bg-slate-50 border-y border-slate-200">
+                <TableHead className="w-[50px] font-bold text-slate-900"></TableHead>
+                <TableHead className="font-bold text-slate-900">Número do Processo</TableHead>
+                <TableHead className="text-right font-bold text-slate-900">Quarter Anterior</TableHead>
+                <TableHead className="text-right font-bold text-slate-900">Quarter Atual</TableHead>
+                <TableHead className="text-right font-bold text-slate-900">Diferença</TableHead>
+                <TableHead className="text-center font-bold text-slate-900">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

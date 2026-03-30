@@ -66,7 +66,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
     <section className="py-0">
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-card-foreground">
+          <CardTitle className="text-xl font-bold text-card-foreground">
             Detalhamento dos Processos
           </CardTitle>
         </CardHeader>
@@ -74,13 +74,13 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
           <div className="rounded-lg border border-border overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="font-semibold text-card-foreground">Número do Processo</TableHead>
-                  <TableHead className="font-semibold text-card-foreground">Reclamante</TableHead>
-                  <TableHead className="font-semibold text-card-foreground">TRT/Comarca</TableHead>
-                  <TableHead className="font-semibold text-card-foreground">Fase Atual</TableHead>
-                  <TableHead className="font-semibold text-card-foreground">Status</TableHead>
-                  <TableHead className="font-semibold text-card-foreground text-right">Ações</TableHead>
+                <TableRow className="bg-slate-50 border-y border-slate-200">
+                  <TableHead className="font-bold text-slate-900">Número do Processo</TableHead>
+                  <TableHead className="font-bold text-slate-900">Reclamante</TableHead>
+                  <TableHead className="font-bold text-slate-900">TRT/Comarca</TableHead>
+                  <TableHead className="font-bold text-slate-900">Fase Atual</TableHead>
+                  <TableHead className="font-bold text-slate-900">Status</TableHead>
+                  <TableHead className="font-bold text-slate-900 text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
