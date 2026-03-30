@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FileText, DollarSign, MapPin, Archive, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, PieChart, Pie, Cell, Legend, Label } from "recharts"
+import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, PieChart, Pie, Cell, Legend, Label } from "recharts"
 import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
 import { ConcessoesLiminares } from "./concessoes-liminares"
@@ -584,30 +584,46 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         <CardContent>
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ranks.anos} margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} />
+              <AreaChart data={ranks.anos} margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorYellowArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#F6D000" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#F6D000" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
+                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} tick={{fontSize: 12, fontWeight: 500}} />
                 <YAxis 
                    stroke="hsl(var(--muted-foreground))" 
                    tickLine={false} 
                    axisLine={false}
                    tickFormatter={(value) => value >= 1000000 ? `${(value/1000000).toFixed(1)}mi` : value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString()}
+                   tick={{fontSize: 12, fontWeight: 500}}
                 />
                 <Tooltip 
-                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
-                  contentStyle={{ backgroundColor: "#1f2937", color: "#fff", borderRadius: "8px", border: "none" }}
-                  formatter={(value: number) => [<span className="font-medium">{`${value.toLocaleString('pt-BR')} processos`}</span>, '']}
+                  cursor={{ stroke: "hsl(var(--muted))", strokeWidth: 1, strokeDasharray: "4 4" }} 
+                  contentStyle={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px", border: "1px solid #333333" }}
+                  itemStyle={{ color: "#F6D000", fontWeight: 600 }}
+                  formatter={(value: number) => [`${value.toLocaleString('pt-BR')} processos`, 'Total']}
                   labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
                 />
-                <Bar dataKey="count" fill="#F6D000" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                <Area 
+                  type="monotone" 
+                  dataKey="count" 
+                  stroke="#F6D000" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorYellowArea)" 
+                  isAnimationActive={true}
+                >
                   <LabelList 
                     dataKey="count" 
                     position="top" 
                     formatter={(val: number) => val.toLocaleString('pt-BR')} 
-                    style={{ fill: "hsl(var(--foreground))", fontSize: 11, fontWeight: 600, textDecoration: "underline" }} 
+                    style={{ fill: "hsl(var(--foreground))", fontSize: 11, fontWeight: 700 }} 
                   />
-                </Bar>
-              </BarChart>
+                </Area>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
