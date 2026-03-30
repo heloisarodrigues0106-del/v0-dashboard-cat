@@ -241,7 +241,7 @@ export function ProcessosTab({
 
       {/* Per-Process Detail Dialog */}
       <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white p-0">
+        <DialogContent className="max-w-6xl w-[95vw] max-h-[90vh] overflow-hidden bg-white p-0">
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
             <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
               <span className="w-2 h-8 rounded-full bg-[#F6D000] shrink-0"></span>
@@ -257,27 +257,27 @@ export function ProcessosTab({
 
           <ScrollArea className="max-h-[65vh]">
             <div className="px-6 py-4">
-              <div className="overflow-x-auto rounded-lg border border-border">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto rounded-lg border border-border bg-white">
+                <table className="w-full text-sm table-fixed border-collapse">
                   <thead className="sticky top-0 z-10">
                     <tr className="bg-[#111111] text-white">
-                      <th className="text-left px-4 py-3 font-semibold min-w-[220px] border-r border-slate-700">Nº Processo</th>
-                      <th className="text-left px-4 py-3 font-semibold min-w-[180px] border-r border-slate-700">Reclamante</th>
-                      <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 w-[100px]">Inicial</th>
-                      <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 w-[100px]">Sentença</th>
-                      <th className="text-center px-4 py-3 font-semibold w-[100px]">Acórdão</th>
+                      <th className="text-left px-4 py-3 font-semibold w-[220px] border-r border-slate-700">Nº Processo</th>
+                      <th className="text-left px-4 py-3 font-semibold min-w-[200px] border-r border-slate-700">Reclamante</th>
+                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[100px]">Inicial</th>
+                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[100px]">Sentença</th>
+                      <th className="text-center px-2 py-3 font-semibold w-[100px]">Acórdão</th>
                     </tr>
                   </thead>
                   <tbody>
                     {detailRows.map((row, idx) => (
                       <tr 
                         key={idx} 
-                        className={`border-b border-border transition-colors hover:bg-amber-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}
+                        className={`border-b border-border transition-colors hover:bg-amber-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
                       >
-                        <td className="px-4 py-2.5 font-mono text-xs text-slate-700 border-r border-border">
+                        <td className="px-4 py-2.5 font-mono text-[11px] text-slate-700 border-r border-border truncate">
                           {row.numero}
                         </td>
-                        <td className="px-4 py-2.5 text-slate-700 text-xs font-medium truncate max-w-[200px] border-r border-border" title={row.reclamante}>
+                        <td className="px-4 py-2.5 text-slate-700 text-xs font-medium truncate border-r border-border" title={row.reclamante}>
                           {row.reclamante}
                         </td>
                         <td className="px-4 py-2.5 border-r border-border">
