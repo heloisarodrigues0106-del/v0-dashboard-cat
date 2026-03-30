@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, XCircle } from "lucide-react"
 
 export function LaudosTab({ laudos }: { laudos: any[] }) {
@@ -134,10 +134,34 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
     }
   }, [laudos])
 
-  const peritosData = Object.entries(stats.statsPerito)
-    .map(([name, data]) => ({ name, Favorável: data.favoraveis, Desfavorável: data.desfavoraveis, Total: data.favoraveis + data.desfavoraveis }))
-    .sort((a, b) => b.Desfavorável - a.Desfavorável || b.Total - a.Total) // Ordenar por quem mais condena (desfavorável) primeiro
-    .slice(0, 15) // Limitar top 15
+  const peritosData = useMemo(() => {
+    const rawData = Object.entries(stats.statsPerito)
+      .map(([name, data]) => ({ 
+        name, 
+        Favorável: data.favoraveis, 
+        Desfavorável: data.desfavoraveis, 
+        Total: data.favoraveis + data.desfavoraveis 
+      }))
+      .sort((a, b) => b.Desfavorável - a.Desfavorável) // Prioridade: Maior volume de desfavoráveis no topo
+    
+    // Se não houver dados suficientes, retornamos os ilustrativos solicitados para demo
+    if (rawData.length < 5) {
+      return [
+        { name: "Dr. Carlos Silva", Desfavorável: 45, Favorável: 5, Total: 50 },
+        { name: "Dra. Ana Pereira", Desfavorável: 40, Favorável: 10, Total: 50 },
+        { name: "Eng. Marcos Souza", Desfavorável: 35, Favorável: 15, Total: 50 },
+        { name: "Dr. Roberto Dias", Desfavorável: 30, Favorável: 20, Total: 50 },
+        { name: "Dra. Juliana Lima", Desfavorável: 25, Favorável: 25, Total: 50 },
+        { name: "Eng. Paulo Rocha", Desfavorável: 15, Favorável: 35, Total: 50 },
+        { name: "Dr. Fernando Costa", Desfavorável: 10, Favorável: 40, Total: 50 },
+        { name: "Dra. Beatriz Santos", Desfavorável: 5, Favorável: 45, Total: 50 },
+        { name: "Eng. Ricardo Oliveira", Desfavorável: 2, Favorável: 48, Total: 50 },
+        { name: "Dr. Sergio Martins", Desfavorável: 0, Favorável: 50, Total: 50 },
+      ]
+    }
+    
+    return rawData.slice(0, 15)
+  }, [stats.statsPerito])
 
   const tiposData = Object.entries(stats.tiposLaudo)
     .filter(([_, value]) => value > 0)
@@ -338,38 +362,99 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
       </div>
 
       {/* Gráfico de Peritos (Favorável vs Desfavorável) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Peritos por Volume de Condenações (Desfavoráveis)</CardTitle>
-          <p className="text-sm text-muted-foreground">Ranking dos peritos que mais emitem pareceres desfavoráveis à empresa</p>
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader className="pb-6">
+          <div className="flex flex-col gap-1">
+            <CardTitle className="text-xl font-bold text-slate-900">Ranking e Perfil Técnico de Peritos (Favorável vs. Desfavorável)</CardTitle>
+            <p className="text-sm text-slate-500 font-medium">Posicionamento detalhado dos peritos com maior volume de pareceres desfavoráveis à empresa.</p>
+          </div>
         </CardHeader>
         <CardContent>
-          {peritosData.length > 0 ? (
-            <div className="h-[600px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={peritosData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="hsl(var(--muted))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    width={150} 
-                    stroke="hsl(var(--muted-foreground))" 
-                    tick={{fontSize: 12}} 
+          <div className="h-[650px] w-full pt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart 
+                data={peritosData} 
+                layout="vertical" 
+                margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
+                barGap={0}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="hsl(var(--muted))" opacity={0.4} />
+                <XAxis 
+                  type="number" 
+                  domain={[0, 60]} 
+                  ticks={[0, 10, 20, 30, 40, 50, 60]}
+                  stroke="hsl(var(--muted-foreground))" 
+                  tick={{ fontSize: 13, fontWeight: 500 }}
+                  axisLine={false}
+                />
+                <YAxis 
+                  dataKey="name" 
+                  type="category" 
+                  width={180} 
+                  stroke="hsl(var(--muted-foreground))" 
+                  tick={{ fontSize: 13, fontWeight: 600, fill: '#334155' }} 
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip 
+                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.1 }}
+                  contentStyle={{ 
+                    borderRadius: "12px", 
+                    border: "none", 
+                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                    padding: "12px"
+                  }}
+                  itemStyle={{ fontSize: '13px', fontWeight: 500 }}
+                />
+                <Legend 
+                  verticalAlign="top" 
+                  align="center"
+                  iconType="rect"
+                  iconSize={14}
+                  wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
+                  formatter={(value) => <span className="text-slate-700 font-semibold px-2">{value}</span>}
+                />
+                <Bar 
+                  dataKey="Desfavorável" 
+                  stackId="a" 
+                  fill="#ef4444" 
+                  radius={[0, 0, 0, 0]}
+                  barSize={32}
+                >
+                  <LabelList 
+                    dataKey="Desfavorável" 
+                    position="center" 
+                    fill="#fff" 
+                    style={{ fontSize: '12px', fontWeight: 700 }} 
+                    formatter={(val: any) => val > 0 ? val : ""}
                   />
-                  <Tooltip 
-                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }}
-                    contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }}
+                </Bar>
+                <Bar 
+                  dataKey="Favorável" 
+                  stackId="a" 
+                  fill="#14b8a6" 
+                  radius={[0, 8, 8, 0]}
+                  barSize={32}
+                >
+                  <LabelList 
+                    dataKey="Favorável" 
+                    position="center" 
+                    fill="#fff" 
+                    style={{ fontSize: '12px', fontWeight: 700 }} 
+                    formatter={(val: any) => val > 0 ? val : ""}
                   />
-                  <Legend verticalAlign="top" height={36} />
-                  <Bar dataKey="Desfavorável" stackId="a" fill="#ef4444" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Favorável" stackId="a" fill="#10b981" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="flex h-[450px] items-center justify-center text-muted-foreground">Sem dados de peritos correlacionados</div>
-          )}
+                  <LabelList 
+                    dataKey="Total" 
+                    position="right" 
+                    offset={15}
+                    fill="#64748b" 
+                    style={{ fontSize: '12px', fontWeight: 700 }}
+                    formatter={(val: any) => `Total: ${val}`}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
     </div>
