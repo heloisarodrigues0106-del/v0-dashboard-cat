@@ -63,7 +63,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
   const currentProcesses = processos.slice(startIndex, endIndex)
 
   return (
-    <section className="px-0 md:px-6 py-6">
+    <section className="py-0">
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-card-foreground">

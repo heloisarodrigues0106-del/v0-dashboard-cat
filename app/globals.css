@@ -80,8 +80,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: 'Verdana', 'Geneva', 'Tahoma', sans-serif;
+  --font-mono: 'Verdana', 'Geneva', 'Tahoma', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

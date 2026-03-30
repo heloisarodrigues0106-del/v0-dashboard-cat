@@ -81,7 +81,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       <HoverCard openDelay={0} closeDelay={150}>
         <HoverCardTrigger asChild>
           <div 
-            className="text-[11px] bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded cursor-pointer hover:bg-slate-100 hover:text-[#003366] flex items-center gap-1 transition-colors"
+            className="text-[11px] bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded cursor-pointer hover:bg-amber-50 hover:text-[#111111] flex items-center gap-1 transition-colors"
           >
             <ExternalLink className="h-3 w-3" />
             {proc}
@@ -91,7 +91,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
           <div className="flex flex-col gap-3">
             <div className="border-b border-slate-100 pb-2">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Processo</span>
-              <p className="font-mono text-sm font-bold text-[#003366] mt-0.5">{proc}</p>
+              <p className="font-mono text-sm font-bold text-[#111111] mt-0.5">{proc}</p>
             </div>
             <div className="grid gap-2.5 text-sm">
               <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
@@ -124,10 +124,10 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
   }
 
   return (
-    <Card className="bg-white rounded-xl shadow-sm border border-slate-200 mt-8">
+    <Card className="bg-white rounded-xl shadow-sm border border-slate-200">
       <CardHeader className="pb-4 border-b border-slate-100">
-        <CardTitle className="text-xl font-semibold text-[#003366] flex items-center gap-2">
-          <UserSearch className="h-6 w-6 text-slate-500" />
+        <CardTitle className="text-xl font-semibold text-[#111111] flex items-center gap-2">
+          <UserSearch className="h-6 w-6 text-[#F6D000]" />
           Mapeamento de Testemunhas
         </CardTitle>
         <CardDescription className="text-slate-500 max-w-2xl">
@@ -140,14 +140,14 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
           <TabsList className="mb-4 bg-slate-100/50 p-1 w-full max-w-md grid grid-cols-2">
             <TabsTrigger 
               value="ranking" 
-              className="data-[state=active]:bg-white data-[state=active]:text-[#003366] data-[state=active]:shadow-sm font-medium"
+              className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
             >
               <UserSearch className="h-4 w-4 mr-2" />
               Ranking de Recorrência
             </TabsTrigger>
             <TabsTrigger 
               value="cruzamento"
-              className="data-[state=active]:bg-white data-[state=active]:text-[#003366] data-[state=active]:shadow-sm font-medium"
+              className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
             >
               <LinkIcon className="h-4 w-4 mr-2" />
               Cruzamento de Nomes
@@ -166,7 +166,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                     <div key={idx} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 rounded-lg bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors">
                       <div>
                         <div className="flex items-center gap-3">
-                          <span className="flex items-center justify-center bg-[#003366] text-white font-bold text-xs h-6 w-6 rounded-md">
+                          <span className="flex items-center justify-center bg-[#F6D000] text-[#111111] font-bold text-xs h-6 w-6 rounded-md">
                             {idx + 1}
                           </span>
                           <span className="font-semibold text-slate-800 text-sm md:text-base">
@@ -203,7 +203,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                       
                       <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                         <div className="flex items-center gap-2">
-                          <LinkIcon className="h-5 w-5 text-[#003366]" />
+                          <LinkIcon className="h-5 w-5 text-[#F6D000]" />
                           <span className="font-bold text-slate-800 text-sm md:text-base">
                             {item.nome}
                           </span>
@@ -231,7 +231,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
 
                         <div className="space-y-2">
                           <h4 className="font-semibold text-slate-600 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#003366]"></span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#111111]"></span>
                             Figura como Reclamante
                           </h4>
                           <div className="flex flex-col gap-2">
