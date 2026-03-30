@@ -241,7 +241,7 @@ export function ProcessosTab({
 
       {/* Per-Process Detail Dialog */}
       <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
-        <DialogContent className="max-w-6xl w-[95vw] max-h-[90vh] overflow-hidden bg-white p-0">
+        <DialogContent className="sm:max-w-[95vw] sm:w-[95vw] w-[98vw] max-h-[95vh] overflow-hidden bg-white p-0 !max-w-none">
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
             <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
               <span className="w-2 h-8 rounded-full bg-[#F6D000] shrink-0"></span>
@@ -258,14 +258,14 @@ export function ProcessosTab({
           <ScrollArea className="max-h-[65vh]">
             <div className="px-6 py-4">
               <div className="overflow-x-auto rounded-lg border border-border bg-white">
-                <table className="w-full text-sm table-fixed border-collapse">
+                <table className="w-full text-sm table-auto border-collapse">
                   <thead className="sticky top-0 z-10">
                     <tr className="bg-[#111111] text-white">
-                      <th className="text-left px-4 py-3 font-semibold w-[220px] border-r border-slate-700">Nº Processo</th>
-                      <th className="text-left px-4 py-3 font-semibold min-w-[200px] border-r border-slate-700">Reclamante</th>
-                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[100px]">Inicial</th>
-                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[100px]">Sentença</th>
-                      <th className="text-center px-2 py-3 font-semibold w-[100px]">Acórdão</th>
+                      <th className="text-left px-4 py-3 font-semibold min-w-[180px] border-r border-slate-700">Nº Processo</th>
+                      <th className="text-left px-4 py-3 font-semibold min-w-[250px] border-r border-slate-700">Reclamante</th>
+                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Inicial</th>
+                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Sentença</th>
+                      <th className="text-center px-2 py-3 font-semibold w-[110px]">Acórdão</th>
                     </tr>
                   </thead>
                   <tbody>
