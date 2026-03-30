@@ -1,12 +1,13 @@
-"use client"
-
-import { useMemo } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   ScatterChart, Scatter, ComposedChart, Line, Legend
 } from "recharts"
-import { TrendingDown, Percent, CheckCircle2 } from "lucide-react"
+import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -20,8 +21,9 @@ function formatPercent(value: number) {
 }
 
 export function AcordosTab({ processos = [] }: { processos: any[] }) {
+  const [searchQuery, setSearchQuery] = useState("")
   
-  const { metrics, chartData, scatterData } = useMemo(() => {
+  const { metrics, chartData, scatterData, listAcordos } = useMemo(() => {
     // Filtrar apenas processos com status ACORDO
     const acordos = processos.filter(p => p?.status?.toUpperCase() === 'ACORDO')
     
@@ -29,11 +31,13 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
     let totalAcordado = 0
     
     const validScatterData: any[] = []
+    const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      // O usuário se referiu a "valor_acao", mas no banco é comum ser "valor_causa"
       const pedido = Number(p.valor_acao || p.valor_causa || 0)
       const acordado = Number(p.valor_acordo || 0)
+      const savingVal = pedido - acordado
+      const savingPerc = pedido > 0 ? (savingVal / pedido) * 100 : 0
       
       totalPedido += pedido
       totalAcordado += acordado
@@ -42,10 +46,28 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         validScatterData.push({
           x: pedido,
           y: acordado,
-          economia: pedido - acordado
+          economia: savingVal
         })
       }
+
+      mappedAcordos.push({
+        numero: p.numero_processo,
+        reclamante: p.nome_reclamante || "Não informado",
+        juizo: `${p.vara || "?"}ª Vara de ${p.comarca || "?"}`,
+        advogado: p.advogado_reclamante || "Não informado",
+        valorOriginal: pedido,
+        valorAcordo: acordado,
+        savingValor: savingVal,
+        savingPercent: savingPerc
+      })
     })
+
+    // Filter by search query
+    const filteredAcordos = mappedAcordos.filter(a => 
+      a.reclamante.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.advogado.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.numero.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     
     const economiaTotal = totalPedido - totalAcordado
     const taxaEconomia = totalPedido > 0 ? (economiaTotal / totalPedido) * 100 : 0
@@ -69,9 +91,10 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         { name: "Valor Total Acordado", total: totalAcordado, media: mediaAcordado },
         { name: "Economia Total Gerada", total: economiaTotal, media: mediaEconomia }
       ],
-      scatterData: validScatterData
+      scatterData: validScatterData,
+      listAcordos: filteredAcordos
     }
-  }, [processos])
+  }, [processos, searchQuery])
   
   return (
     <div className="space-y-6">
@@ -219,6 +242,84 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         </Card>
 
       </div>
+      {/* Detailed Agreement Table Card */}
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
+          <div className="space-y-1">
+            <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <span className="w-2 h-7 bg-emerald-500 rounded-full"></span>
+              Detalhamento de Acordos e Savings
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Listagem técnica de negociações e economia gerada</p>
+          </div>
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Buscar reclamante ou advogado..." 
+              className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="relative max-h-[500px] overflow-y-auto overflow-x-auto">
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-slate-50 border-b shadow-sm">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[220px]">Processo</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Reclamante</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Juízo</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Advogado Adverso</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 text-right pr-6 min-w-[180px]">Financeiro (Saving)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {listAcordos.length > 0 ? (
+                  listAcordos.map((acordo, idx) => (
+                    <TableRow key={idx} className="hover:bg-slate-50/50 transition-colors group">
+                      <TableCell className="py-2.5 pl-6">
+                        <span className="font-mono text-[11px] text-slate-500 block group-hover:text-slate-900 transition-colors">
+                          {acordo.numero}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-2.5">
+                        <span className="font-bold text-slate-900 text-sm">{acordo.reclamante}</span>
+                      </TableCell>
+                      <TableCell className="py-2.5 capitalize text-slate-600 text-[13px]">
+                        {acordo.juizo}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-slate-600 text-[13px]">
+                        {acordo.advogado}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-right pr-6">
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
+                             <span className="line-through">{formatCurrency(acordo.valorOriginal)}</span>
+                             <ArrowDownRight className="h-3 w-3" />
+                             <span className="text-slate-900 font-bold">{formatCurrency(acordo.valorAcordo)}</span>
+                          </div>
+                          <Badge className={`bg-emerald-500/10 text-emerald-700 border-emerald-200/50 hover:bg-emerald-500/20 gap-1 px-2 py-0 h-6`}>
+                            <TrendingDown className="h-3 w-3" />
+                            <span className="font-bold">{formatPercent(acordo.savingPercent)}</span>
+                            <span className="font-medium">({formatCurrency(acordo.savingValor)})</span>
+                          </Badge>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                     <TableCell colSpan={5} className="h-40 text-center text-muted-foreground italic">
+                        Nenhum acordo encontrado com os filtros atuais.
+                     </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
