@@ -3,9 +3,16 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { ProcessesTable } from "@/components/dashboard/processes-table"
 import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
-import { Check, X } from "lucide-react"
+import { Check, X, Search } from "lucide-react"
 
 const PEDIDO_KEYS = [
   { key: "reintegracao", label: "Reintegração" },
@@ -23,6 +30,12 @@ const PEDIDO_KEYS = [
   { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
 ]
 
+function BoolIcon({ value }: { value: boolean | null | undefined }) {
+  if (value === true) return <Check className="h-4 w-4 text-emerald-500 mx-auto" strokeWidth={3} />
+  if (value === false) return <X className="h-4 w-4 text-red-400 mx-auto" strokeWidth={3} />
+  return <span className="text-slate-300 text-xs block text-center">—</span>
+}
+
 export function ProcessosTab({ 
   processos, 
   pedidosInicial, 
@@ -36,7 +49,27 @@ export function ProcessosTab({
   pedidosAcordao: any[],
   laudos?: any[]
 }) {
-  
+  const [selectedPedido, setSelectedPedido] = useState<{ key: string, label: string } | null>(null)
+
+  // Index pedidos by numero_processo for fast lookup
+  const pedidosInicialMap = useMemo(() => {
+    const map: Record<string, any> = {}
+    pedidosInicial.forEach(p => { if (p.numero_processo) map[String(p.numero_processo)] = p })
+    return map
+  }, [pedidosInicial])
+
+  const pedidosSentencaMap = useMemo(() => {
+    const map: Record<string, any> = {}
+    pedidosSentenca.forEach(p => { if (p.numero_processo) map[String(p.numero_processo)] = p })
+    return map
+  }, [pedidosSentenca])
+
+  const pedidosAcordaoMap = useMemo(() => {
+    const map: Record<string, any> = {}
+    pedidosAcordao.forEach(p => { if (p.numero_processo) map[String(p.numero_processo)] = p })
+    return map
+  }, [pedidosAcordao])
+
   // Aggregate data for the matrix table
   const matrixData = useMemo(() => {
     return PEDIDO_KEYS.map((pedido) => {
@@ -64,6 +97,7 @@ export function ProcessosTab({
       const acordaoTotal = acordaoTrue + acordaoFalse
 
       return {
+        key: pedido.key,
         name: pedido.label,
         inicial: { deferido: inicialTrue, indeferido: inicialFalse, total: inicialTotal },
         sentenca: { deferido: sentencaTrue, indeferido: sentencaFalse, total: sentencaTotal },
@@ -75,11 +109,37 @@ export function ProcessosTab({
     .sort((a, b) => b.totalPedidos - a.totalPedidos)
   }, [pedidosInicial, pedidosSentenca, pedidosAcordao])
 
+  // Per-process detail for the selected pedido
+  const detailRows = useMemo(() => {
+    if (!selectedPedido) return []
+    
+    return processos.map(p => {
+      const numProc = String(p.numero_processo)
+      const ini = pedidosInicialMap[numProc]
+      const sen = pedidosSentencaMap[numProc]
+      const aco = pedidosAcordaoMap[numProc]
+
+      const inicialVal = ini ? ini[selectedPedido.key] : undefined
+      const sentencaVal = sen ? sen[selectedPedido.key] : undefined
+      const acordaoVal = aco ? aco[selectedPedido.key] : undefined
+
+      const hasData = inicialVal !== undefined || sentencaVal !== undefined || acordaoVal !== undefined
+
+      return {
+        numero: numProc,
+        reclamante: p.nome_reclamante || "—",
+        status: p.status || "—",
+        inicial: inicialVal ?? null,
+        sentenca: sentencaVal ?? null,
+        acordao: acordaoVal ?? null,
+        hasData,
+      }
+    }).filter(r => r.hasData)
+  }, [selectedPedido, processos, pedidosInicialMap, pedidosSentencaMap, pedidosAcordaoMap])
+
   const renderCell = (data: { deferido: number, indeferido: number, total: number }) => {
     if (data.total === 0) {
-      return (
-        <span className="text-slate-300 text-xs">—</span>
-      )
+      return <span className="text-slate-300 text-xs">—</span>
     }
     const rate = data.total > 0 ? (data.deferido / data.total * 100).toFixed(0) : "0"
     const isDeferido = data.deferido > data.indeferido
@@ -109,7 +169,7 @@ export function ProcessosTab({
             Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700 hover:bg-amber-100">Inicial → Sentença → Acórdão</Badge>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Visualização do resultado de cada pedido ao longo das fases processuais. ✓ = Deferido (maioria) | ✗ = Indeferido (maioria)
+            Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
           </p>
         </CardHeader>
         <CardContent>
@@ -130,11 +190,14 @@ export function ProcessosTab({
                       <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
                     </div>
                   </th>
-                  <th className="text-center px-4 py-3 font-semibold min-w-[120px]">
+                  <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
                     <div className="flex flex-col items-center gap-0.5">
                       <span>Acórdão</span>
                       <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
                     </div>
+                  </th>
+                  <th className="text-center px-3 py-3 font-semibold w-[60px]">
+                    <span className="text-[10px] text-slate-400 font-normal">Detalhe</span>
                   </th>
                 </tr>
               </thead>
@@ -156,8 +219,17 @@ export function ProcessosTab({
                     <td className="px-4 py-3 text-center border-r border-border">
                       {renderCell(row.sentenca)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center border-r border-border">
                       {renderCell(row.acordao)}
+                    </td>
+                    <td className="px-3 py-3 text-center">
+                      <button
+                        onClick={() => setSelectedPedido({ key: row.key, label: row.name })}
+                        className="p-1.5 rounded-md bg-amber-50 hover:bg-[#F6D000] text-slate-600 hover:text-[#111111] transition-all duration-200 hover:shadow-sm"
+                        title={`Ver detalhe de "${row.name}" por processo`}
+                      >
+                        <Search className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -166,6 +238,97 @@ export function ProcessosTab({
           </div>
         </CardContent>
       </Card>
+
+      {/* Per-Process Detail Dialog */}
+      <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-white p-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
+            <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
+              <span className="w-2 h-8 rounded-full bg-[#F6D000] shrink-0"></span>
+              {selectedPedido?.label}
+              <Badge className="bg-amber-100 text-amber-700 font-normal hover:bg-amber-100">
+                {detailRows.length} processo(s)
+              </Badge>
+            </DialogTitle>
+            <p className="text-sm text-slate-500 mt-1">
+              Movimentação do pedido por processo individual — da Inicial ao Acórdão
+            </p>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[65vh]">
+            <div className="px-6 py-4">
+              <div className="overflow-x-auto rounded-lg border border-border">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 z-10">
+                    <tr className="bg-[#111111] text-white">
+                      <th className="text-left px-4 py-3 font-semibold min-w-[220px] border-r border-slate-700">Nº Processo</th>
+                      <th className="text-left px-4 py-3 font-semibold min-w-[180px] border-r border-slate-700">Reclamante</th>
+                      <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 w-[100px]">Inicial</th>
+                      <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 w-[100px]">Sentença</th>
+                      <th className="text-center px-4 py-3 font-semibold w-[100px]">Acórdão</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {detailRows.map((row, idx) => (
+                      <tr 
+                        key={idx} 
+                        className={`border-b border-border transition-colors hover:bg-amber-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}
+                      >
+                        <td className="px-4 py-2.5 font-mono text-xs text-slate-700 border-r border-border">
+                          {row.numero}
+                        </td>
+                        <td className="px-4 py-2.5 text-slate-700 text-xs font-medium truncate max-w-[200px] border-r border-border" title={row.reclamante}>
+                          {row.reclamante}
+                        </td>
+                        <td className="px-4 py-2.5 border-r border-border">
+                          <BoolIcon value={row.inicial} />
+                        </td>
+                        <td className="px-4 py-2.5 border-r border-border">
+                          <BoolIcon value={row.sentenca} />
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <BoolIcon value={row.acordao} />
+                        </td>
+                      </tr>
+                    ))}
+                    {detailRows.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                          Nenhum processo encontrado para este pedido.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ScrollArea>
+
+          {/* Summary Footer */}
+          {detailRows.length > 0 && (
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-6 text-xs">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                <span className="text-slate-600">
+                  Inicial: <strong className="text-emerald-600">{detailRows.filter(r => r.inicial === true).length}</strong> deferidos
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                <span className="text-slate-600">
+                  Sentença: <strong className="text-emerald-600">{detailRows.filter(r => r.sentenca === true).length}</strong> deferidos
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                <span className="text-slate-600">
+                  Acórdão: <strong className="text-emerald-600">{detailRows.filter(r => r.acordao === true).length}</strong> deferidos
+                </span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Tabela de Processos */}
       <ProcessesTable processos={processos} laudos={laudos} />
