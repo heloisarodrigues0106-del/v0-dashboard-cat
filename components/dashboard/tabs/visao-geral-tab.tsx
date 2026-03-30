@@ -27,7 +27,7 @@ function getTopObj(mapRecord: Record<string, number>, top: number = 5) {
 
 export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], pedidos?: any[] }) {
   
-  const [hoveredUF, setHoveredUF] = useState<{sigla: string, details: { count: number, valorTotal: number }} | null>(null)
+  const [hoveredUF, setHoveredUF] = useState<{sigla: string, details: { count: number, valorTotal: number, comarcas: Record<string, number> }} | null>(null)
 
   const { kpis, ranks, mapData } = useMemo(() => {
     let valorTotal = 0
@@ -55,7 +55,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
        }
     })
 
-    const dictUF: Record<string, { count: number, valorTotal: number }> = {}
+    const dictUF: Record<string, { count: number, valorTotal: number, comarcas: Record<string, number> }> = {}
     const dictAnos: Record<string, number> = {}
     const dictTipoAcao: Record<string, number> = {}
     const dictInstancias: Record<string, number> = {}
@@ -115,9 +115,12 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       let uf = p.uf?.toUpperCase()
       if (uf) {
         if (uf.length > 2) uf = uf.substring(0, 2)
-        if (!dictUF[uf]) dictUF[uf] = { count: 0, valorTotal: 0 }
+        if (!dictUF[uf]) dictUF[uf] = { count: 0, valorTotal: 0, comarcas: {} }
         dictUF[uf].count += 1
         dictUF[uf].valorTotal += (p.valor_causa || 0)
+        
+        const comarcaVar = p.comarca ? p.comarca.trim() : "SEM COMARCA"
+        dictUF[uf].comarcas[comarcaVar] = (dictUF[uf].comarcas[comarcaVar] || 0) + 1
       }
     })
 
@@ -164,45 +167,41 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Processos</CardTitle>
+            <CardTitle>Total de Processos</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{kpis.totalProcessos}</div>
-            <p className="text-xs text-muted-foreground">Somatória de todas as linhas</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Processos Ativos</CardTitle>
+            <CardTitle>Processos Ativos</CardTitle>
             <Activity className="h-4 w-4 text-[#F6D000]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-[#F6D000]">{kpis.processosAtivos}</div>
-            <p className="text-xs text-muted-foreground">Considerando o status ativo</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Processos Arquivados</CardTitle>
+            <CardTitle>Processos Arquivados</CardTitle>
             <Archive className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{kpis.processosArquivados}</div>
-            <p className="text-xs text-muted-foreground">Arquivados ou Extintos</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total das Causas</CardTitle>
+            <CardTitle>Valor Total das Causas</CardTitle>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">{formatCurrency(kpis.valorCausa)}</div>
-            <p className="text-xs text-muted-foreground">Somatória declarada baseada no SQL</p>
           </CardContent>
         </Card>
 
@@ -214,7 +213,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
           <CardHeader className="bg-muted/30 border-b">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
               <MapPin className="h-4 w-4 text-amber-500" />
-              Top 5 Localidades
+              Comarcas com maior volume de ajuizamento
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-4 space-y-3 bg-[#f8fafc]/50">
@@ -287,6 +286,22 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       {formatCurrency(hoveredUF.details.valorTotal)}
                     </span>
                   </div>
+                  {hoveredUF.details.comarcas && Object.keys(hoveredUF.details.comarcas).length > 0 && (
+                     <div className="mt-3 pt-3 border-t">
+                       <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-2">Por Comarca</span>
+                       <div className="max-h-[120px] overflow-y-auto space-y-1.5 pr-1">
+                         {Object.entries(hoveredUF.details.comarcas)
+                           .sort((a, b) => b[1] - a[1])
+                           .slice(0, 5) // top 5 comarcas in this uf
+                           .map(([cname, ccount]) => (
+                             <div key={cname} className="flex justify-between items-center text-xs">
+                               <span className="text-slate-700 truncate max-w-[140px]" title={cname}>{cname}</span>
+                               <span className="font-medium bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{ccount}</span>
+                             </div>
+                           ))}
+                       </div>
+                     </div>
+                  )}
                 </div>
               </div>
             )}
@@ -411,7 +426,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* Instâncias (Gráfico de Pizza) */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Porcentagem por Instância</CardTitle>
+            <CardTitle>Volumetria por instância</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.instancias.length > 0 ? (
@@ -480,7 +495,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* Status (Gráfico de Pizza) */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle>Volume de Status da Ação</CardTitle>
+            <CardTitle>Volumetria por desfecho</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.status.length > 0 ? (
@@ -560,7 +575,6 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       </div>
 
       {/* 5. Volume de Processos Distribuídos por Ano */}
-      <h3 className="text-lg font-medium mt-6 text-sidebar-foreground/70">Distribuição</h3>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

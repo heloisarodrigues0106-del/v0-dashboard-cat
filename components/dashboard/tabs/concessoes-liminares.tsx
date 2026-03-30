@@ -119,7 +119,6 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
-              <Scale className="h-5 w-5 text-[#E67E66]" />
               Concessões de Liminares
             </CardTitle>
             <CardDescription className="mt-1.5 max-w-md">
@@ -163,7 +162,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
               variant={agrupamento === mod ? "default" : "outline"}
               size="sm"
               onClick={() => setAgrupamento(mod)}
-              className={agrupamento === mod ? "bg-[#E67E66] hover:bg-[#D46B54] text-white rounded-full px-5 shadow-sm" : "rounded-full px-5 text-slate-600 border-slate-200 hover:bg-slate-50"}
+              className={agrupamento === mod ? "bg-[#F6D000] hover:bg-[#d97706] text-slate-900 font-semibold rounded-full px-5 shadow-sm" : "rounded-full px-5 text-slate-600 border-slate-200 hover:bg-slate-50"}
             >
               {mod}
             </Button>
@@ -198,7 +197,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                   />
                   <Bar 
                     dataKey="count" 
-                    fill="#E67E66" 
+                    fill="#F6D000" 
                     radius={[0, 4, 4, 0]} 
                     barSize={28}
                     isAnimationActive={true}
