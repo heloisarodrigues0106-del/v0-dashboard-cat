@@ -1,6 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase-client"
 import {
   LayoutDashboard,
   FileText,
@@ -45,6 +47,24 @@ export function SidebarNav({
   onMobileClose,
   onLogout
 }: SidebarNavProps) {
+  const [userEmail, setUserEmail] = useState<string>("Carregando...")
+  const [userInitials, setUserInitials] = useState<string>("--")
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user && user.email) {
+        setUserEmail(user.email)
+        setUserInitials(user.email.substring(0, 2).toUpperCase())
+      } else {
+        setUserEmail("Usuário")
+        setUserInitials("US")
+      }
+    }
+    fetchUser()
+  }, [])
+
   const handleItemClick = (id: string) => {
     onItemClick?.(id)
     onMobileClose?.()
@@ -147,12 +167,12 @@ export function SidebarNav({
           <div className="border-t border-sidebar-border p-4 space-y-3">
             <div className={cn("flex items-center gap-3", !isMobileOpen && isCollapsed && "justify-center")}>
               <div className="h-9 w-9 shrink-0 rounded-full bg-sidebar-accent flex items-center justify-center">
-                <span className="text-sm font-medium">AS</span>
+                <span className="text-sm font-medium">{userInitials}</span>
               </div>
               {(isMobileOpen || !isCollapsed) && (
-                <div className="flex-1 truncate whitespace-nowrap">
-                  <p className="text-sm font-medium">Ana Silva</p>
-                  <p className="text-xs text-sidebar-foreground/60">Advogada Sênior</p>
+                <div className="flex-1 truncate whitespace-nowrap overflow-hidden">
+                  <p className="text-sm font-medium truncate" title={userEmail}>{userEmail}</p>
+                  <p className="text-xs text-sidebar-foreground/60">Advogado(a)</p>
                 </div>
               )}
             </div>

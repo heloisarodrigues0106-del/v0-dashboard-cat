@@ -130,7 +130,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
          return { name, count: data.count, uf: data.uf, trend };
       })
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .slice(0, 10);
 
     return {
       kpis: {

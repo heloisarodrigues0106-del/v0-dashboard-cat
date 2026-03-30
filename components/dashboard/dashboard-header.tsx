@@ -9,14 +9,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import { FileDown, Menu } from "lucide-react"
+import { FileDown, Menu, Loader2 } from "lucide-react"
 
 interface DashboardHeaderProps {
   breadcrumb?: string
   onMenuClick?: () => void
+  isExporting?: boolean
+  onExportPDF?: () => void
 }
 
-export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick }: DashboardHeaderProps) {
+export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick, isExporting = false, onExportPDF }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 md:h-16 items-center justify-between border-b border-border bg-card px-4 md:px-6">
       <div className="flex items-center gap-3">
@@ -43,10 +45,15 @@ export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick }: Dashb
         </Breadcrumb>
       </div>
 
-      <Button className="gap-2 text-xs md:text-sm" size="sm">
-        <FileDown className="h-4 w-4" />
-        <span className="hidden sm:inline">Exportar PDF</span>
-        <span className="sm:hidden">PDF</span>
+      <Button 
+        className="gap-2 text-xs md:text-sm min-w-[125px]" 
+        size="sm"
+        onClick={onExportPDF}
+        disabled={isExporting}
+      >
+        {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+        <span className="hidden sm:inline">{isExporting ? "Gerando PDF..." : "Exportar PDF"}</span>
+        <span className="sm:hidden">{isExporting ? "..." : "PDF"}</span>
       </Button>
     </header>
   )
