@@ -53,7 +53,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       mappedAcordos.push({
         numero: p.numero_processo,
         reclamante: p.nome_reclamante || "Não informado",
-        juizo: `${p.vara || "?"}ª Vara de ${p.comarca || "?"}`,
+        juizo: `${p.vara || "?"} VARA DE ${p.comarca || "?"}`.toUpperCase(),
         advogado: p.advogado_reclamante || "Não informado",
         valorOriginal: pedido,
         valorAcordo: acordado,
@@ -286,7 +286,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                       <TableCell className="py-2.5">
                         <span className="font-bold text-slate-900 text-sm">{acordo.reclamante}</span>
                       </TableCell>
-                      <TableCell className="py-2.5 capitalize text-slate-600 text-[13px]">
+                      <TableCell className="py-2.5 text-slate-600 text-[13px]">
                         {acordo.juizo}
                       </TableCell>
                       <TableCell className="py-2.5 text-slate-600 text-[13px]">
