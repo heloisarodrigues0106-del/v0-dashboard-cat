@@ -169,8 +169,17 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="mt-4 text-center text-xs text-[#444444]">
-          © {new Date().getFullYear()} Caterpillar Inc. Todos os direitos reservados.
+          © {new Date().getFullYear()} Caterpillar Inc. · Martinelli Advogados
         </p>
+        <div className="mt-3 flex justify-center">
+          <Image
+            src="/martinelli-logo.svg"
+            alt="Martinelli Advogados"
+            width={140}
+            height={20}
+            className="h-5 w-auto opacity-40"
+          />
+        </div>
       </div>
     </div>
   )
