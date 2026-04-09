@@ -1,15 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
-import { FileDown, Menu, Loader2, Filter } from "lucide-react"
+import { FileDown, Menu, Loader2 } from "lucide-react"
 import Image from "next/image"
 
 interface DashboardHeaderProps {
@@ -22,38 +14,24 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick, isExporting = false, onExportPDF }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 md:h-16 items-center justify-between border-b border-border bg-card px-4 md:px-6">
-      <div className="flex items-center gap-3">
-        {/* Mobile hamburger */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onMenuClick}
-          className="md:hidden h-9 w-9 p-0"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden sm:inline-flex">
-              <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden sm:inline-flex" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{breadcrumb}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      {/* Mobile hamburger */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onMenuClick}
+        className="md:hidden h-9 w-9 p-0"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
 
       {/* Center: Caterpillar Logo */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <Image
           src="/caterpillar-logo.svg"
           alt="Caterpillar"
-          width={120}
-          height={40}
-          className="h-7 md:h-8 w-auto"
+          width={160}
+          height={56}
+          className="h-10 md:h-12 w-auto"
           priority
         />
       </div>
