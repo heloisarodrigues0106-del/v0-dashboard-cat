@@ -9,7 +9,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import { FileDown, Menu, Loader2 } from "lucide-react"
+import { FileDown, Menu, Loader2, Filter } from "lucide-react"
+import Image from "next/image"
 
 interface DashboardHeaderProps {
   breadcrumb?: string
@@ -35,7 +36,7 @@ export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick, isExpor
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden sm:inline-flex">
-              <BreadcrumbLink href="#">Dashboard CAT</BreadcrumbLink>
+              <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden sm:inline-flex" />
             <BreadcrumbItem>
@@ -45,16 +46,31 @@ export function DashboardHeader({ breadcrumb = "Dashboard", onMenuClick, isExpor
         </Breadcrumb>
       </div>
 
-      <Button 
-        className="gap-2 text-xs md:text-sm min-w-[125px]" 
-        size="sm"
-        onClick={onExportPDF}
-        disabled={isExporting}
-      >
-        {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
-        <span className="hidden sm:inline">{isExporting ? "Gerando PDF..." : "Exportar PDF"}</span>
-        <span className="sm:hidden">{isExporting ? "..." : "PDF"}</span>
-      </Button>
+      {/* Center: Caterpillar Logo */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Image
+          src="/caterpillar-logo.svg"
+          alt="Caterpillar"
+          width={120}
+          height={40}
+          className="h-7 md:h-8 w-auto"
+          priority
+        />
+      </div>
+
+      {/* Right side: Export */}
+      <div className="flex items-center gap-2">
+        <Button 
+          className="gap-2 text-xs md:text-sm min-w-[125px]" 
+          size="sm"
+          onClick={onExportPDF}
+          disabled={isExporting}
+        >
+          {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+          <span className="hidden sm:inline">{isExporting ? "Gerando PDF..." : "Exportar PDF"}</span>
+          <span className="sm:hidden">{isExporting ? "..." : "PDF"}</span>
+        </Button>
+      </div>
     </header>
   )
 }
