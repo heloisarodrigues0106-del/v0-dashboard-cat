@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { ChevronLeft, ChevronRight, Eye, AlertCircle, Link as LinkIcon, Activity, AlertTriangle, ShieldAlert, HeartPulse, Stethoscope } from "lucide-react"
+import { ChevronLeft, ChevronRight, Eye, AlertCircle, Link as LinkIcon, Activity, AlertTriangle, ShieldAlert, HeartPulse, Stethoscope, Search } from "lucide-react"
 
 const ITEMS_PER_PAGE = 5
 
@@ -56,19 +57,42 @@ const getStatusColor = (status: string): string => {
 
 export function ProcessesTable({ processos = [], laudos = [] }: { processos?: any[], laudos?: any[] }) {
   const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState("")
   
-  const totalPages = Math.max(1, Math.ceil(processos.length / ITEMS_PER_PAGE))
+  const filteredProcessos = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim()
+    if (!query) return processos
+
+    return processos.filter((p) => 
+      (p.nome_reclamante || "").toLowerCase().includes(query) ||
+      (p.numero_processo || "").toLowerCase().includes(query)
+    )
+  }, [processos, searchQuery])
+
+  const totalPages = Math.max(1, Math.ceil(filteredProcessos.length / ITEMS_PER_PAGE))
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentProcesses = processos.slice(startIndex, endIndex)
+  const currentProcesses = filteredProcessos.slice(startIndex, endIndex)
 
   return (
     <section className="py-0">
       <Card className="border border-border bg-card shadow-sm">
-        <CardHeader className="pb-4">
+        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
           <CardTitle className="text-xl font-bold text-card-foreground">
             Detalhamento dos Processos
           </CardTitle>
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Buscar reclamante ou número..." 
+              className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setCurrentPage(1)
+              }}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-border overflow-x-auto">
@@ -281,7 +305,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
           {/* Pagination */}
           <div className="mt-4 flex items-center justify-between">
             <p className="text-xs md:text-sm text-muted-foreground">
-              {startIndex + 1}-{Math.min(endIndex, processos.length)} de {processos.length}
+              {filteredProcessos.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredProcessos.length)} de {filteredProcessos.length}
             </p>
             <div className="flex items-center gap-2">
               <Button
