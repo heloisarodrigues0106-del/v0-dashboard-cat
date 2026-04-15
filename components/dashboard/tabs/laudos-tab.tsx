@@ -7,6 +7,18 @@ import { AlertCircle, CheckCircle2, FileText, Search } from "lucide-react"
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   const [honorariosPage, setHonorariosPage] = useState(1);
   const [honorariosSearch, setHonorariosSearch] = useState("");
+  const [peritoFilter, setPeritoFilter] = useState("Todos");
+
+  const peritoClassificacaoMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    processos.forEach(p => {
+      if (p.perito_medico_psiquiatra) map[String(p.perito_medico_psiquiatra).trim().toUpperCase()] = "Médico Psiquiatra";
+      if (p.perito_medico_geral) map[String(p.perito_medico_geral).trim().toUpperCase()] = "Médico";
+      if (p.perito_ergonomico) map[String(p.perito_ergonomico).trim().toUpperCase()] = "Ergonômico";
+      if (p.perito_tecnico) map[String(p.perito_tecnico).trim().toUpperCase()] = "Técnico";
+    });
+    return map;
+  }, [processos]);
   
   const stats = useMemo(() => {
     let total = laudos.length
@@ -19,7 +31,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       "Doença Mental": 0,
       "Outros": 0
     }
-    let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number }> = {}
+    let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number, classificacao: string }> = {}
     let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Ergonômica": 0, "Médica Mental": 0, "Outros/Não Especificado": 0 }
     let nexos = { Causa: 0, Concausa: 0, "Incapacidade/Restrição": 0 }
     let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
@@ -120,9 +132,15 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         periculosidadeStatus["Não Caracterizada"]++
       }
 
-      // Correlacionar com o Perito
+      // Correlacionar com o Perito e mapear a classificação
       const nomePerito = laudo.perito || "Perito Não Informado"
-      if (!statsPerito[nomePerito]) statsPerito[nomePerito] = { favoraveis: 0, desfavoraveis: 0 }
+      if (!statsPerito[nomePerito]) {
+         statsPerito[nomePerito] = { 
+            favoraveis: 0, 
+            desfavoraveis: 0,
+            classificacao: peritoClassificacaoMap[nomePerito.trim().toUpperCase()] || "Não Classificado"
+         }
+      }
       
       if (isDesfavoravel) {
         statsPerito[nomePerito].desfavoraveis++
@@ -135,7 +153,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       total, favoraveis, desfavoraveis, motivos, statsPerito, tiposLaudo, nexos, 
       ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus 
     }
-  }, [laudos])
+  }, [laudos, peritoClassificacaoMap])
 
   const honorariosData = useMemo(() => {
     let totalHonorarios = 0;
@@ -195,17 +213,23 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const totalPages = Math.ceil(honorariosData.lista.length / itemsPerPage);
 
   const peritosData = useMemo(() => {
-    const rawData = Object.entries(stats.statsPerito)
+    let rawData = Object.entries(stats.statsPerito)
       .map(([name, data]) => ({ 
         name, 
+        classificacao: data.classificacao,
         Favorável: data.favoraveis, 
         Desfavorável: data.desfavoraveis, 
         Total: data.favoraveis + data.desfavoraveis 
-      }))
-      .sort((a, b) => b.Desfavorável - a.Desfavorável) // Prioridade: Maior volume de desfavoráveis no topo
+      }));
+
+    if (peritoFilter !== "Todos") {
+        rawData = rawData.filter(d => d.classificacao === peritoFilter);
+    }
+
+    rawData = rawData.sort((a, b) => b.Desfavorável - a.Desfavorável) // Prioridade: Maior volume de desfavoráveis no topo
     
-    // Se não houver dados suficientes, retornamos os ilustrativos solicitados para demo
-    if (rawData.length < 5) {
+    // Se não houver dados reais na base, mostramos o demo, apenas se a base estiver VAZIA.
+    if (stats.total === 0) {
       return [
         { name: "Dr. Carlos Silva", Desfavorável: 45, Favorável: 5, Total: 50 },
         { name: "Dra. Ana Pereira", Desfavorável: 40, Favorável: 10, Total: 50 },
@@ -221,7 +245,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     }
     
     return rawData.slice(0, 15)
-  }, [stats.statsPerito])
+  }, [stats.statsPerito, peritoFilter])
 
   const tiposData = Object.entries(stats.tiposLaudo)
     .filter(([_, value]) => value > 0)
@@ -424,9 +448,23 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       {/* Gráfico de Peritos (Favorável vs Desfavorável) */}
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="pb-6">
-          <div className="flex flex-col gap-1">
-            <CardTitle className="text-xl font-bold text-slate-900">Ranking e Perfil Técnico de Peritos (Favorável vs. Desfavorável)</CardTitle>
-            <p className="text-sm text-slate-500 font-medium">Posicionamento detalhado dos peritos com maior volume de pareceres desfavoráveis à empresa.</p>
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-xl font-bold text-slate-900">Ranking e Perfil Técnico de Peritos</CardTitle>
+              <p className="text-sm text-slate-500 font-medium">Posicionamento detalhado dos peritos com maior volume de pareceres desfavoráveis.</p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+               {["Todos", "Médico Psiquiatra", "Médico", "Ergonômico", "Técnico"].map(f => (
+                 <button
+                    key={f}
+                    onClick={() => setPeritoFilter(f)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-colors border ${peritoFilter === f ? 'bg-slate-800 text-white border-slate-800 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                 >
+                    {f}
+                 </button>
+               ))}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
