@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { CalendarIcon, X, Filter } from "lucide-react"
+import { CalendarIcon, X, Filter, DollarSign } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { FilterHistogramSlider } from "@/components/dashboard/filter-histogram-slider"
 
 interface GlobalFiltersProps {
   dataAjuizamentoInicio: Date | undefined
@@ -56,6 +57,9 @@ interface GlobalFiltersProps {
     tiposAcao: string[]
     varas: string[]
   }
+  valorAcaoRange: [number, number]
+  setValorAcaoRange: (val: [number, number]) => void
+  processos: any[]
 }
 
 export function GlobalFilters({
@@ -79,7 +83,10 @@ export function GlobalFilters({
   setTipoAcao,
   vara,
   setVara,
-  filterOptions
+  filterOptions,
+  valorAcaoRange,
+  setValorAcaoRange,
+  processos
 }: GlobalFiltersProps) {
   
   const hasActiveFilters =
@@ -92,7 +99,9 @@ export function GlobalFilters({
     advogado !== "all" ||
     terceirizada !== "all" ||
     tipoAcao !== "all" ||
-    vara !== "all";
+    vara !== "all" ||
+    valorAcaoRange[0] !== 1000 ||
+    valorAcaoRange[1] !== 1000000;
 
   const resetFilters = () => {
     setDataAjuizamentoInicio(undefined)
@@ -105,6 +114,7 @@ export function GlobalFilters({
     setTerceirizada("all")
     setTipoAcao("all")
     setVara("all")
+    setValorAcaoRange([1000, 1000000])
   }
 
   return (
@@ -194,6 +204,31 @@ export function GlobalFilters({
                       </PopoverContent>
                     </Popover>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-border my-6" />
+
+            {/* Valores de Risco / Causa */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold tracking-tight uppercase text-muted-foreground flex items-center gap-2">
+                <DollarSign className="h-4 w-4" /> Valores (R$)
+              </h3>
+              
+              <div className="p-4 bg-muted/40 rounded-lg border border-border/50">
+                <label className="text-xs font-medium text-foreground uppercase tracking-wider mb-2 block">
+                  Faixa de Valor da Causa
+                </label>
+                <div className="-mx-2">
+                  <FilterHistogramSlider 
+                    data={processos.map(p => Number(p.valor_acao) || 0)}
+                    min={1000}
+                    max={1000000}
+                    step={1000}
+                    value={valorAcaoRange}
+                    onValueChange={setValorAcaoRange}
+                  />
                 </div>
               </div>
             </div>

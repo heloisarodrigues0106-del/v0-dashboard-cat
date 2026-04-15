@@ -86,6 +86,9 @@ export default function DashboardClient({
   const [terceirizada, setTerceirizada] = useState<string>("all")
   const [tipoAcao, setTipoAcao] = useState<string>("all")
   const [vara, setVara] = useState<string>("all")
+  
+  // Filtro de Faixa de Valor da Causa
+  const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([1000, 1000000])
 
   // Extract unique options for dropdowns
   const filterOptions = useMemo(() => {
@@ -188,6 +191,12 @@ export default function DashboardClient({
         return pt === vara
       })()
 
+      // Filtro de Valor da Causa
+      let matchesValorAcao = true
+      const valor = Number(p.valor_acao) || 0
+      if (valor < valorAcaoRange[0]) matchesValorAcao = false
+      if (valorAcaoRange[1] < 1000000 && valor > valorAcaoRange[1]) matchesValorAcao = false
+
       return (
         matchesAjuizamento && 
         matchesArquivamento &&
@@ -196,12 +205,13 @@ export default function DashboardClient({
         matchesAdvogado &&
         matchesTerceirizada &&
         matchesTipoAcao &&
-        matchesVara
+        matchesVara &&
+        matchesValorAcao
       )
     })
   }, [
     processos, dataAjuizamentoInicio, dataAjuizamentoFim, dataArquivamentoInicio, dataArquivamentoFim,
-    empresa, unidade, advogado, terceirizada, tipoAcao, vara
+    empresa, unidade, advogado, terceirizada, tipoAcao, vara, valorAcaoRange
   ])
 
   // Extract valid numero_processos for cascading filters to other arrays
@@ -289,6 +299,9 @@ export default function DashboardClient({
             setTipoAcao={setTipoAcao}
             vara={vara}
             setVara={setVara}
+            valorAcaoRange={valorAcaoRange}
+            setValorAcaoRange={setValorAcaoRange}
+            processos={processos} // For the histogram
             filterOptions={filterOptions}
           />
         )}
