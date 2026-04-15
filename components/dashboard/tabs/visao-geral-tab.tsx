@@ -441,6 +441,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       outerRadius={110}
                       paddingAngle={5}
                       dataKey="value"
+                      nameKey="name"
                       stroke="none"
                       isAnimationActive={true}
                     >
@@ -461,7 +462,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     </Pie>
                     <Tooltip 
                        contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
-                       formatter={(value: number) => [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc.`}</span>, 'Total']}
+                       formatter={(value: number, name: string) => {
+                         const percentage = ((value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
+                         return [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
+                       }}
                     />
                     <Legend 
                       verticalAlign="bottom" 
@@ -510,6 +514,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       outerRadius={110}
                       paddingAngle={5}
                       dataKey="value"
+                      nameKey="name"
                       stroke="none"
                       isAnimationActive={true}
                     >
@@ -538,7 +543,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     </Pie>
                     <Tooltip 
                        contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
-                       formatter={(value: number) => [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc.`}</span>, 'Total']}
+                       formatter={(value: number, name: string) => {
+                         const percentage = ((value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
+                         return [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
+                       }}
                     />
                     <Legend 
                       verticalAlign="bottom" 
