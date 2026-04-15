@@ -58,7 +58,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         valorOriginal: pedido,
         valorAcordo: acordado,
         savingValor: savingVal,
-        savingPercent: savingPerc
+        savingPercent: savingPerc,
+        funcao: p.funcao_reclamante || "Não informada"
       })
     })
 
@@ -267,10 +268,11 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
             <Table>
               <TableHeader className="sticky top-0 z-10 bg-slate-50 border-b shadow-sm">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[220px]">Processo</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Reclamante</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Juízo</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[200px]">Advogado Adverso</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[180px]">Processo</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Reclamante</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[150px]">Função</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Juízo</TableHead>
+                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Advogado Adverso</TableHead>
                   <TableHead className="font-bold text-slate-800 py-3 text-right pr-6 min-w-[180px]">Financeiro (Saving)</TableHead>
                 </TableRow>
               </TableHeader>
@@ -285,6 +287,9 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                       </TableCell>
                       <TableCell className="py-2.5">
                         <span className="font-bold text-slate-900 text-sm">{acordo.reclamante}</span>
+                      </TableCell>
+                      <TableCell className="py-2.5">
+                        <span className="text-[12px] text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded-full">{acordo.funcao}</span>
                       </TableCell>
                       <TableCell className="py-2.5 text-slate-600 text-[13px]">
                         {acordo.juizo}
@@ -310,7 +315,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                   ))
                 ) : (
                   <TableRow>
-                     <TableCell colSpan={5} className="h-40 text-center text-muted-foreground italic">
+                     <TableCell colSpan={6} className="h-40 text-center text-muted-foreground italic">
                         Nenhum acordo encontrado com os filtros atuais.
                      </TableCell>
                   </TableRow>
