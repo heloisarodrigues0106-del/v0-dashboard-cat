@@ -101,7 +101,7 @@ export function GlobalFilters({
     tipoAcao !== "all" ||
     vara !== "all" ||
     valorAcaoRange[0] !== 1000 ||
-    valorAcaoRange[1] !== 1000000;
+    valorAcaoRange[1] !== 5000000;
 
   const resetFilters = () => {
     setDataAjuizamentoInicio(undefined)
@@ -114,7 +114,7 @@ export function GlobalFilters({
     setTerceirizada("all")
     setTipoAcao("all")
     setVara("all")
-    setValorAcaoRange([1000, 1000000])
+    setValorAcaoRange([1000, 5000000])
   }
 
   return (
@@ -224,7 +224,7 @@ export function GlobalFilters({
                   <FilterHistogramSlider 
                     data={processos.map(p => Number(p.valor_causa) || 0)}
                     min={1000}
-                    max={1000000}
+                    max={5000000}
                     step={1000}
                     value={valorAcaoRange}
                     onValueChange={setValorAcaoRange}

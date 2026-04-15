@@ -88,7 +88,7 @@ export default function DashboardClient({
   const [vara, setVara] = useState<string>("all")
   
   // Filtro de Faixa de Valor da Causa
-  const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([1000, 1000000])
+  const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([1000, 5000000])
 
   // Extract unique options for dropdowns
   const filterOptions = useMemo(() => {
@@ -195,7 +195,7 @@ export default function DashboardClient({
       let matchesValorAcao = true
       const valor = Number(p.valor_causa) || 0
       if (valor < valorAcaoRange[0]) matchesValorAcao = false
-      if (valorAcaoRange[1] < 1000000 && valor > valorAcaoRange[1]) matchesValorAcao = false
+      if (valorAcaoRange[1] < 5000000 && valor > valorAcaoRange[1]) matchesValorAcao = false
 
       return (
         matchesAjuizamento && 
