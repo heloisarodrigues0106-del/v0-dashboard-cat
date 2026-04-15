@@ -38,6 +38,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
+    let ergonomiaStatus = { Positivo: 0, Negativo: 0 }
 
     laudos.forEach(laudo => {
       // Checar se há risco/desfavorabilidade nas colunas críticas
@@ -132,6 +133,14 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         periculosidadeStatus["Não Caracterizada"]++
       }
 
+      // Gráfico Específico para Ergonomia (Riscos nas atividades)
+      const ergonomiaVal = String(laudo.ergonomia || "").toUpperCase()
+      if (ergonomiaVal === "POSITIVO") {
+        ergonomiaStatus.Positivo++
+      } else if (ergonomiaVal === "NEGATIVO") {
+        ergonomiaStatus.Negativo++
+      }
+
       // Correlacionar com o Perito e mapear a classificação
       const nomePerito = laudo.perito || "Perito Não Informado"
       if (!statsPerito[nomePerito]) {
@@ -164,7 +173,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     return { 
       total, favoraveis, desfavoraveis, motivos, statsPerito, tiposLaudo, nexos, 
-      ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus 
+      ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus
     }
   }, [laudos, peritoClassificacaoMap])
 
@@ -297,6 +306,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const periculosidadeData = [
     { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: "#ef4444" },
     { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: "#9ca3af" }
+  ].filter(d => d.value > 0)
+
+  const ergonomiaData = [
+    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: "#10b981" },
+    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: "#ef4444" }
   ].filter(d => d.value > 0)
 
   // Subcomponent wrapper render logic for inner repetitive pies
@@ -456,6 +470,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         {renderMiniPie(mentalData, "Resultados de Doença Mental", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(insalubridadeData, "Resultados de Insalubridade", "Distribuição de Caracterizada e Não Caracterizada")}
         {renderMiniPie(periculosidadeData, "Resultados de Periculosidade", "Distribuição de Caracterizada e Não Caracterizada")}
+        {renderMiniPie(ergonomiaData, "Resultados de Ergonomia", "Riscos ergonômicos reconhecidos nas atividades")}
       </div>
 
       {/* Gráfico de Peritos (Favorável vs Desfavorável) */}
