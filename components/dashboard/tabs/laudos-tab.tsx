@@ -149,10 +149,10 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         
         if (p.perito_medico_psiquiatra) {
             nomePerito = p.perito_medico_psiquiatra;
-            tipoPerito = "Psiquiatra";
+            tipoPerito = "Médico Psiquiatra";
         } else if (p.perito_medico_geral) {
             nomePerito = p.perito_medico_geral;
-            tipoPerito = "Geral";
+            tipoPerito = "Médico";
         } else if (p.perito_ergonomico) {
             nomePerito = p.perito_ergonomico;
             tipoPerito = "Ergonômico";
@@ -560,7 +560,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   </span>
                   <span className="text-slate-300 hidden md:inline">|</span>
                   <div className="flex items-center gap-2 overflow-hidden w-full">
-                    <span className="text-sm rounded-sm text-slate-700 font-medium truncate max-w-[180px]" title={item.nomePerito}>
+                    <span className="text-sm rounded-sm text-slate-700 font-medium truncate" title={item.nomePerito}>
                        {item.nomePerito}
                     </span>
                     {item.tipoPerito !== "N/A" && (
