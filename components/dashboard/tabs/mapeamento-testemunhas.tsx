@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 
 export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [abaTestemunha, setAbaTestemunha] = useState<"reclamante" | "reclamada">("reclamante")
+  
   const { ranking, cruzamentos, detailsMap } = useMemo(() => {
     const testemunhasMap: Record<string, string[]> = {}
     const reclamantesMap: Record<string, string[]> = {}
@@ -20,7 +22,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       detailsMap[procNum] = p
       
       // Captura Testemunhas (pode haver mais de uma se separada por vírgula, mas assumimos string inteira ou array)
-      const test = p.testemunha_reclamante
+      const test = abaTestemunha === "reclamante" ? p.testemunha_reclamante : p.testemunha_reclamada
       if (test && typeof test === "string" && test.trim() !== "") {
         const nomesTestemunhas = test.split(",").map(t => t.trim().toUpperCase()).filter(Boolean)
         nomesTestemunhas.forEach(nome => {
@@ -91,7 +93,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
     })
 
     return { ranking: filteredRanking, cruzamentos: filteredCruzamentos, detailsMap }
-  }, [processos, searchQuery])
+  }, [processos, searchQuery, abaTestemunha])
 
   const renderProcessInfo = (proc: string) => {
     const pData = detailsMap[proc] || {}
@@ -193,9 +195,24 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
           </TabsList>
 
           <TabsContent value="ranking" className="space-y-4">
+            <div className="flex border border-slate-200 rounded-md p-1 w-fit bg-slate-100/50 mb-4">
+              <button 
+                onClick={() => setAbaTestemunha('reclamante')}
+                className={`px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamante' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Reclamante
+              </button>
+              <button 
+                onClick={() => setAbaTestemunha('reclamada')}
+                className={`px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamada' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Reclamada
+              </button>
+            </div>
+
             {ranking.length === 0 ? (
               <div className="flex items-center justify-center p-8 border border-dashed rounded-lg text-slate-400">
-                Nenhuma testemunha registrada.
+                Nenhuma testemunha registrada para a opção selecionada.
               </div>
             ) : (
               <ScrollArea className="h-[400px] w-full rounded-md border border-slate-200">
