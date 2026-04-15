@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, XCircle } from "lucide-react"
 
-export function LaudosTab({ laudos }: { laudos: any[] }) {
+export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   
   const stats = useMemo(() => {
     let total = laudos.length
@@ -133,6 +133,28 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
       ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus 
     }
   }, [laudos])
+
+  const honorariosData = useMemo(() => {
+    let totalHonorarios = 0;
+    const lista: any[] = [];
+
+    processos.forEach(p => {
+      const valor = Number(p.honorario_pericia) || 0;
+      if (valor > 0) {
+        totalHonorarios += valor;
+        lista.push({
+          numero: p.numero_processo || "S/N",
+          vara: p.vara,
+          comarca: p.comarca,
+          valor: valor,
+        });
+      }
+    });
+
+    lista.sort((a, b) => b.valor - a.valor);
+    
+    return { totalHonorarios, lista };
+  }, [processos]);
 
   const peritosData = useMemo(() => {
     const rawData = Object.entries(stats.statsPerito)
@@ -457,6 +479,45 @@ export function LaudosTab({ laudos }: { laudos: any[] }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Controle de Honorários Prévios */}
+      <div className="space-y-4 pt-6">
+        <div className="mb-4">
+          <Card className="border-slate-200 shadow-none bg-white rounded-md w-full md:w-fit min-w-[300px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-slate-800 uppercase tracking-wide">Investimento Total em Honorários</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">
+                {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-3">
+          {honorariosData.lista.map((item, idx) => (
+             <div key={`hon-${idx}`} className="flex flex-row justify-between items-start p-4 bg-white border border-slate-200 rounded-md">
+                <div className="flex flex-col gap-1">
+                  <span className="font-bold text-slate-900 text-sm tracking-tight">{item.numero}</span>
+                  <span className="text-xs text-slate-500 font-medium">
+                    {item.vara ? `${item.vara} ` : ""}
+                    {item.comarca ? `- ${item.comarca}` : ""}
+                  </span>
+                </div>
+                <div className="font-bold text-slate-900 text-base">
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
+                </div>
+             </div>
+          ))}
+          {honorariosData.lista.length === 0 && (
+             <div className="p-4 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
+               Nenhum honorário pericial registrado.
+             </div>
+          )}
+        </div>
+      </div>
+      
     </div>
   )
 }

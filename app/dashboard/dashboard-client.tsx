@@ -339,7 +339,7 @@ export default function DashboardClient({
           {/* 4. Laudos */}
           {activeNavItem === "laudos" && (
             <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
-               <LaudosTab laudos={filteredLaudos} />
+              <LaudosTab laudos={filteredLaudos} processos={filteredProcessos} />
             </div>
           )}
 
@@ -399,7 +399,7 @@ export default function DashboardClient({
             
             <section className="bg-white rounded-xl shadow-sm border p-6">
               <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Histórico de Laudos Periciais</h2>
-              <LaudosTab laudos={filteredLaudos} />
+              <LaudosTab laudos={filteredLaudos} processos={filteredProcessos} />
             </section>
             
             <div className="html2pdf__page-break"></div>
