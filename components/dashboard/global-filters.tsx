@@ -222,7 +222,7 @@ export function GlobalFilters({
                 </label>
                 <div className="-mx-2">
                   <FilterHistogramSlider 
-                    data={processos.map(p => Number(p.valor_acao) || 0)}
+                    data={processos.map(p => Number(p.valor_causa) || 0)}
                     min={1000}
                     max={1000000}
                     step={1000}

@@ -193,7 +193,7 @@ export default function DashboardClient({
 
       // Filtro de Valor da Causa
       let matchesValorAcao = true
-      const valor = Number(p.valor_acao) || 0
+      const valor = Number(p.valor_causa) || 0
       if (valor < valorAcaoRange[0]) matchesValorAcao = false
       if (valorAcaoRange[1] < 1000000 && valor > valorAcaoRange[1]) matchesValorAcao = false
 
