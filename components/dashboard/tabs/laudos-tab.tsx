@@ -174,10 +174,17 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     // Agregação de Graus de Insalubridade de tb_processo.grau_ergonomia
     processos.forEach(p => {
-      const grau = String(p.grau_ergonomia || "").trim().replace(',', '.')
-      if (grau === "0.1" || grau.includes("10%")) grausInsalubridade["Mínimo (10%)"]++
-      else if (grau === "0.2" || grau.includes("20%")) grausInsalubridade["Médio (20%)"]++
-      else if (grau === "0.4" || grau.includes("40%")) grausInsalubridade["Máximo (40%)"]++
+      // Tenta várias colunas possíveis por segurança
+      const grauRaw = p.grau_ergonomia || p.grau_insalubridade || p.insalubridade_grau || ""
+      const grau = String(grauRaw).trim().toUpperCase().replace(',', '.')
+      
+      if (grau === "0.1" || grau.includes("10") || grau.includes("MÍNIMO")) {
+          grausInsalubridade["Mínimo (10%)"]++
+      } else if (grau === "0.2" || grau.includes("20") || grau.includes("MÉDIO")) {
+          grausInsalubridade["Médio (20%)"]++
+      } else if (grau === "0.4" || grau.includes("40") || grau.includes("MÁXIMO")) {
+          grausInsalubridade["Máximo (40%)"]++
+      }
     })
 
     return { 
