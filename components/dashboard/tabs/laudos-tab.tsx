@@ -1,9 +1,10 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, XCircle } from "lucide-react"
 
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
+  const [honorariosPage, setHonorariosPage] = useState(1);
   
   const stats = useMemo(() => {
     let total = laudos.length
@@ -142,19 +143,48 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       const valor = Number(p.honorario_pericia) || 0;
       if (valor > 0) {
         totalHonorarios += valor;
+        
+        let nomePerito = "Não informado";
+        let tipoPerito = "N/A";
+        
+        if (p.perito_medico_psiquiatra) {
+            nomePerito = p.perito_medico_psiquiatra;
+            tipoPerito = "Psiquiatra";
+        } else if (p.perito_medico_geral) {
+            nomePerito = p.perito_medico_geral;
+            tipoPerito = "Geral";
+        } else if (p.perito_ergonomico) {
+            nomePerito = p.perito_ergonomico;
+            tipoPerito = "Ergonômico";
+        } else if (p.perito_tecnico) {
+            nomePerito = p.perito_tecnico;
+            tipoPerito = "Técnico";
+        }
+
         lista.push({
           numero: p.numero_processo || "S/N",
           vara: p.vara,
           comarca: p.comarca,
           valor: valor,
+          nomePerito,
+          tipoPerito
         });
       }
     });
 
     lista.sort((a, b) => b.valor - a.valor);
     
-    return { totalHonorarios, lista };
+    return { 
+      totalHonorarios, 
+      qtdProcessos: lista.length, 
+      ticketMedio: lista.length > 0 ? (totalHonorarios / lista.length) : 0, 
+      lista 
+    };
   }, [processos]);
+
+  const itemsPerPage = 10;
+  const paginatedHonorarios = honorariosData.lista.slice((honorariosPage - 1) * itemsPerPage, honorariosPage * itemsPerPage);
+  const totalPages = Math.ceil(honorariosData.lista.length / itemsPerPage);
 
   const peritosData = useMemo(() => {
     const rawData = Object.entries(stats.statsPerito)
@@ -481,41 +511,101 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </Card>
 
       {/* Controle de Honorários Prévios */}
-      <div className="space-y-4 pt-6">
-        <div className="mb-4">
-          <Card className="border-slate-200 shadow-none bg-white rounded-md w-full md:w-fit min-w-[300px]">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-slate-800 uppercase tracking-wide">Investimento Total em Honorários</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-slate-900">
-                {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-3">
-          {honorariosData.lista.map((item, idx) => (
-             <div key={`hon-${idx}`} className="flex flex-row justify-between items-start p-4 bg-white border border-slate-200 rounded-md">
-                <div className="flex flex-col gap-1">
-                  <span className="font-bold text-slate-900 text-sm tracking-tight">{item.numero}</span>
-                  <span className="text-xs text-slate-500 font-medium">
-                    {item.vara ? `${item.vara} ` : ""}
-                    {item.comarca ? `- ${item.comarca}` : ""}
-                  </span>
+      <div className="space-y-4 pt-8 mt-8 border-t border-slate-100">
+        
+        {/* Banner de Métricas (Header) */}
+        <Card className="bg-slate-50 border-slate-200 shadow-none">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="space-y-1">
+                <div className="text-3xl md:text-4xl font-black text-slate-800">
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
                 </div>
-                <div className="font-bold text-slate-900 text-base">
+                <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                  Investimento Total em Honorários Prévios
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <div className="bg-white rounded-md p-4 border border-slate-200 flex flex-col items-center justify-center min-w-[140px]">
+                  <span className="text-xl font-bold text-slate-800">
+                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
+                  </span>
+                  <span className="text-xs text-slate-500 font-medium">Ticket Médio</span>
+                </div>
+                <div className="bg-white rounded-md p-4 border border-slate-200 flex flex-col items-center justify-center min-w-[140px]">
+                  <span className="text-xl font-bold text-slate-800">{honorariosData.qtdProcessos}</span>
+                  <span className="text-xs text-slate-500 font-medium">Qtd de Processos</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Lista com Paginação e Identidade do Perito */}
+        <div className="flex flex-col gap-2">
+          {paginatedHonorarios.map((item, idx) => (
+             <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
+                
+                {/* Esquerda: Número do Processo */}
+                <div className="w-full md:w-[25%] font-bold text-slate-900 text-sm tracking-tight mb-2 md:mb-0 shrink-0">
+                  {item.numero}
+                </div>
+                
+                {/* Centro: Vara/Juízo e Perito */}
+                <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[50%] gap-2 shrink-0">
+                  <span className="text-sm text-slate-500 shrink-0">
+                    {item.vara ? `${item.vara} ` : ""}
+                    {item.comarca ? `${item.vara ? '-' : ''} ${item.comarca}` : ""}
+                  </span>
+                  <span className="text-slate-300 hidden md:inline">|</span>
+                  <div className="flex items-center gap-2 overflow-hidden w-full">
+                    <span className="text-sm rounded-sm text-slate-700 font-medium truncate max-w-[180px]" title={item.nomePerito}>
+                       {item.nomePerito}
+                    </span>
+                    {item.tipoPerito !== "N/A" && (
+                      <span className="inline-flex items-center rounded bg-slate-100 flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-600 ring-1 ring-inset ring-slate-400/20">
+                        {item.tipoPerito}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Direita: Valor Pago */}
+                <div className="w-full md:w-[25%] font-bold text-slate-900 text-right mt-2 md:mt-0 shrink-0 text-sm">
                   {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
                 </div>
              </div>
           ))}
           {honorariosData.lista.length === 0 && (
-             <div className="p-4 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
+             <div className="p-8 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
                Nenhum honorário pericial registrado.
              </div>
           )}
         </div>
+
+        {/* Controles de Navegação (Paginação) Estritamente Textuais */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-6 pt-4 pb-4">
+            <button 
+              onClick={() => setHonorariosPage(p => Math.max(1, p - 1))}
+              disabled={honorariosPage === 1}
+              className="text-[13px] font-bold text-slate-500 uppercase tracking-wide disabled:text-slate-300 hover:text-slate-900 transition-colors"
+            >
+              Anterior
+            </button>
+            <span className="text-xs font-semibold text-slate-400">
+              PÁGINA {honorariosPage} / {totalPages}
+            </span>
+            <button 
+              onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))}
+              disabled={honorariosPage === totalPages}
+              className="text-[13px] font-bold text-slate-500 uppercase tracking-wide disabled:text-slate-300 hover:text-slate-900 transition-colors"
+            >
+              Próximo
+            </button>
+          </div>
+        )}
       </div>
       
     </div>
