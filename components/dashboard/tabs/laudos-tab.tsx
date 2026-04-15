@@ -39,6 +39,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let ergonomiaStatus = { Positivo: 0, Negativo: 0 }
+    let grausInsalubridade = { "Mínimo (10%)": 0, "Médio (20%)": 0, "Máximo (40%)": 0 }
 
     laudos.forEach(laudo => {
       // Checar se há risco/desfavorabilidade nas colunas críticas
@@ -171,11 +172,19 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       }
     })
 
+    // Agregação de Graus de Insalubridade de tb_processo.grau_ergonomia
+    processos.forEach(p => {
+      const grau = String(p.grau_ergonomia || "").trim().replace(',', '.')
+      if (grau === "0.1" || grau.includes("10%")) grausInsalubridade["Mínimo (10%)"]++
+      else if (grau === "0.2" || grau.includes("20%")) grausInsalubridade["Médio (20%)"]++
+      else if (grau === "0.4" || grau.includes("40%")) grausInsalubridade["Máximo (40%)"]++
+    })
+
     return { 
       total, favoraveis, desfavoraveis, motivos, statsPerito, tiposLaudo, nexos, 
-      ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus
+      ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade
     }
-  }, [laudos, peritoClassificacaoMap])
+  }, [laudos, processos, peritoClassificacaoMap])
 
   const honorariosData = useMemo(() => {
     let totalHonorarios = 0;
@@ -311,6 +320,12 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const ergonomiaData = [
     { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: "#10b981" },
     { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: "#ef4444" }
+  ].filter(d => d.value > 0)
+
+  const grausInsalubridadeData = [
+    { name: "Mínimo (10%)", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#9ca3af" },
+    { name: "Médio (20%)", value: stats.grausInsalubridade["Médio (20%)"], color: "#f97316" },
+    { name: "Máximo (40%)", value: stats.grausInsalubridade["Máximo (40%)"], color: "#ef4444" }
   ].filter(d => d.value > 0)
 
   // Subcomponent wrapper render logic for inner repetitive pies
@@ -469,6 +484,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         {renderMiniPie(ergoData, "Resultados de Doença Ergonômica", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(mentalData, "Resultados de Doença Mental", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(insalubridadeData, "Resultados de Insalubridade", "Distribuição de Caracterizada e Não Caracterizada")}
+        {renderMiniPie(grausInsalubridadeData, "Graus de Insalubridade", "Distribuição por intensidade aferida")}
         {renderMiniPie(periculosidadeData, "Resultados de Periculosidade", "Distribuição de Caracterizada e Não Caracterizada")}
         {renderMiniPie(ergonomiaData, "Resultados de Ergonomia", "Riscos ergonômicos reconhecidos nas atividades")}
       </div>
