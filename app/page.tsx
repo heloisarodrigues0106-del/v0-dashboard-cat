@@ -33,98 +33,109 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#111111]">
-      {/* Animated background pattern */}
-      <div className="pointer-events-none absolute inset-0">
+    <div className="flex min-h-screen">
+      {/* Left Panel — Royal Blue gradient */}
+      <div
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(160deg, #0a1628 0%, #0d2b5e 40%, #1a3a7a 70%, #0d2b5e 100%)",
+        }}
+      >
+        {/* Subtle grain overlay */}
         <div
-          className="absolute -left-[20%] top-0 h-full w-[60%] origin-top-left -skew-x-12 bg-gradient-to-b from-[#F6D000]/15 via-[#F6D000]/5 to-transparent"
-        />
-        <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: `
-              linear-gradient(rgba(246,208,0,0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(246,208,0,0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: "60px 60px",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#F6D000]/10 blur-[120px]" />
+
+        {/* Soft radial glow */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(ellipse at 30% 50%, rgba(26, 58, 122, 0.4) 0%, transparent 70%)",
+          }}
+        />
       </div>
 
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md mx-4">
-        <div
-          className="rounded-2xl border border-[#2a2a2a] bg-[#1a1a1a]/90 p-8 shadow-2xl backdrop-blur-sm"
-        >
-          {/* Logo */}
-          <div className="mb-8 flex flex-col items-center">
-            <div className="flex h-24 w-56 items-center justify-center">
-              <Image
-                src="/caterpillar-logo.svg"
-                alt="Caterpillar"
-                width={224}
-                height={96}
-                className="h-auto w-full brightness-0 invert"
-                priority
-              />
-            </div>
+      {/* Right Panel — White form area */}
+      <div className="flex w-full lg:w-1/2 flex-col items-center justify-center bg-[#f5f5f5] px-6 py-12 relative">
+        <div className="w-full max-w-md">
+          {/* Caterpillar Logo */}
+          <div className="mb-10 flex justify-center">
+            <Image
+              src="/caterpillar-logo.svg"
+              alt="Caterpillar"
+              width={240}
+              height={100}
+              className="h-auto w-60"
+              priority
+            />
           </div>
 
-          {/* Divider */}
-          <div className="mb-6 h-px bg-gradient-to-r from-transparent via-[#F6D000]/30 to-transparent" />
+          {/* Welcome Text */}
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-bold text-[#1a1a1a] tracking-tight">
+              Bem-vindo de volta
+            </h1>
+            <p className="mt-1.5 text-sm text-[#888888]">
+              Acesse sua conta para continuar
+            </p>
+          </div>
 
           {/* Error message */}
           {error && (
-            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="mb-5 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
-                htmlFor="email"
-                className="block text-xs font-semibold uppercase tracking-wider text-[#999999]"
+                htmlFor="login-email"
+                className="block text-sm font-medium text-[#333333]"
               >
-                Email
+                E-mail
               </label>
               <input
-                id="email"
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
-                className="w-full rounded-lg border border-[#333333] bg-[#222222] px-4 py-3 text-sm text-white placeholder:text-[#555555] transition-all duration-200 outline-none focus:border-[#F6D000] focus:ring-2 focus:ring-[#F6D000]/20"
+                autoComplete="email"
+                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15"
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label
-                htmlFor="password"
-                className="block text-xs font-semibold uppercase tracking-wider text-[#999999]"
+                htmlFor="login-password"
+                className="block text-sm font-medium text-[#333333]"
               >
                 Senha
               </label>
               <input
-                id="password"
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full rounded-lg border border-[#333333] bg-[#222222] px-4 py-3 text-sm text-white placeholder:text-[#555555] transition-all duration-200 outline-none focus:border-[#F6D000] focus:ring-2 focus:ring-[#F6D000]/20"
+                autoComplete="current-password"
+                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full overflow-hidden rounded-lg bg-[#F6D000] py-3 text-sm font-bold uppercase tracking-wider text-[#111111] transition-all duration-300 hover:bg-[#FFE033] hover:shadow-[0_0_30px_rgba(246,208,0,0.3)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group w-full rounded-full bg-[#0d2b5e] py-3.5 text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:bg-[#1a3a7a] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 {isLoading ? (
                   <svg
                     className="h-5 w-5 animate-spin"
@@ -147,30 +158,30 @@ export default function LoginPage() {
                     />
                   </svg>
                 ) : (
-                  "Entrar"
+                  <>
+                    Entrar
+                    <svg
+                      className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </>
                 )}
               </span>
             </button>
           </form>
-
-          {/* Forgot password */}
-          <div className="mt-6 text-center">
-            <a
-              href="#"
-              className="text-xs text-[#666666] transition-colors duration-200 hover:text-[#F6D000]"
-            >
-              Esqueceu sua senha?
-            </a>
-          </div>
         </div>
 
-        {/* Bottom accent line */}
-        <div className="mt-6 h-0.5 bg-gradient-to-r from-transparent via-[#F6D000]/30 to-transparent" />
-
         {/* Footer */}
-        <p className="mt-4 text-center text-sm text-[#555555]">
-          © {new Date().getFullYear()} Caterpillar Inc. · Martinelli Advogados
-        </p>
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+          <p className="text-xs text-[#aaaaaa] tracking-wide">
+            © {new Date().getFullYear()} CATERPILLAR INC.&nbsp;&nbsp;&nbsp;MARTINELLI ADVOGADOS
+          </p>
+        </div>
       </div>
     </div>
   )
