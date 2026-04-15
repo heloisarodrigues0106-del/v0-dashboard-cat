@@ -135,10 +135,23 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       // Correlacionar com o Perito e mapear a classificação
       const nomePerito = laudo.perito || "Perito Não Informado"
       if (!statsPerito[nomePerito]) {
+         const laudoUpp = nomePerito.trim().toUpperCase();
+         let classificacaoEncontrada = peritoClassificacaoMap[laudoUpp];
+         
+         // Se não achar exato, tenta encontrar parcialmente (muitos tem "Dr." "Eng." num lugar e não no outro)
+         if (!classificacaoEncontrada) {
+             for (const [keyStr, val] of Object.entries(peritoClassificacaoMap)) {
+                 if (keyStr.length > 3 && (keyStr.includes(laudoUpp) || laudoUpp.includes(keyStr))) {
+                     classificacaoEncontrada = val;
+                     break;
+                 }
+             }
+         }
+
          statsPerito[nomePerito] = { 
             favoraveis: 0, 
             desfavoraveis: 0,
-            classificacao: peritoClassificacaoMap[nomePerito.trim().toUpperCase()] || "Não Classificado"
+            classificacao: classificacaoEncontrada || "Não Classificado"
          }
       }
       
@@ -469,8 +482,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         </CardHeader>
         <CardContent>
           <div className="h-[650px] w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
+            {peritosData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart  
                 data={peritosData} 
                 layout="vertical" 
                 margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
@@ -552,6 +566,12 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+            ) : (
+               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
+                 <span className="font-semibold text-lg text-slate-500">Nenhum perito encontrado.</span>
+                 <span className="text-sm">Tente selecionar outra classificação ou ajustar os filtros globais.</span>
+               </div>
+            )}
           </div>
         </CardContent>
       </Card>
