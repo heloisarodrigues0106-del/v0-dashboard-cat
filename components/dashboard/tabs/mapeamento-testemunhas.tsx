@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [abaTestemunha, setAbaTestemunha] = useState<"reclamante" | "reclamada">("reclamante")
+  const [activeTab, setActiveTab] = useState("ranking")
   
   const { ranking, cruzamentos, detailsMap } = useMemo(() => {
     const testemunhasMap: Record<string, string[]> = {}
@@ -176,39 +177,44 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       </CardHeader>
       
       <CardContent className="pt-6">
-        <Tabs defaultValue="ranking" className="w-full">
-          <TabsList className="mb-4 bg-slate-100/50 p-1 w-full max-w-md grid grid-cols-2">
-            <TabsTrigger 
-              value="ranking" 
-              className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
-            >
-              <UserSearch className="h-4 w-4 mr-2" />
-              Ranking de Recorrência
-            </TabsTrigger>
-            <TabsTrigger 
-              value="cruzamento"
-              className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
-            >
-              <LinkIcon className="h-4 w-4 mr-2" />
-              Cruzamento de Nomes
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
+            <TabsList className="bg-slate-100/50 p-1 w-full md:max-w-md grid grid-cols-2">
+              <TabsTrigger 
+                value="ranking" 
+                className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
+              >
+                <UserSearch className="h-4 w-4 mr-2" />
+                Ranking de Recorrência
+              </TabsTrigger>
+              <TabsTrigger 
+                value="cruzamento"
+                className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
+              >
+                <LinkIcon className="h-4 w-4 mr-2" />
+                Cruzamento de Nomes
+              </TabsTrigger>
+            </TabsList>
+
+            {activeTab === "ranking" && (
+              <div className="flex border border-slate-200 rounded-md p-1 w-full md:w-auto bg-slate-100/50">
+                <button 
+                  onClick={() => setAbaTestemunha('reclamante')}
+                  className={`flex-1 md:flex-none px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamante' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Reclamante
+                </button>
+                <button 
+                  onClick={() => setAbaTestemunha('reclamada')}
+                  className={`flex-1 md:flex-none px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamada' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Reclamada
+                </button>
+              </div>
+            )}
+          </div>
 
           <TabsContent value="ranking" className="space-y-4">
-            <div className="flex border border-slate-200 rounded-md p-1 w-fit bg-slate-100/50 mb-4">
-              <button 
-                onClick={() => setAbaTestemunha('reclamante')}
-                className={`px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamante' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
-              >
-                Reclamante
-              </button>
-              <button 
-                onClick={() => setAbaTestemunha('reclamada')}
-                className={`px-6 py-1.5 text-xs font-semibold rounded-sm transition-all ${abaTestemunha === 'reclamada' ? 'bg-white shadow-sm text-[#111111]' : 'text-slate-500 hover:text-slate-700'}`}
-              >
-                Reclamada
-              </button>
-            </div>
 
             {ranking.length === 0 ? (
               <div className="flex items-center justify-center p-8 border border-dashed rounded-lg text-slate-400">
