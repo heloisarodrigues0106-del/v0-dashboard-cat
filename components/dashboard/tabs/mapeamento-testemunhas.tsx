@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
+import { UserSearch, Link as LinkIcon, ExternalLink, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
 export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) {
+  const [searchQuery, setSearchQuery] = useState("")
   const { ranking, cruzamentos, detailsMap } = useMemo(() => {
     const testemunhasMap: Record<string, string[]> = {}
     const reclamantesMap: Record<string, string[]> = {}
@@ -63,8 +65,33 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       (a.processosTestemunha.length + a.processosReclamante.length)
     )
 
-    return { ranking: rankingArray, cruzamentos: cruzamentosArray, detailsMap }
-  }, [processos])
+    // 3. Aplicação do Filtro de Pesquisa
+    const query = searchQuery.toLowerCase().trim()
+    
+    const filteredRanking = rankingArray.filter(item => {
+      if (!query) return true
+      const matchNome = item.nome.toLowerCase().includes(query)
+      const matchProc = item.processos.some(p => p.toLowerCase().includes(query))
+      const matchRecl = item.processos.some(p => {
+        const recl = detailsMap[p]?.nome_reclamante || ""
+        return recl.toLowerCase().includes(query)
+      })
+      return matchNome || matchProc || matchRecl
+    })
+
+    const filteredCruzamentos = cruzamentosArray.filter(item => {
+      if (!query) return true
+      const matchNome = item.nome.toLowerCase().includes(query)
+      const matchProc = [...item.processosTestemunha, ...item.processosReclamante].some(p => p.toLowerCase().includes(query))
+      const matchRecl = [...item.processosTestemunha, ...item.processosReclamante].some(p => {
+        const recl = detailsMap[p]?.nome_reclamante || ""
+        return recl.toLowerCase().includes(query)
+      })
+      return matchNome || matchProc || matchRecl
+    })
+
+    return { ranking: filteredRanking, cruzamentos: filteredCruzamentos, detailsMap }
+  }, [processos, searchQuery])
 
   const renderProcessInfo = (proc: string) => {
     const pData = detailsMap[proc] || {}
@@ -125,14 +152,25 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
 
   return (
     <Card className="bg-white rounded-xl shadow-sm border border-slate-200">
-      <CardHeader className="pb-4 border-b border-slate-100">
-        <CardTitle className="text-xl font-semibold text-[#111111] flex items-center gap-2">
-          <UserSearch className="h-6 w-6 text-[#F6D000]" />
-          Mapeamento de Testemunhas
-        </CardTitle>
-        <CardDescription className="text-slate-500 max-w-2xl">
-          Análise de recorrência e cruzamento de dados de testemunhas com o polo ativo (Reclamantes) para identificação de padrões.
-        </CardDescription>
+      <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div className="space-y-1">
+          <CardTitle className="text-xl font-semibold text-[#111111] flex items-center gap-2">
+            <UserSearch className="h-6 w-6 text-[#F6D000]" />
+            Mapeamento de Testemunhas
+          </CardTitle>
+          <CardDescription className="text-slate-500 max-w-2xl">
+            Análise de recorrência e cruzamento de dados de testemunhas com o polo ativo (Reclamantes) para identificação de padrões.
+          </CardDescription>
+        </div>
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Buscar testemunha, reclamante ou número..." 
+            className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </CardHeader>
       
       <CardContent className="pt-6">
