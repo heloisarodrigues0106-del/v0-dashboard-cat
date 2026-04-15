@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { AlertCircle, CheckCircle2, FileText, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle2, FileText, Search } from "lucide-react"
 
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   const [honorariosPage, setHonorariosPage] = useState(1);
+  const [honorariosSearch, setHonorariosSearch] = useState("");
   
   const stats = useMemo(() => {
     let total = laudos.length
@@ -138,36 +140,42 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const honorariosData = useMemo(() => {
     let totalHonorarios = 0;
     const lista: any[] = [];
+    const lowerSearch = honorariosSearch.toLowerCase();
 
     processos.forEach(p => {
       const valor = Number(p.honorario_pericia) || 0;
       if (valor > 0) {
+        const num = p.numero_processo || "S/N";
+        const rec = p.nome_reclamante || "Não informado";
+        
+        if (lowerSearch && !num.toLowerCase().includes(lowerSearch) && !rec.toLowerCase().includes(lowerSearch)) {
+            return;
+        }
+
         totalHonorarios += valor;
         
-        let nomePerito = "Não informado";
-        let tipoPerito = "N/A";
+        let peritosEncontrados = [];
         
+        if (p.perito_tecnico) {
+            peritosEncontrados.push({ nome: p.perito_tecnico, tipo: "Técnico" });
+        }
+        if (p.perito_ergonomico) {
+            peritosEncontrados.push({ nome: p.perito_ergonomico, tipo: "Ergonômico" });
+        }
+        if (p.perito_medico_geral) {
+            peritosEncontrados.push({ nome: p.perito_medico_geral, tipo: "Médico" });
+        }
         if (p.perito_medico_psiquiatra) {
-            nomePerito = p.perito_medico_psiquiatra;
-            tipoPerito = "Médico Psiquiatra";
-        } else if (p.perito_medico_geral) {
-            nomePerito = p.perito_medico_geral;
-            tipoPerito = "Médico";
-        } else if (p.perito_ergonomico) {
-            nomePerito = p.perito_ergonomico;
-            tipoPerito = "Ergonômico";
-        } else if (p.perito_tecnico) {
-            nomePerito = p.perito_tecnico;
-            tipoPerito = "Técnico";
+            peritosEncontrados.push({ nome: p.perito_medico_psiquiatra, tipo: "Médico Psiquiatra" });
         }
 
         lista.push({
-          numero: p.numero_processo || "S/N",
+          numero: num,
+          reclamante: rec,
           vara: p.vara,
           comarca: p.comarca,
           valor: valor,
-          nomePerito,
-          tipoPerito
+          peritos: peritosEncontrados.length > 0 ? peritosEncontrados : [{ nome: "Não informado", tipo: "N/A" }]
         });
       }
     });
@@ -180,7 +188,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       ticketMedio: lista.length > 0 ? (totalHonorarios / lista.length) : 0, 
       lista 
     };
-  }, [processos]);
+  }, [processos, honorariosSearch]);
 
   const itemsPerPage = 10;
   const paginatedHonorarios = honorariosData.lista.slice((honorariosPage - 1) * itemsPerPage, honorariosPage * itemsPerPage);
@@ -542,37 +550,66 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           </CardContent>
         </Card>
 
-        {/* Lista com Paginação e Identidade do Perito */}
-        <div className="flex flex-col gap-2">
-          {paginatedHonorarios.map((item, idx) => (
-             <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
-                
-                {/* Esquerda: Número do Processo */}
-                <div className="w-full md:w-[25%] font-bold text-slate-900 text-sm tracking-tight mb-2 md:mb-0 shrink-0">
-                  {item.numero}
-                </div>
-                
-                {/* Centro: Vara/Juízo e Perito */}
-                <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[50%] gap-2 shrink-0">
+        {/* Lista com Paginação, Header e Busca */}
+        <Card className="border border-border bg-card shadow-sm mt-4">
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
+            <div className="space-y-1">
+              <CardTitle className="text-xl font-bold flex items-center gap-2">
+                Listagem Detalhada
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">Relatório de honorários pagos por processo e reclamante</p>
+            </div>
+            
+            <div className="relative w-full md:w-[350px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Buscar por nº processo ou reclamante..." 
+                className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
+                value={honorariosSearch}
+                onChange={(e) => {
+                   setHonorariosSearch(e.target.value)
+                   setHonorariosPage(1)
+                }}
+              />
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-0 px-6">
+            <div className="flex flex-col gap-2">
+              {paginatedHonorarios.map((item, idx) => (
+                 <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
+                    
+                    {/* Esquerda: Número do Processo e Reclamante */}
+                    <div className="w-full md:w-[30%] flex flex-col gap-1 mb-2 md:mb-0 shrink-0">
+                      <span className="font-bold text-slate-900 text-sm tracking-tight">{item.numero}</span>
+                      <span className="text-[11px] font-bold text-slate-500 uppercase">{item.reclamante}</span>
+                    </div>
+                    
+                    {/* Centro: Vara/Juízo e Peritos */}
+                    <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[55%] gap-2 shrink-0">
                   <span className="text-sm text-slate-500 shrink-0">
                     {item.vara ? `${item.vara} ` : ""}
                     {item.comarca ? `${item.vara ? '-' : ''} ${item.comarca}` : ""}
                   </span>
                   <span className="text-slate-300 hidden md:inline">|</span>
-                  <div className="flex items-center gap-2 overflow-hidden w-full">
-                    <span className="text-sm rounded-sm text-slate-700 font-medium truncate" title={item.nomePerito}>
-                       {item.nomePerito}
-                    </span>
-                    {item.tipoPerito !== "N/A" && (
-                      <span className="inline-flex items-center rounded bg-slate-100 flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-600 ring-1 ring-inset ring-slate-400/20">
-                        {item.tipoPerito}
-                      </span>
-                    )}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 w-full">
+                    {item.peritos.map((perito: any, pIdx: number) => (
+                      <div key={pIdx} className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-sm rounded-sm text-slate-700 font-medium truncate" title={perito.nome}>
+                           {perito.nome}
+                        </span>
+                        {perito.tipo !== "N/A" && (
+                          <span className="inline-flex items-center rounded bg-slate-100 flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-600 ring-1 ring-inset ring-slate-400/20">
+                            {perito.tipo}
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Direita: Valor Pago */}
-                <div className="w-full md:w-[25%] font-bold text-slate-900 text-right mt-2 md:mt-0 shrink-0 text-sm">
+                <div className="w-full md:w-[15%] font-bold text-slate-900 text-right mt-2 md:mt-0 shrink-0 text-sm">
                   {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
                 </div>
              </div>
@@ -606,6 +643,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </button>
           </div>
         )}
+          </CardContent>
+        </Card>
       </div>
       
     </div>
