@@ -130,22 +130,20 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                   <button
                     type="button"
                     onClick={() => setExpandedProcesso(isExpanded ? null : processo.numero_processo)}
-                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white transition-colors hover:bg-slate-50 gap-3 text-left"
+                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center px-5 py-4 bg-white transition-colors hover:bg-slate-50 gap-3 text-left cursor-pointer"
                   >
-                    <div className="w-full md:w-[30%] flex flex-col gap-0.5 shrink-0">
+                    <div className="w-full md:w-[35%] flex flex-col gap-0.5 shrink-0">
                       <span className="font-bold text-slate-900 text-sm tracking-tight">{processo.numero_processo}</span>
                       <span className="text-[11px] font-bold text-slate-500 uppercase">{processo.nome_reclamante}</span>
                     </div>
-                    <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[40%] gap-2 md:gap-4 shrink-0">
-                      <span className="text-sm text-slate-500 shrink-0">{processo.trt} / {processo.comarca}</span>
-                      <span className="text-slate-300 hidden md:inline">|</span>
+                    <div className="w-full md:w-[30%] shrink-0">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{processo.fase_processual}</span>
                     </div>
-                    <div className="flex items-center w-full md:w-[30%] gap-3 justify-between md:justify-end shrink-0">
-                      <Badge variant={getStatusVariant(processo.status)} className={`${getStatusColor(processo.status)} text-[10px] px-2 py-0.5 font-bold uppercase`}>
+                    <div className="flex items-center w-full md:w-[35%] gap-4 justify-between md:justify-end shrink-0">
+                      <Badge variant={getStatusVariant(processo.status)} className={`${getStatusColor(processo.status)} text-[10px] px-2.5 py-0.5 font-bold uppercase`}>
                         {processo.status}
                       </Badge>
-                      <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-200 shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
                     </div>
                   </button>
 
