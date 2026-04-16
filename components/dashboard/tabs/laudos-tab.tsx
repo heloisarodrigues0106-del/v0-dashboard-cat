@@ -565,8 +565,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="hsl(var(--muted))" opacity={0.4} />
                 <XAxis 
                   type="number" 
-                  domain={[0, 60]} 
-                  ticks={[0, 10, 20, 30, 40, 50, 60]}
+                  allowDecimals={false}
+                  domain={[0, 'dataMax + 1']}
                   stroke="hsl(var(--muted-foreground))" 
                   tick={{ fontSize: 13, fontWeight: 500 }}
                   axisLine={false}
