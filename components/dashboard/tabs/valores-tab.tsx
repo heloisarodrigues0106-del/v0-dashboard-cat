@@ -88,13 +88,13 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       <div className="flex items-center gap-8 border-b border-border/60">
         <button
           onClick={() => setActiveMainTab("provisionamento")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-slate-900 border-b-[2px] border-slate-900" : "text-slate-500 font-medium hover:text-slate-700 border-b-[2px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#FFCD00]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Provisionamento
         </button>
         <button
           onClick={() => setActiveMainTab("preparo_recursal")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-slate-900 border-b-[2px] border-slate-900" : "text-slate-500 font-medium hover:text-slate-700 border-b-[2px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#FFCD00]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Preparo Recursal
         </button>
@@ -103,10 +103,10 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       {activeMainTab === "provisionamento" && (
         <Tabs defaultValue="provavel" onValueChange={setRiscoAtivo} className="w-full space-y-6">
           
-          <TabsList className="w-full overflow-x-auto flex justify-start gap-6 bg-transparent border-b border-transparent rounded-none p-0 h-auto">
-            <TabsTrigger value="provavel" className="px-0 pb-2 text-xs md:text-sm bg-transparent rounded-none border-b-[2px] border-transparent data-[state=active]:border-slate-400 data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none">Risco Provável</TabsTrigger>
-            <TabsTrigger value="possivel" className="px-0 pb-2 text-xs md:text-sm bg-transparent rounded-none border-b-[2px] border-transparent data-[state=active]:border-slate-400 data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none">Risco Possível</TabsTrigger>
-            <TabsTrigger value="remoto" className="px-0 pb-2 text-xs md:text-sm bg-transparent rounded-none border-b-[2px] border-transparent data-[state=active]:border-slate-400 data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none">Risco Remoto</TabsTrigger>
+          <TabsList className="w-full flex flex-wrap justify-start gap-3 bg-transparent border-none p-0 h-auto">
+            <TabsTrigger value="provavel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Provável</TabsTrigger>
+            <TabsTrigger value="possivel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Possível</TabsTrigger>
+            <TabsTrigger value="remoto" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Remoto</TabsTrigger>
           </TabsList>
 
           <TabsContent value={riscoAtivo} className="space-y-6 mt-0">
@@ -219,8 +219,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                                      </div>
                                   </div>
                                   {item.justificativa && (
-                                    <div className="bg-white border-l-4 border-l-[#F6D000] border-y border-r border-slate-200 rounded p-3 text-sm flex items-start gap-3 shadow-sm">
-                                       <span className="font-semibold whitespace-nowrap pt-0.5">Justificativa:</span>
+                                    <div className="bg-white border-l-4 border-l-[#FFCD00] border-y border-r border-slate-200 rounded p-3 text-sm flex items-start gap-3 shadow-sm">
+                                       <span className="font-semibold text-[#111111] whitespace-nowrap pt-0.5">Justificativa:</span>
                                        <span className="italic text-slate-600 pt-0.5">{item.justificativa}</span>
                                     </div>
                                   )}
