@@ -249,7 +249,6 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       {activeMainTab === "preparo_recursal" && (
         <div className="space-y-6 pt-2">
           {/* Gestão de Custos e Garantias */}
-          <h3 className="text-lg font-medium">Gestão de Garantias e Custos</h3>
           <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
             <Card className="shadow-sm border-slate-200 bg-white">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
