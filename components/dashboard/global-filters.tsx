@@ -19,13 +19,7 @@ import {
   SheetFooter,
   SheetClose
 } from "@/components/ui/sheet"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { MultiSelect } from "@/components/ui/multi-select"
 import { FilterHistogramSlider } from "@/components/dashboard/filter-histogram-slider"
 
 interface GlobalFiltersProps {
@@ -37,18 +31,20 @@ interface GlobalFiltersProps {
   setDataArquivamentoInicio: (date: Date | undefined) => void
   dataArquivamentoFim: Date | undefined
   setDataArquivamentoFim: (date: Date | undefined) => void
-  empresa: string
-  setEmpresa: (val: string) => void
-  unidade: string
-  setUnidade: (val: string) => void
-  advogado: string
-  setAdvogado: (val: string) => void
-  terceirizada: string
-  setTerceirizada: (val: string) => void
-  tipoAcao: string
-  setTipoAcao: (val: string) => void
-  vara: string
-  setVara: (val: string) => void
+  empresa: string[]
+  setEmpresa: (val: string[]) => void
+  unidade: string[]
+  setUnidade: (val: string[]) => void
+  advogado: string[]
+  setAdvogado: (val: string[]) => void
+  terceirizada: string[]
+  setTerceirizada: (val: string[]) => void
+  tipoAcao: string[]
+  setTipoAcao: (val: string[]) => void
+  vara: string[]
+  setVara: (val: string[]) => void
+  funcaoReclamante: string[]
+  setFuncaoReclamante: (val: string[]) => void
   filterOptions: {
     empresas: string[]
     unidades: string[]
@@ -56,6 +52,7 @@ interface GlobalFiltersProps {
     terceirizadas: string[]
     tiposAcao: string[]
     varas: string[]
+    funcoes: string[]
   }
   valorAcaoRange: [number, number]
   setValorAcaoRange: (val: [number, number]) => void
@@ -83,6 +80,8 @@ export function GlobalFilters({
   setTipoAcao,
   vara,
   setVara,
+  funcaoReclamante,
+  setFuncaoReclamante,
   filterOptions,
   valorAcaoRange,
   setValorAcaoRange,
@@ -94,12 +93,13 @@ export function GlobalFilters({
     dataAjuizamentoFim ||
     dataArquivamentoInicio ||
     dataArquivamentoFim ||
-    empresa !== "all" ||
-    unidade !== "all" ||
-    advogado !== "all" ||
-    terceirizada !== "all" ||
-    tipoAcao !== "all" ||
-    vara !== "all" ||
+    empresa.length > 0 ||
+    unidade.length > 0 ||
+    advogado.length > 0 ||
+    terceirizada.length > 0 ||
+    tipoAcao.length > 0 ||
+    vara.length > 0 ||
+    funcaoReclamante.length > 0 ||
     valorAcaoRange[0] !== 1000 ||
     valorAcaoRange[1] !== 5000000;
 
@@ -108,12 +108,13 @@ export function GlobalFilters({
     setDataAjuizamentoFim(undefined)
     setDataArquivamentoInicio(undefined)
     setDataArquivamentoFim(undefined)
-    setEmpresa("all")
-    setUnidade("all")
-    setAdvogado("all")
-    setTerceirizada("all")
-    setTipoAcao("all")
-    setVara("all")
+    setEmpresa([])
+    setUnidade([])
+    setAdvogado([])
+    setTerceirizada([])
+    setTipoAcao([])
+    setVara([])
+    setFuncaoReclamante([])
     setValorAcaoRange([1000, 5000000])
   }
 
@@ -244,68 +245,37 @@ export function GlobalFilters({
               <div className="space-y-5">
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Empresa (Reclamada)</label>
-                  <Select value={empresa} onValueChange={setEmpresa}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todas" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      {filterOptions.empresas.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.empresas} selected={empresa} onChange={setEmpresa} placeholder="Todas as Empresas" />
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Unidade/Centro de Custo</label>
-                  <Select value={unidade} onValueChange={setUnidade}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {filterOptions.unidades.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.unidades} selected={unidade} onChange={setUnidade} placeholder="Todas as Unidades" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Empresa Terceirizada</label>
-                  <Select value={terceirizada} onValueChange={setTerceirizada}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todas" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      {filterOptions.terceirizadas.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.terceirizadas} selected={terceirizada} onChange={setTerceirizada} placeholder="Todas as Empresas" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Advogado Adverso</label>
-                  <Select value={advogado} onValueChange={setAdvogado}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {filterOptions.advogados.map(a => <SelectItem key={a} value={a}>{a}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.advogados} selected={advogado} onChange={setAdvogado} placeholder="Todos os Advogados" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Tipo de Ação</label>
-                  <Select value={tipoAcao} onValueChange={setTipoAcao}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {filterOptions.tiposAcao.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.tiposAcao} selected={tipoAcao} onChange={setTipoAcao} placeholder="Todos os Tipos" />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Vara e Comarca</label>
-                  <Select value={vara} onValueChange={setVara}>
-                    <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Todas" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
-                      {filterOptions.varas.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect options={filterOptions.varas} selected={vara} onChange={setVara} placeholder="Todas as Varas e Comarcas" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium uppercase tracking-wider">Função Reclamante</label>
+                  <MultiSelect options={filterOptions.funcoes} selected={funcaoReclamante} onChange={setFuncaoReclamante} placeholder="Todas as Funções" />
                 </div>
               </div>
             </div>

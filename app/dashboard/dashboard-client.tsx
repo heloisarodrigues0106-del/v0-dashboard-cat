@@ -80,12 +80,13 @@ export default function DashboardClient({
   const [dataArquivamentoFim, setDataArquivamentoFim] = useState<Date | undefined>()
 
   // Novos Filtros Globais Categóricos
-  const [empresa, setEmpresa] = useState<string>("all")
-  const [unidade, setUnidade] = useState<string>("all")
-  const [advogado, setAdvogado] = useState<string>("all")
-  const [terceirizada, setTerceirizada] = useState<string>("all")
-  const [tipoAcao, setTipoAcao] = useState<string>("all")
-  const [vara, setVara] = useState<string>("all")
+  const [empresa, setEmpresa] = useState<string[]>([])
+  const [unidade, setUnidade] = useState<string[]>([])
+  const [advogado, setAdvogado] = useState<string[]>([])
+  const [terceirizada, setTerceirizada] = useState<string[]>([])
+  const [tipoAcao, setTipoAcao] = useState<string[]>([])
+  const [vara, setVara] = useState<string[]>([])
+  const [funcaoReclamante, setFuncaoReclamante] = useState<string[]>([])
   
   // Filtro de Faixa de Valor da Causa
   const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([1000, 5000000])
@@ -98,6 +99,7 @@ export default function DashboardClient({
     const terceirizadas = new Set<string>()
     const tiposAcao = new Set<string>()
     const varas = new Set<string>()
+    const funcoes = new Set<string>()
 
     processos.forEach(p => {
       if (p.reclamada) empresas.add(p.reclamada)
@@ -105,6 +107,7 @@ export default function DashboardClient({
       if (p.advogado_reclamante) advogados.add(p.advogado_reclamante)
       if (p.empresa_terceirizada) terceirizadas.add(p.empresa_terceirizada)
       if (p.tipo_acao) tiposAcao.add(p.tipo_acao)
+      if (p.funcao_reclamante) funcoes.add(p.funcao_reclamante)
       
       const v = p.vara ? p.vara.trim() : ""
       const c = p.comarca ? p.comarca.trim() : ""
@@ -118,7 +121,8 @@ export default function DashboardClient({
       advogados: Array.from(advogados).sort(),
       terceirizadas: Array.from(terceirizadas).sort(),
       tiposAcao: Array.from(tiposAcao).sort(),
-      varas: Array.from(varas).sort()
+      varas: Array.from(varas).sort(),
+      funcoes: Array.from(funcoes).sort()
     }
   }, [processos])
 
@@ -178,17 +182,18 @@ export default function DashboardClient({
         }
       }
 
-      const matchesEmpresa = empresa === "all" || p.reclamada === empresa
-      const matchesUnidade = unidade === "all" || p.centro_custo === unidade
-      const matchesAdvogado = advogado === "all" || p.advogado_reclamante === advogado
-      const matchesTerceirizada = terceirizada === "all" || p.empresa_terceirizada === terceirizada
-      const matchesTipoAcao = tipoAcao === "all" || p.tipo_acao === tipoAcao
+      const matchesEmpresa = empresa.length === 0 || empresa.includes(p.reclamada)
+      const matchesUnidade = unidade.length === 0 || unidade.includes(p.centro_custo)
+      const matchesAdvogado = advogado.length === 0 || advogado.includes(p.advogado_reclamante)
+      const matchesTerceirizada = terceirizada.length === 0 || terceirizada.includes(p.empresa_terceirizada)
+      const matchesTipoAcao = tipoAcao.length === 0 || tipoAcao.includes(p.tipo_acao)
+      const matchesFuncao = funcaoReclamante.length === 0 || funcaoReclamante.includes(p.funcao_reclamante)
       
-      const matchesVara = vara === "all" || (() => {
+      const matchesVara = vara.length === 0 || (() => {
         const v = p.vara ? p.vara.trim() : ""
         const c = p.comarca ? p.comarca.trim() : ""
         const pt = v && c ? `${v} - ${c}` : v || c || ""
-        return pt === vara
+        return vara.includes(pt)
       })()
 
       // Filtro de Valor da Causa
@@ -205,13 +210,14 @@ export default function DashboardClient({
         matchesAdvogado &&
         matchesTerceirizada &&
         matchesTipoAcao &&
+        matchesFuncao &&
         matchesVara &&
         matchesValorAcao
       )
     })
   }, [
     processos, dataAjuizamentoInicio, dataAjuizamentoFim, dataArquivamentoInicio, dataArquivamentoFim,
-    empresa, unidade, advogado, terceirizada, tipoAcao, vara, valorAcaoRange
+    empresa, unidade, advogado, terceirizada, tipoAcao, vara, funcaoReclamante, valorAcaoRange
   ])
 
   // Extract valid numero_processos for cascading filters to other arrays
@@ -299,6 +305,8 @@ export default function DashboardClient({
             setTipoAcao={setTipoAcao}
             vara={vara}
             setVara={setVara}
+            funcaoReclamante={funcaoReclamante}
+            setFuncaoReclamante={setFuncaoReclamante}
             valorAcaoRange={valorAcaoRange}
             setValorAcaoRange={setValorAcaoRange}
             processos={processos} // For the histogram
