@@ -67,7 +67,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
     const filteredAcordos = mappedAcordos.filter(a => 
       a.reclamante.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.advogado.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.numero.toLowerCase().includes(searchQuery.toLowerCase())
+      a.numero.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.funcao.toLowerCase().includes(searchQuery.toLowerCase())
     )
     
     const economiaTotal = totalPedido - totalAcordado
@@ -256,7 +257,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Buscar reclamante ou advogado..." 
+              placeholder="Buscar reclamante, advogado ou cargo..." 
               className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

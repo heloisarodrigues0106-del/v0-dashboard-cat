@@ -79,7 +79,11 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
         const recl = detailsMap[p]?.nome_reclamante || ""
         return recl.toLowerCase().includes(query)
       })
-      return matchNome || matchProc || matchRecl
+      const matchFuncao = item.processos.some(p => {
+        const func = detailsMap[p]?.funcao_reclamante || ""
+        return func.toLowerCase().includes(query)
+      })
+      return matchNome || matchProc || matchRecl || matchFuncao
     })
 
     const filteredCruzamentos = cruzamentosArray.filter(item => {
@@ -90,7 +94,11 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
         const recl = detailsMap[p]?.nome_reclamante || ""
         return recl.toLowerCase().includes(query)
       })
-      return matchNome || matchProc || matchRecl
+      const matchFuncao = [...item.processosTestemunha, ...item.processosReclamante].some(p => {
+        const func = detailsMap[p]?.funcao_reclamante || ""
+        return func.toLowerCase().includes(query)
+      })
+      return matchNome || matchProc || matchRecl || matchFuncao
     })
 
     return { ranking: filteredRanking, cruzamentos: filteredCruzamentos, detailsMap }
@@ -168,7 +176,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Buscar testemunha, reclamante ou número..." 
+            placeholder="Buscar testemunha, reclamante, número ou cargo..." 
             className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

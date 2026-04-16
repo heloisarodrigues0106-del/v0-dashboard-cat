@@ -238,7 +238,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         const num = p.numero_processo || "S/N";
         const rec = p.nome_reclamante || "Não informado";
         
-        if (lowerSearch && !num.toLowerCase().includes(lowerSearch) && !rec.toLowerCase().includes(lowerSearch)) {
+        if (lowerSearch && 
+            !num.toLowerCase().includes(lowerSearch) && 
+            !rec.toLowerCase().includes(lowerSearch) &&
+            !(p.funcao_reclamante || "").toLowerCase().includes(lowerSearch)
+        ) {
             return;
         }
 
@@ -693,7 +697,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             <div className="relative w-full md:w-[350px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Buscar por nº processo ou reclamante..." 
+                placeholder="Buscar por nº processo, reclamante ou cargo..." 
                 className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
                 value={honorariosSearch}
                 onChange={(e) => {

@@ -65,7 +65,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
 
     return processos.filter((p) => 
       (p.nome_reclamante || "").toLowerCase().includes(query) ||
-      (p.numero_processo || "").toLowerCase().includes(query)
+      (p.numero_processo || "").toLowerCase().includes(query) ||
+      (p.funcao_reclamante || "").toLowerCase().includes(query)
     )
   }, [processos, searchQuery])
 
@@ -84,7 +85,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Buscar reclamante ou número..." 
+              placeholder="Buscar reclamante, número ou cargo..." 
               className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
               value={searchQuery}
               onChange={(e) => {
