@@ -173,10 +173,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       }
     })
 
-    // Agregação de Graus de Insalubridade de tb_processo.grau_ergonomia
-    processos.forEach(p => {
-      // Tenta várias colunas possíveis por segurança
-      const grauRaw = p.grau_ergonomia || p.grau_insalubridade || p.insalubridade_grau || ""
+    // Agregação de Graus de Insalubridade de tb_laudo.grau_insalubridade
+    laudos.forEach(laudo => {
+      const grauRaw = laudo.grau_insalubridade || ""
       const grau = String(grauRaw).trim().toUpperCase().replace(',', '.')
       
       if (grau === "0.1" || grau.includes("10") || grau.includes("MÍNIMO")) {
