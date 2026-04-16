@@ -1,37 +1,84 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff, Mail, Lock, Check } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, Check, AlertCircle } from "lucide-react"
+import { createClient } from "@/lib/supabase-client"
 
 export function ConfiguracoesPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  
-  const [email, setEmail] = useState("maria.silva@lexdash.com.br")
+
+  const [email, setEmail] = useState("")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  
-  const [emailSaved, setEmailSaved] = useState(false)
-  const [passwordSaved, setPasswordSaved] = useState(false)
 
-  const handleSaveEmail = () => {
-    setEmailSaved(true)
-    setTimeout(() => setEmailSaved(false), 2000)
+  const [emailSaved, setEmailSaved] = useState(false)
+  const [emailError, setEmailError] = useState("")
+  const [passwordSaved, setPasswordSaved] = useState(false)
+  const [passwordError, setPasswordError] = useState("")
+  const [isLoadingEmail, setIsLoadingEmail] = useState(false)
+  const [isLoadingPassword, setIsLoadingPassword] = useState(false)
+
+  // Buscar email real do usuário autenticado
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) setEmail(user.email)
+    })
+  }, [])
+
+  const handleSaveEmail = async () => {
+    setEmailError("")
+    setIsLoadingEmail(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({ email })
+      if (error) {
+        setEmailError(error.message)
+      } else {
+        setEmailSaved(true)
+        setTimeout(() => setEmailSaved(false), 2000)
+      }
+    } catch {
+      setEmailError("Erro ao atualizar email. Tente novamente.")
+    } finally {
+      setIsLoadingEmail(false)
+    }
   }
 
-  const handleSavePassword = () => {
-    if (newPassword === confirmPassword && newPassword.length >= 8) {
-      setPasswordSaved(true)
-      setCurrentPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
-      setTimeout(() => setPasswordSaved(false), 2000)
+  const handleSavePassword = async () => {
+    setPasswordError("")
+    if (!passwordValid || !passwordsMatch || !currentPassword) return
+
+    setIsLoadingPassword(true)
+    try {
+      const response = await fetch("/api/auth/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setPasswordError(data.error || "Erro ao alterar senha.")
+      } else {
+        setPasswordSaved(true)
+        setCurrentPassword("")
+        setNewPassword("")
+        setConfirmPassword("")
+        setTimeout(() => setPasswordSaved(false), 2000)
+      }
+    } catch {
+      setPasswordError("Erro ao alterar senha. Tente novamente.")
+    } finally {
+      setIsLoadingPassword(false)
     }
   }
 
@@ -67,14 +114,27 @@ export function ConfiguracoesPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                autoComplete="email"
               />
             </div>
-            <Button onClick={handleSaveEmail} className="w-full sm:w-auto">
+            {emailError && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {emailError}
+              </p>
+            )}
+            <Button
+              onClick={handleSaveEmail}
+              className="w-full sm:w-auto"
+              disabled={isLoadingEmail || !email}
+            >
               {emailSaved ? (
                 <>
                   <Check className="mr-2 h-4 w-4" />
                   Salvo
                 </>
+              ) : isLoadingEmail ? (
+                "Salvando..."
               ) : (
                 "Salvar Email"
               )}
@@ -103,6 +163,7 @@ export function ConfiguracoesPage() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Digite sua senha atual"
                   className="pr-10"
+                  autoComplete="current-password"
                 />
                 <Button
                   type="button"
@@ -130,6 +191,7 @@ export function ConfiguracoesPage() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Digite sua nova senha"
                   className="pr-10"
+                  autoComplete="new-password"
                 />
                 <Button
                   type="button"
@@ -162,6 +224,7 @@ export function ConfiguracoesPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirme sua nova senha"
                   className="pr-10"
+                  autoComplete="new-password"
                 />
                 <Button
                   type="button"
@@ -184,16 +247,25 @@ export function ConfiguracoesPage() {
               )}
             </div>
 
-            <Button 
-              onClick={handleSavePassword} 
+            {passwordError && (
+              <p className="text-xs text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {passwordError}
+              </p>
+            )}
+
+            <Button
+              onClick={handleSavePassword}
               className="w-full sm:w-auto"
-              disabled={!passwordValid || !passwordsMatch || !currentPassword}
+              disabled={!passwordValid || !passwordsMatch || !currentPassword || isLoadingPassword}
             >
               {passwordSaved ? (
                 <>
                   <Check className="mr-2 h-4 w-4" />
                   Senha Alterada
                 </>
+              ) : isLoadingPassword ? (
+                "Alterando..."
               ) : (
                 "Alterar Senha"
               )}

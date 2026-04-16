@@ -1,8 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Ignorar erros de certificado self-signed do Node.js (necessário para alguns ambientes/VPNs)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 /**
  * Cria uma instância do cliente Supabase para ser usada EXCLUSIVAMENTE
  * no lado do servidor (Server Components, Server Actions, API Routes),

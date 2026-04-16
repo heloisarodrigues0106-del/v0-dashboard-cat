@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const cookieStore = await cookies()
 
   const supabase = createServerClient(
@@ -22,13 +22,33 @@ export async function POST() {
     }
   )
 
+  // Verificar autenticação
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) {
     return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
   }
 
-  await supabase.auth.signOut()
+  let body: { newPassword?: string }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Corpo da requisição inválido' }, { status: 400 })
+  }
+
+  const { newPassword } = body
+
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+    return NextResponse.json(
+      { error: 'A nova senha deve ter no mínimo 8 caracteres' },
+      { status: 400 }
+    )
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 })
+  }
 
   return NextResponse.json({ success: true })
 }
