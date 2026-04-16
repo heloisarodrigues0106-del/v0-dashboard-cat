@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { AlertCircle, CheckCircle2, FileText, Search } from "lucide-react"
+import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight } from "lucide-react"
 
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   const [honorariosPage, setHonorariosPage] = useState(1);
@@ -284,9 +285,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     };
   }, [processos, honorariosSearch]);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const paginatedHonorarios = honorariosData.lista.slice((honorariosPage - 1) * itemsPerPage, honorariosPage * itemsPerPage);
   const totalPages = Math.ceil(honorariosData.lista.length / itemsPerPage);
+  const startIndex = (honorariosPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
   const peritosData = useMemo(() => {
     let rawData = Object.entries(stats.statsPerito)
@@ -755,28 +758,47 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           )}
         </div>
 
-        {/* Controles de Navegação (Paginação) Estritamente Textuais */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-6 pt-4 pb-4">
-            <button 
-              onClick={() => setHonorariosPage(p => Math.max(1, p - 1))}
-              disabled={honorariosPage === 1}
-              className="text-[13px] font-bold text-slate-500 uppercase tracking-wide disabled:text-slate-300 hover:text-slate-900 transition-colors"
-            >
-              Anterior
-            </button>
-            <span className="text-xs font-semibold text-slate-400">
-              PÁGINA {honorariosPage} / {totalPages}
-            </span>
-            <button 
-              onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))}
-              disabled={honorariosPage === totalPages}
-              className="text-[13px] font-bold text-slate-500 uppercase tracking-wide disabled:text-slate-300 hover:text-slate-900 transition-colors"
-            >
-              Próximo
-            </button>
+          {/* Pagination */}
+          <div className="mt-4 flex items-center justify-between pb-6">
+            <p className="text-xs md:text-sm text-muted-foreground">
+              {honorariosData.lista.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, honorariosData.lista.length)} de {honorariosData.lista.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setHonorariosPage((prev) => Math.max(prev - 1, 1))}
+                disabled={honorariosPage === 1}
+                className="gap-1.5"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Anterior
+              </Button>
+              <div className="hidden md:flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={honorariosPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setHonorariosPage(page)}
+                    className={`h-8 w-8 p-0 ${honorariosPage === page ? 'bg-[#F6D000] text-[#111111] hover:bg-[#d97706]' : ''}`}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setHonorariosPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={honorariosPage === totalPages}
+                className="gap-1.5"
+              >
+                Próximo
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        )}
           </CardContent>
         </Card>
       </div>
