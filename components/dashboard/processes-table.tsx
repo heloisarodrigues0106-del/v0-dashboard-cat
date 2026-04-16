@@ -107,6 +107,20 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                 return `${(n * 100).toFixed(0)}%`
               }
 
+              const formatDate = (val: any) => {
+                if (!val) return "N/A"
+                try {
+                  const datePart = String(val).split('T')[0]
+                  if (datePart.includes('-')) {
+                    const [y, m, d] = datePart.split('-')
+                    if(y && m && d) return `${d}/${m}/${y}`
+                  }
+                  return String(val)
+                } catch {
+                  return String(val)
+                }
+              }
+
               return (
                 <div key={processo.numero_processo} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50 gap-4">
                   {/* Esquerda: Identificação */}
@@ -142,7 +156,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                           Ver detalhes
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white p-6 md:p-8">
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white p-6 md:p-8">
                         <DialogHeader className="mb-6 space-y-4">
                           <DialogTitle className="text-2xl text-slate-900 font-bold tracking-tight">
                             {processo.numero_processo}
@@ -150,16 +164,52 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                           <div className="flex flex-col gap-1.5 text-base">
                             <p className="text-slate-800">
                               <span className="font-medium text-slate-500 mr-2">Reclamante:</span> 
-                              <span className="font-semibold">{processo.nome_reclamante || "Não informado"}</span>
+                              <span className="font-semibold">{processo.nome_reclamante || "N/A"}</span>
                             </p>
                             <p className="text-slate-800">
                               <span className="font-medium text-slate-500 mr-2">Advogado Adverso:</span> 
-                              <span className="font-medium">{processo.advogado_reclamante || "Não informado"}</span>
+                              <span className="font-medium">{processo.advogado_reclamante || "N/A"}</span>
                             </p>
                           </div>
                         </DialogHeader>
 
                         <div className="flex flex-col gap-6">
+                          
+                          {/* DADOS CONTRATUAIS */}
+                          <div className="space-y-4">
+                            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Informações Contratuais</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-white p-4 border border-slate-100 rounded-xl shadow-sm">
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Empresa</p>
+                                <p className="font-semibold text-slate-800 truncate" title={processo.reclamada}>{processo.reclamada || "N/A"}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Unidade</p>
+                                <p className="font-semibold text-slate-800 truncate" title={processo.centro_custo}>{processo.centro_custo || "N/A"}</p>
+                              </div>
+                              <div className="col-span-2">
+                                <p className="font-medium text-slate-500 mb-1">Empresa Terceira</p>
+                                <p className="font-semibold text-slate-800 truncate" title={processo.empresa_terceirizada}>{processo.empresa_terceirizada || "N/A"}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Data Ajuizamento</p>
+                                <p className="font-semibold text-slate-800">{formatDate(processo.data_ajuizamento)}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Admissão</p>
+                                <p className="font-semibold text-slate-800">{formatDate(processo.data_admissao_reclamante)}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Demissão</p>
+                                <p className="font-semibold text-slate-800">{formatDate(processo.data_demissao_reclamante || processo.data_demissao_reclamantte)}</p>
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-500 mb-1">Modalidade Dispensa</p>
+                                <p className="font-semibold text-slate-800 truncate" title={processo.modalidade_rescisao}>{processo.modalidade_rescisao || "N/A"}</p>
+                              </div>
+                            </div>
+                          </div>
+
                           {/* STATUS GRID */}
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-slate-50 p-4 rounded-xl">
                             <div>
@@ -267,16 +317,13 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                         </div>
 
                         {/* FOOTER DA MODAL */}
-                        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-start gap-4">
                           <div className="flex flex-col">
                             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Valor da Causa</span>
                             <span className="text-2xl font-black text-emerald-800 tracking-tight">
                               {processo.valor_causa ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(processo.valor_causa) : "Não Informado"}
                             </span>
                           </div>
-                          <Button variant="outline" className="text-slate-700 font-semibold border-slate-300 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-                            Exportar PDF
-                          </Button>
                         </div>
                       </DialogContent>
                     </Dialog>
