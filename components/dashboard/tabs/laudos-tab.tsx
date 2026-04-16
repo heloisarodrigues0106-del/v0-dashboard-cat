@@ -34,7 +34,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number, classificacao: string }> = {}
     let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Ergonômica": 0, "Médica Mental": 0, "Outros/Não Especificado": 0 }
     let nexos = { Causa: 0, Concausa: 0, "Incapacidade/Restrição": 0 }
-    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
+    let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
+    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } // Manter se for usar separadamente, mas para o gráfico principal vamos usar medicaGeralStatus
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
@@ -101,15 +102,15 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         nexos["Incapacidade/Restrição"]++
       }
 
-      // Gráfico Específico para do_ergonomica
-      // Considera a coluna 'do_ergonomica' ou 'doenca_ergonomica', nulls entram como 'Sem Nexo'
-      const ergoVal = String(laudo.do_ergonomica || laudo.doenca_ergonomica || "").toLowerCase().trim()
-      if (ergoVal.includes("concausa")) {
-        ergoStatus.Concausa++
-      } else if (ergoVal.includes("causa")) {
-        ergoStatus.Causa++
+      // Gráfico Específico para do_medica_geral 
+      // Substitui o antigo de Doença Ergonômica conforme pedido
+      const medicaVal = String(laudo.do_medica_geral || "").toLowerCase().trim()
+      if (medicaVal.includes("concausa")) {
+        medicaGeralStatus.Concausa++
+      } else if (medicaVal.includes("causa")) {
+        medicaGeralStatus.Causa++
       } else {
-        ergoStatus["Sem Nexo"]++
+        medicaGeralStatus["Sem Nexo"]++
       }
 
       // Gráfico Específico para do_mental
@@ -189,7 +190,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     return { 
       total, favoraveis, desfavoraveis, motivos, statsPerito, tiposLaudo, nexos, 
-      ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade
+      medicaGeralStatus, ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade
     }
   }, [laudos, processos, peritoClassificacaoMap])
 
@@ -302,10 +303,10 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     .map(([name, value]) => ({ name, Quantidade: value }))
     .sort((a, b) => b.Quantidade - a.Quantidade)
 
-  const ergoData = [
-    { name: "Causa", value: stats.ergoStatus.Causa, color: "#eab308" },
-    { name: "Concausa", value: stats.ergoStatus.Concausa, color: "#f97316" },
-    { name: "Sem Nexo", value: stats.ergoStatus["Sem Nexo"], color: "#9ca3af" }
+  const medicaGeralData = [
+    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: "#eab308" },
+    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: "#f97316" },
+    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: "#9ca3af" }
   ].filter(d => d.value > 0)
 
   const mentalData = [
@@ -488,7 +489,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {renderMiniPie(ergoData, "Resultados de Doença Ergonômica", "Distribuição de Causa, Concausa e Sem Nexo")}
+        {renderMiniPie(medicaGeralData, "Resultados de Doença Médica Geral", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(mentalData, "Resultados de Doença Mental", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(insalubridadeData, "Resultados de Insalubridade", "Distribuição de Caracterizada e Não Caracterizada")}
         {renderMiniPie(grausInsalubridadeData, "Graus de Insalubridade", "Distribuição por intensidade aferida")}
