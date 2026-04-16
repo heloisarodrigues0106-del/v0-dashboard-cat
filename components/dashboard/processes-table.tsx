@@ -125,25 +125,27 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
               const isExpanded = expandedProcesso === processo.numero_processo
 
               return (
-                <div key={processo.numero_processo} className="border border-slate-200 rounded-md overflow-hidden">
+                <div key={processo.numero_processo} className="border border-slate-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md hover:border-slate-300 bg-white">
                   {/* LINHA RESUMO (sempre visível) */}
                   <button
                     type="button"
                     onClick={() => setExpandedProcesso(isExpanded ? null : processo.numero_processo)}
-                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center px-5 py-4 bg-white transition-colors hover:bg-slate-50 gap-3 text-left cursor-pointer"
+                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-amber-50/30 gap-3 text-left cursor-pointer group"
                   >
                     <div className="w-full md:w-[35%] flex flex-col gap-0.5 shrink-0">
-                      <span className="font-bold text-slate-900 text-sm tracking-tight">{processo.numero_processo}</span>
+                      <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-amber-600 transition-colors">{processo.numero_processo}</span>
                       <span className="text-[11px] font-bold text-slate-500 uppercase">{processo.nome_reclamante}</span>
                     </div>
                     <div className="w-full md:w-[30%] shrink-0">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{processo.fase_processual}</span>
                     </div>
-                    <div className="flex items-center w-full md:w-[35%] gap-4 justify-between md:justify-end shrink-0">
+                    <div className="flex items-center w-full md:w-[35%] gap-5 justify-between md:justify-end shrink-0">
                       <Badge variant={getStatusVariant(processo.status)} className={`${getStatusColor(processo.status)} text-[10px] px-2.5 py-0.5 font-bold uppercase`}>
                         {processo.status}
                       </Badge>
-                      <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform duration-200 shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                      <div className="p-1 rounded-md text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-all">
+                        <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-amber-500' : ''}`} />
+                      </div>
                     </div>
                   </button>
 
