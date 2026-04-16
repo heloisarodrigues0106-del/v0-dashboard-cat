@@ -200,7 +200,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                               <th className="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Localidade</th>
                               <th className="text-left px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Fase</th>
                               <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nexo Mental</th>
-                              <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nexo Ergon.</th>
+                              <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nexo Méd. Geral</th>
+                              <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Ergonomia</th>
                               <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Incapacidade</th>
                               <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Acid. Trab.</th>
                               <th className="text-center px-4 py-2.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Periculosidade</th>
@@ -223,12 +224,15 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                                 ) : <span className="text-slate-300">—</span>}
                               </td>
                               <td className="px-4 py-3 text-center">
-                                {laudo.do_ergonomica ? (
+                                {laudo.do_medica_geral ? (
                                   <span className="inline-flex items-center gap-1 font-semibold text-slate-800">
-                                    {String(laudo.do_ergonomica).toUpperCase()}
-                                    {laudo.grau_ergonomico && <span className="text-slate-400 text-xs">({formatGrau(laudo.grau_ergonomico)})</span>}
+                                    {String(laudo.do_medica_geral).toUpperCase()}
+                                    {laudo.grau_medico_geral && <span className="text-slate-400 text-xs">({formatGrau(laudo.grau_medico_geral)})</span>}
                                   </span>
                                 ) : <span className="text-slate-300">—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <span className="font-semibold text-slate-800 uppercase">{laudo.ergonomia || <span className="text-slate-300">—</span>}</span>
                               </td>
                               <td className="px-4 py-3 text-center">
                                 {laudo.incapacidade ? (
@@ -282,7 +286,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                           {(processo.numero_processo_apenso || processo.processo_apenso) && (
                             <span className="font-semibold text-amber-700 flex items-center gap-1.5">
                               <LinkIcon className="h-4 w-4 opacity-70" />
-                              Apenso: {processo.numero_processo_apenso || processo.processo_apenso}
+                              {processo.tipo_processo_apenso ? `${String(processo.tipo_processo_apenso).toUpperCase()}: ` : 'Apenso: '}
+                              {processo.numero_processo_apenso || processo.processo_apenso}
                             </span>
                           )}
                         </div>
