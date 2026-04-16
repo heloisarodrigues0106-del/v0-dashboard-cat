@@ -1,9 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase-client"
+
+const MAX_ATTEMPTS = 5
+const COOLDOWN_SECONDS = 30
 
 export default function LoginPage() {
   const router = useRouter()
@@ -11,9 +14,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [attempts, setAttempts] = useState(0)
+  const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isBlocked = cooldownUntil !== null && Date.now() < cooldownUntil
+  const remainingSeconds = isBlocked ? Math.ceil((cooldownUntil! - Date.now()) / 1000) : 0
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (isBlocked) {
+      setError(`Muitas tentativas. Aguarde ${remainingSeconds} segundos.`)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
@@ -24,13 +38,24 @@ export default function LoginPage() {
     })
 
     if (authError) {
-      setError("Email ou senha inválidos.")
+      const newAttempts = attempts + 1
+      setAttempts(newAttempts)
+
+      if (newAttempts >= MAX_ATTEMPTS) {
+        setCooldownUntil(Date.now() + COOLDOWN_SECONDS * 1000)
+        setAttempts(0)
+        setError(`Muitas tentativas seguidas. Aguarde ${COOLDOWN_SECONDS} segundos antes de tentar novamente.`)
+      } else {
+        const remaining = MAX_ATTEMPTS - newAttempts
+        setError(`Email ou senha inválidos. ${remaining} tentativa${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''}.`)
+      }
+
       setIsLoading(false)
       return
     }
 
     router.push("/dashboard")
-  }
+  }, [email, password, attempts, isBlocked, remainingSeconds, router])
 
   return (
     <div className="flex min-h-screen">
@@ -107,7 +132,8 @@ export default function LoginPage() {
                 placeholder="seu@email.com"
                 required
                 autoComplete="email"
-                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15"
+                disabled={isBlocked}
+                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -126,13 +152,14 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15"
+                disabled={isBlocked}
+                className="w-full rounded-xl border border-[#e0e0e0] bg-[#eef1f6] px-4 py-3.5 text-sm text-[#1a1a1a] placeholder:text-[#aaaaaa] transition-all duration-200 outline-none focus:border-[#1a3a7a] focus:ring-2 focus:ring-[#1a3a7a]/15 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isBlocked}
               className="group w-full rounded-full bg-[#0d2b5e] py-3.5 text-sm font-semibold text-white tracking-wide transition-all duration-300 hover:bg-[#1a3a7a] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               <span className="flex items-center justify-center gap-2">
@@ -157,6 +184,8 @@ export default function LoginPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
+                ) : isBlocked ? (
+                  `Aguarde ${remainingSeconds}s`
                 ) : (
                   <>
                     Entrar

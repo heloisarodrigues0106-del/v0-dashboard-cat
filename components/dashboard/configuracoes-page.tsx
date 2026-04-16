@@ -8,6 +8,20 @@ import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, Mail, Lock, Check, AlertCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase-client"
 
+function getPasswordStrength(password: string): { score: number; label: string; color: string; errors: string[] } {
+  const errors: string[] = []
+  if (password.length < 8) errors.push("mínimo 8 caracteres")
+  if (!/[A-Z]/.test(password)) errors.push("uma letra maiúscula")
+  if (!/[0-9]/.test(password)) errors.push("um número")
+  if (!/[^a-zA-Z0-9]/.test(password)) errors.push("um caractere especial (@, #, !...)")
+
+  const score = 4 - errors.length
+  const labels = ["Muito fraca", "Fraca", "Razoável", "Boa", "Forte"]
+  const colors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"]
+
+  return { score, label: labels[score], color: colors[score], errors }
+}
+
 export function ConfiguracoesPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
@@ -25,7 +39,6 @@ export function ConfiguracoesPage() {
   const [isLoadingEmail, setIsLoadingEmail] = useState(false)
   const [isLoadingPassword, setIsLoadingPassword] = useState(false)
 
-  // Buscar email real do usuário autenticado
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -54,14 +67,26 @@ export function ConfiguracoesPage() {
 
   const handleSavePassword = async () => {
     setPasswordError("")
-    if (!passwordValid || !passwordsMatch || !currentPassword) return
+    const strength = getPasswordStrength(newPassword)
+    if (strength.score < 4) {
+      setPasswordError(`A senha precisa ter: ${strength.errors.join(", ")}.`)
+      return
+    }
+    if (!passwordsMatch) {
+      setPasswordError("As senhas não coincidem.")
+      return
+    }
+    if (!currentPassword) {
+      setPasswordError("Informe a senha atual.")
+      return
+    }
 
     setIsLoadingPassword(true)
     try {
       const response = await fetch("/api/auth/update-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ currentPassword, newPassword }),
       })
 
       const data = await response.json()
@@ -83,7 +108,7 @@ export function ConfiguracoesPage() {
   }
 
   const passwordsMatch = newPassword === confirmPassword && newPassword.length > 0
-  const passwordValid = newPassword.length >= 8
+  const passwordStrength = newPassword.length > 0 ? getPasswordStrength(newPassword) : null
 
   return (
     <div className="space-y-6">
@@ -95,6 +120,7 @@ export function ConfiguracoesPage() {
       </div>
 
       <div className="grid gap-6 max-w-2xl">
+        {/* Email */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -123,25 +149,15 @@ export function ConfiguracoesPage() {
                 {emailError}
               </p>
             )}
-            <Button
-              onClick={handleSaveEmail}
-              className="w-full sm:w-auto"
-              disabled={isLoadingEmail || !email}
-            >
+            <Button onClick={handleSaveEmail} className="w-full sm:w-auto" disabled={isLoadingEmail || !email}>
               {emailSaved ? (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Salvo
-                </>
-              ) : isLoadingEmail ? (
-                "Salvando..."
-              ) : (
-                "Salvar Email"
-              )}
+                <><Check className="mr-2 h-4 w-4" />Salvo</>
+              ) : isLoadingEmail ? "Salvando..." : "Salvar Email"}
             </Button>
           </CardContent>
         </Card>
 
+        {/* Senha */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -153,6 +169,7 @@ export function ConfiguracoesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Senha Atual */}
             <div className="space-y-2">
               <Label htmlFor="current-password">Senha Atual</Label>
               <div className="relative">
@@ -165,22 +182,15 @@ export function ConfiguracoesPage() {
                   className="pr-10"
                   autoComplete="current-password"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                <Button type="button" variant="ghost" size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                  {showCurrentPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}>
+                  {showCurrentPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                 </Button>
               </div>
             </div>
 
+            {/* Nova Senha */}
             <div className="space-y-2">
               <Label htmlFor="new-password">Nova Senha</Label>
               <div className="relative">
@@ -193,27 +203,32 @@ export function ConfiguracoesPage() {
                   className="pr-10"
                   autoComplete="new-password"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                <Button type="button" variant="ghost" size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  {showNewPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
+                  onClick={() => setShowNewPassword(!showNewPassword)}>
+                  {showNewPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                 </Button>
               </div>
-              {newPassword.length > 0 && !passwordValid && (
-                <p className="text-xs text-destructive">
-                  A senha deve ter no minimo 8 caracteres
-                </p>
+
+              {/* Barra de força da senha */}
+              {passwordStrength && (
+                <div className="space-y-1">
+                  <div className="flex gap-1 h-1.5">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} className={`flex-1 rounded-full transition-all ${i < passwordStrength.score ? passwordStrength.color : "bg-muted"}`} />
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Força: <span className={passwordStrength.score >= 4 ? "text-green-600 font-medium" : "text-orange-500 font-medium"}>{passwordStrength.label}</span>
+                    {passwordStrength.errors.length > 0 && (
+                      <span className="text-destructive"> — faltam: {passwordStrength.errors.join(", ")}</span>
+                    )}
+                  </p>
+                </div>
               )}
             </div>
 
+            {/* Confirmar Senha */}
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
               <div className="relative">
@@ -226,24 +241,14 @@ export function ConfiguracoesPage() {
                   className="pr-10"
                   autoComplete="new-password"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
+                <Button type="button" variant="ghost" size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                 </Button>
               </div>
               {confirmPassword.length > 0 && !passwordsMatch && (
-                <p className="text-xs text-destructive">
-                  As senhas nao coincidem
-                </p>
+                <p className="text-xs text-destructive">As senhas não coincidem</p>
               )}
             </div>
 
@@ -257,18 +262,11 @@ export function ConfiguracoesPage() {
             <Button
               onClick={handleSavePassword}
               className="w-full sm:w-auto"
-              disabled={!passwordValid || !passwordsMatch || !currentPassword || isLoadingPassword}
+              disabled={!passwordsMatch || !currentPassword || isLoadingPassword}
             >
               {passwordSaved ? (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Senha Alterada
-                </>
-              ) : isLoadingPassword ? (
-                "Alterando..."
-              ) : (
-                "Alterar Senha"
-              )}
+                <><Check className="mr-2 h-4 w-4" />Senha Alterada</>
+              ) : isLoadingPassword ? "Alterando..." : "Alterar Senha"}
             </Button>
           </CardContent>
         </Card>
