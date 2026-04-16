@@ -143,34 +143,68 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         ergonomiaStatus.Negativo++
       }
 
-      // Correlacionar com o Perito e mapear a classificação
-      const nomePerito = laudo.perito || "Perito Não Informado"
-      if (!statsPerito[nomePerito]) {
-         const laudoUpp = nomePerito.trim().toUpperCase();
-         let classificacaoEncontrada = peritoClassificacaoMap[laudoUpp];
-         
-         // Se não achar exato, tenta encontrar parcialmente (muitos tem "Dr." "Eng." num lugar e não no outro)
-         if (!classificacaoEncontrada) {
-             for (const [keyStr, val] of Object.entries(peritoClassificacaoMap)) {
-                 if (keyStr.length > 3 && (keyStr.includes(laudoUpp) || laudoUpp.includes(keyStr))) {
-                     classificacaoEncontrada = val;
-                     break;
-                 }
-             }
-         }
+      // Nova Correlação de Peritos solicitada: Extração via tb_processo e validação de seus respectivos campos no laudo
+      const processoRelacionado = processos.find(p => 
+        String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()
+      ) || {};
 
-         statsPerito[nomePerito] = { 
-            favoraveis: 0, 
-            desfavoraveis: 0,
-            classificacao: classificacaoEncontrada || "Não Classificado"
+      const hasValue = (val: any) => {
+         const str = String(val).trim().toLowerCase();
+         return str !== "" && str !== "null" && str !== "undefined" && str !== "nan" && str !== "false";
+      }
+
+      // Além de identificar 'bad words', lidamos com caso o campo seja true
+      const isBadForCompany = (val: any) => {
+         if (val === true || val === "true") return true;
+         if (!hasValue(val)) return false;
+         const str = String(val).trim().toLowerCase();
+         return ["true", "causa", "concausa", "incapaz", "restrição", "incapacidadeparcial", "desfavoravel", "desfavorável", "perda", "negativo", "caracterizada"].some(pc => str.includes(pc));
+      }
+
+      const registrarEstatisticaPerito = (nomePerito: any, classificacao: string, camposAvaliados: any[]) => {
+         if (!nomePerito || hasValue(nomePerito) === false) return;
+         
+         const camposValidos = camposAvaliados.filter(f => hasValue(f) || f === true || f === false);
+         if (camposValidos.length === 0) return; // Nenhuma avaliação dessa área neste laudo
+
+         const isDesfav = camposValidos.some(f => isBadForCompany(f));
+         const key = String(nomePerito).trim();
+
+         if (!statsPerito[key]) {
+            statsPerito[key] = { favoraveis: 0, desfavoraveis: 0, classificacao };
          }
+         
+         if (isDesfav) statsPerito[key].desfavoraveis++;
+         else statsPerito[key].favoraveis++;
       }
-      
-      if (isDesfavoravel) {
-        statsPerito[nomePerito].desfavoraveis++
-      } else {
-        statsPerito[nomePerito].favoraveis++
-      }
+
+      // 1. Psiquiatra
+      registrarEstatisticaPerito(
+         processoRelacionado.perito_medico_psiquiatra, 
+         "Médico Psiquiatra", 
+         [laudo.do_mental, laudo.doenca_mental]
+      );
+
+      // 2. Médico Geral
+      registrarEstatisticaPerito(
+         processoRelacionado.perito_medico_geral, 
+         "Médico", 
+         [laudo.do_medica_geral, laudo.doenca, laudo.acidente_trabalho, laudo.incapacidade]
+      );
+
+      // 3. Ergonômico
+      registrarEstatisticaPerito(
+         processoRelacionado.perito_ergonomico, 
+         "Ergonômico", 
+         [laudo.ergonomia, laudo.do_ergonomica, laudo.doenca_ergonomica]
+      );
+
+      // 4. Técnico
+      registrarEstatisticaPerito(
+         processoRelacionado.perito_tecnico, 
+         "Técnico", 
+         [laudo.insalubridade, laudo.periculosidade]
+      );
     })
 
     // Agregação de Graus de Insalubridade de tb_laudo.grau_insalubridade
