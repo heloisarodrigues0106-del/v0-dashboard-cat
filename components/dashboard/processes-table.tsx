@@ -156,184 +156,176 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                           Ver detalhes
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white p-6 md:p-8">
-                        <DialogHeader className="mb-4">
+                      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white p-6 md:p-8">
+                        {/* CABEÇALHO */}
+                        <DialogHeader className="mb-5">
                           <DialogTitle className="text-xl text-slate-900 font-bold tracking-tight">
                             {processo.numero_processo}
                           </DialogTitle>
-                          <div className="flex flex-col md:flex-row gap-x-6 gap-y-1 text-sm mt-1">
-                            <p className="text-slate-800">
-                              <span className="font-medium text-slate-500 mr-1">Reclamante:</span> 
-                              <span className="font-bold">{processo.nome_reclamante || "N/A"}</span>
+                          <div className="flex flex-col sm:flex-row gap-x-8 gap-y-1 text-sm mt-2">
+                            <p className="text-slate-700">
+                              <span className="text-slate-500 mr-1">Reclamante:</span> 
+                              <span className="font-bold text-slate-900">{processo.nome_reclamante || "N/A"}</span>
                             </p>
-                            <p className="text-slate-800">
-                              <span className="font-medium text-slate-500 mr-1">Advogado:</span> 
-                              <span className="font-semibold">{processo.advogado_reclamante || "N/A"}</span>
+                            <p className="text-slate-700">
+                              <span className="text-slate-500 mr-1">Advogado Adverso:</span> 
+                              <span className="font-semibold text-slate-900">{processo.advogado_reclamante || "N/A"}</span>
                             </p>
                           </div>
                         </DialogHeader>
 
-                        {/* LAYOUT EM 3 COLUNAS */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {/* LAYOUT EM 2 COLUNAS */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                           
-                          {/* COLUNA 1: DADOS CONTRATUAIS E STATUS */}
-                          <div className="flex flex-col gap-3">
-                            <div className="bg-white p-3 border border-slate-100 rounded-lg shadow-sm text-xs">
-                              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1.5 mb-2">Informações Contratuais</h3>
-                              <div className="grid grid-cols-2 gap-x-2 gap-y-3">
-                                <div className="col-span-2 flex justify-between items-end">
-                                  <div>
-                                    <p className="font-medium text-slate-500">Empresa / Unidade</p>
-                                    <p className="font-semibold text-slate-800 truncate" title={`${processo.reclamada} - ${processo.centro_custo}`}>
-                                      {processo.reclamada || "N/A"} <span className="text-slate-300 mx-0.5">•</span> {processo.centro_custo || "N/A"}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="col-span-2">
-                                  <p className="font-medium text-slate-500">Empresa Terceira</p>
-                                  <p className="font-semibold text-slate-800 truncate" title={processo.empresa_terceirizada}>{processo.empresa_terceirizada || "N/A"}</p>
+                          {/* COLUNA ESQUERDA: Dados Contratuais + Localidade */}
+                          <div className="flex flex-col gap-5">
+                            {/* Informações Contratuais */}
+                            <div>
+                              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Informações Contratuais</h3>
+                              <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm bg-slate-50 p-5 rounded-lg border border-slate-100">
+                                <div>
+                                  <p className="text-slate-500 text-xs mb-0.5">Empresa</p>
+                                  <p className="font-semibold text-slate-800">{processo.reclamada || "N/A"}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Data Ajuiz.</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Unidade</p>
+                                  <p className="font-semibold text-slate-800">{processo.centro_custo || "N/A"}</p>
+                                </div>
+                                <div className="col-span-2">
+                                  <p className="text-slate-500 text-xs mb-0.5">Empresa Terceira</p>
+                                  <p className="font-semibold text-slate-800">{processo.empresa_terceirizada || "N/A"}</p>
+                                </div>
+                                <div>
+                                  <p className="text-slate-500 text-xs mb-0.5">Data Ajuizamento</p>
                                   <p className="font-semibold text-slate-800">{formatDate(processo.data_ajuizamento)}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Mod. Dispensa</p>
-                                  <p className="font-semibold text-slate-800 truncate" title={processo.modalidade_rescisao}>{processo.modalidade_rescisao || "N/A"}</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Modalidade Dispensa</p>
+                                  <p className="font-semibold text-slate-800">{processo.modalidade_rescisao || "N/A"}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Admissão</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Admissão</p>
                                   <p className="font-semibold text-slate-800">{formatDate(processo.data_admissao_reclamante)}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Demissão</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Demissão</p>
                                   <p className="font-semibold text-slate-800">{formatDate(processo.data_demissao_reclamante || processo.data_demissao_reclamantte)}</p>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="bg-slate-50 p-3 rounded-lg text-xs border border-slate-100">
-                              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-1.5 mb-2">Localidade & Status</h3>
-                              <div className="grid grid-cols-2 gap-x-2 gap-y-3">
-                                <div className="col-span-2">
-                                  <p className="font-medium text-slate-500">Localidade</p>
+                            {/* Localidade & Status */}
+                            <div>
+                              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Localidade & Status</h3>
+                              <div className="grid grid-cols-3 gap-x-6 gap-y-4 text-sm bg-slate-50 p-5 rounded-lg border border-slate-100">
+                                <div className="col-span-3 sm:col-span-1">
+                                  <p className="text-slate-500 text-xs mb-0.5">Localidade</p>
                                   <p className="font-semibold text-slate-800 uppercase">
                                     {processo.vara ? `${processo.vara} - ` : ""}{processo.comarca || "N/A"} {processo.uf ? `(${processo.uf})` : ""}
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Fase Atual</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Fase Atual</p>
                                   <p className="font-semibold text-slate-800 uppercase">{processo.fase_processual || processo.fase_processo_atual || "N/A"}</p>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-500">Status</p>
+                                  <p className="text-slate-500 text-xs mb-0.5">Status</p>
                                   <p className="font-semibold text-slate-800 uppercase">{processo.status || "-"}</p>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* COLUNA 2: LAUDOS E ALERTAS */}
-                          <div className="flex flex-col gap-3 lg:border-l lg:border-slate-100 lg:pl-4">
-                            <div className="bg-white p-3 border border-slate-100 rounded-lg shadow-sm text-xs">
-                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1.5 mb-2">Análise de Laudos</h3>
-                                
-                                {/* Itens Lado a Lado (Flex Wrap) */}
-                                <div className="flex flex-wrap gap-x-4 gap-y-2 mb-3">
-                                  <div className="flex flex-col">
-                                    <span className="font-medium text-slate-500 text-[10px] uppercase tracking-wider">Nexo Mental</span>
+                          {/* COLUNA DIREITA: Laudos + Alertas */}
+                          <div className="flex flex-col gap-5">
+                            {/* Análise de Laudos */}
+                            <div>
+                              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Análise de Laudos</h3>
+                              <div className="bg-slate-50 p-5 rounded-lg border border-slate-100 text-sm space-y-4">
+                                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                                  <div>
+                                    <p className="text-slate-500 text-xs mb-0.5">Nexo Mental</p>
                                     {laudo.do_mental ? (
-                                      <span className="font-bold text-slate-900">
+                                      <p className="font-bold text-slate-900">
                                         {String(laudo.do_mental).toUpperCase()} {laudo.grau_mental && <span className="text-slate-500 font-medium">({formatGrau(laudo.grau_mental)})</span>}
-                                      </span>
+                                      </p>
                                     ) : (
-                                      <span className="text-slate-400 font-medium italic">N/A</span>
+                                      <p className="text-slate-400 italic">N/A</p>
                                     )}
                                   </div>
-                                  
-                                  <div className="flex flex-col">
-                                    <span className="font-medium text-slate-500 text-[10px] uppercase tracking-wider">Nexo Ergonômico</span>
+                                  <div>
+                                    <p className="text-slate-500 text-xs mb-0.5">Nexo Ergonômico</p>
                                     {laudo.do_ergonomica ? (
-                                      <span className="font-bold text-slate-900">
+                                      <p className="font-bold text-slate-900">
                                         {String(laudo.do_ergonomica).toUpperCase()} {laudo.grau_ergonomico && <span className="text-slate-500 font-medium">({formatGrau(laudo.grau_ergonomico)})</span>}
-                                      </span>
+                                      </p>
                                     ) : (
-                                      <span className="text-slate-400 font-medium italic">N/A</span>
+                                      <p className="text-slate-400 italic">N/A</p>
                                     )}
                                   </div>
-
-                                  <div className="flex flex-col mt-1 w-full">
-                                    <span className="font-medium text-slate-500 text-[10px] uppercase tracking-wider">Incapacidade</span>
+                                  <div className="col-span-2">
+                                    <p className="text-slate-500 text-xs mb-0.5">Incapacidade</p>
                                     {laudo.incapacidade ? (
-                                      <span className={`font-bold ${
+                                      <p className={`font-bold ${
                                         String(laudo.incapacidade).toUpperCase().includes('PARCIAL') ? 'text-orange-600' :
                                         String(laudo.incapacidade).toUpperCase().includes('INCAPAZ') ? 'text-red-600' :
                                         String(laudo.incapacidade).toUpperCase().includes('CAPAZ') ? 'text-emerald-600' :
                                         'text-slate-800'
                                       }`}>
                                         {String(laudo.incapacidade).toUpperCase()}
-                                      </span>
+                                      </p>
                                     ) : (
-                                      <span className="text-slate-400 font-medium italic">N/A</span>
+                                      <p className="text-slate-400 italic">N/A</p>
                                     )}
                                   </div>
                                 </div>
 
-                                {/* Chips Compactos para Riscos */}
-                                {(laudo.acidente_trabalho || laudo.periculosidade || laudo.insalubridade) && (
-                                  <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-50">
-                                    {laudo.acidente_trabalho && (
-                                      <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[9px] px-1.5 py-0 uppercase gap-1 h-5">
-                                        <ShieldAlert className="h-3 w-3" /> Acidente Trab.
-                                      </Badge>
-                                    )}
-                                    {laudo.periculosidade && (
-                                      <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 text-[9px] px-1.5 py-0 uppercase gap-1 h-5">
-                                        <AlertTriangle className="h-3 w-3" /> Periculosidade
-                                      </Badge>
-                                    )}
-                                    {laudo.insalubridade && (
-                                      <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 text-[9px] px-1.5 py-0 uppercase gap-1 h-5">
-                                        <Activity className="h-3 w-3" /> Insalub. {laudo.grau_insalubridade && `(${formatGrau(laudo.grau_insalubridade)})`}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                )}
+                                {/* Tags de Risco */}
+                                <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-200">
+                                  <Badge variant="outline" className={`text-xs px-2.5 py-1 gap-1.5 ${laudo.acidente_trabalho ? 'bg-red-50 text-red-600 border-red-200' : 'bg-slate-100 text-slate-400 border-slate-200'}`}>
+                                    <ShieldAlert className="h-3.5 w-3.5" /> Acidente de Trabalho
+                                  </Badge>
+                                  <Badge variant="outline" className={`text-xs px-2.5 py-1 gap-1.5 ${laudo.periculosidade ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-slate-400 border-slate-200'}`}>
+                                    <AlertTriangle className="h-3.5 w-3.5" /> Periculosidade
+                                  </Badge>
+                                  <Badge variant="outline" className={`text-xs px-2.5 py-1 gap-1.5 ${laudo.insalubridade ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-slate-400 border-slate-200'}`}>
+                                    <Activity className="h-3.5 w-3.5" /> Insalubridade {laudo.insalubridade && laudo.grau_insalubridade && `(${formatGrau(laudo.grau_insalubridade)})`}
+                                  </Badge>
+                                </div>
+                              </div>
                             </div>
-                            
-                            {/* Alertas de Urgência (Passou pra coluna central sob laudos) */}
+
+                            {/* Alertas */}
                             {(processo.liminar || processo.numero_processo_apenso || processo.processo_apenso) && (
-                              <div className="bg-[#FFF8E6] text-amber-900 p-3 rounded-lg border border-amber-200 text-xs">
-                                <h3 className="text-[10px] font-bold text-amber-600/80 uppercase tracking-widest border-b border-amber-200/50 pb-1.5 mb-2">Alertas e Apensos</h3>
-                                <div className="flex flex-col gap-1.5">
+                              <div>
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Alertas & Apensos</h3>
+                                <div className="bg-amber-50/60 p-5 rounded-lg border border-amber-200 text-sm space-y-2">
                                   {processo.liminar && (
-                                    <span className="font-bold text-[#E67E66] flex items-center gap-1.5">
-                                      <AlertCircle className="h-3.5 w-3.5 mt-[-1px]" /> 
+                                    <p className="font-bold text-red-500 flex items-center gap-2">
+                                      <AlertCircle className="h-4 w-4" /> 
                                       LIMINAR: {String(processo.liminar).toUpperCase()}
-                                    </span>
+                                    </p>
                                   )}
                                   {(processo.numero_processo_apenso || processo.processo_apenso) && (
-                                    <span className="font-semibold flex items-center gap-1.5 text-amber-800">
-                                      <LinkIcon className="h-3 w-3 mt-[-1px] opacity-70" />
+                                    <p className="font-semibold text-amber-800 flex items-center gap-2">
+                                      <LinkIcon className="h-4 w-4 opacity-70" />
                                       Apenso: {processo.numero_processo_apenso || processo.processo_apenso}
-                                    </span>
+                                    </p>
                                   )}
                                 </div>
                               </div>
                             )}
                           </div>
+                        </div>
 
-                          {/* COLUNA 3: VALOR DA CAUSA */}
-                          <div className="flex flex-col lg:border-l lg:border-slate-100 lg:pl-4">
-                            <div className="bg-[#F8FAFC] border border-slate-200 p-4 rounded-xl flex flex-col justify-center h-full flex-1">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Valor da Causa</span>
-                              <span className="text-3xl lg:text-2xl xl:text-3xl font-black text-emerald-700 tracking-tighter leading-none mb-2">
-                                {processo.valor_causa ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(processo.valor_causa) : "N/A"}
-                              </span>
-                              <p className="text-[10px] text-slate-500 font-medium">Valor global estimado em sistema para provisões e riscos legais.</p>
-                            </div>
+                        {/* RODAPÉ: VALOR DA CAUSA */}
+                        <div className="mt-6 pt-5 border-t border-slate-200 flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Valor da Causa</span>
+                            <p className="text-2xl font-black text-emerald-700 tracking-tight mt-0.5">
+                              {processo.valor_causa ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(processo.valor_causa) : "N/A"}
+                            </p>
                           </div>
-                          
                         </div>
                       </DialogContent>
                     </Dialog>
