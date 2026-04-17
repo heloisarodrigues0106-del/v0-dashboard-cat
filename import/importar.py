@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 importar.py — Limpa e reimporta dados dos Excels da pasta import/ para o Supabase.
 
@@ -6,22 +7,24 @@ Uso:
 
 Requerimentos:
     pip install pandas openpyxl supabase
-
-Configuração:
-    Defina as variáveis de ambiente abaixo ou crie um arquivo .env.local na raiz com:
-        NEXT_PUBLIC_SUPABASE_URL=...
-        SUPABASE_SERVICE_ROLE_KEY=...
 """
 
 import os
+import sys
 import math
+import ssl
 import pandas as pd
 from supabase import create_client
 from pathlib import Path
 
+# Força UTF-8 no terminal Windows
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8')
+
 # ─── Configuração ────────────────────────────────────────────────────────────
 
-# Carrega .env.local se existir
 env_path = Path(__file__).parent.parent / ".env.local"
 if env_path.exists():
     for line in env_path.read_text(encoding="utf-8").splitlines():
@@ -34,139 +37,285 @@ SUPABASE_URL = os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    print("ERRO: Variáveis NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY não encontradas.")
-    print("      Configure o arquivo .env.local na raiz do projeto.")
+    print("ERRO: Variaveis NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY nao encontradas.")
     exit(1)
+
+# Desabilita verificacao SSL (necessario para este ambiente)
+ssl._create_default_https_context = ssl._create_unverified_context
+os.environ["HTTPX_SSL_VERIFY"] = "0"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 IMPORT_DIR = Path(__file__).parent
+BATCH_SIZE = 100
 
-# Mapeamento: nome_do_arquivo.xlsx → nome_da_tabela_no_supabase
-# Também define renomeações de colunas quando o Excel difere do banco
+# ─── Colunas por tipo ────────────────────────────────────────────────────────
+
+# Colunas que o banco espera como boolean
+BOOL_COLS = {
+    "tb_pedidos_inicial_import": [
+        "do_at", "reintegracao", "periculosidade", "insalubridade",
+        "rescisao_indireta", "danos_morais", "danos_materiais", "horas_extras",
+        "intrajornada", "horas_itinere", "acumulo_funcao", "equip_salarial",
+        "rec_vinculo", "honorarios_advocaticios",
+    ],
+    "tb_pedidos_sentenca_import": [
+        "reintegracao", "periculosidade", "insalubridade", "danos_morais",
+        "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
+        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
+        "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
+        "incapacidade",
+    ],
+    # tb_laudo: do_mental é boolean no banco, mas Excel tem CONCAUSA/SEM NEXO → vira None
+    "tb_laudo_import": [
+        "do_mental", "acidente_trabalho", "periculosidade", "insalubridade",
+    ],
+    "tb_valores_import": ["apolice"],
+}
+
+NUMERIC_COLS = {
+    "tb_processo_import": ["valor_causa", "valor_acordo", "honorario_pericia"],
+    "tb_laudo_import": ["grau_mental", "grau_medico_geral", "grau_insalubridade"],
+    "tb_valores_import": [
+        "deposito_recursal", "custas_processuais", "deposito_judicial",
+        "provavel_principal_quarter_anterior", "provavel_correcao_quarter_anterior",
+        "provavel_juros_quarter_anterior", "provavel_total_anterior",
+        "provavel_principal_quarter_atual", "provavel_correcao_quarter_atual",
+        "provavel_juros_quarter_atual", "provavel_total_atual",
+        "possivel_principal_quarter_atual", "possivel_correcao_quarter_atual",
+        "possivel_juros_quarter_atual", "possivel_total_atual",
+        "remoto_principal_quarter_atual", "remoto_correcao_quarter_atual",
+        "remoto_juros_quarter_atual", "remoto_total_atual",
+        "valor_pago_reclamante",
+    ],
+}
+
+# Colunas que o banco espera como date
+DATE_COLS = {
+    "tb_processo_import": [
+        "data_ajuizamento", "data_arquivamento",
+        "data_admissao_reclamante", "data_demissao_reclamante",
+    ],
+}
+
+# ─── Mapeamento de arquivos ───────────────────────────────────────────────────
+
 TABELAS = {
     "tb_processo.xlsx": {
-        "tabela": "tb_processo",
+        "tabela": "tb_processo_import",
         "renomear": {
             "numero_ processo_apenso": "numero_processo_apenso",
             "testemunha reclamante": "testemunha_reclamante",
         },
     },
     "tb_pedidos_inicial.xlsx": {
-        "tabela": "tb_pedidos_inicial",
+        "tabela": "tb_pedidos_inicial_import",
         "renomear": {
             "periculosidade ": "periculosidade",
             "honorarios_adv": "honorarios_advocaticios",
         },
     },
     "tb_pedidos_sentenca.xlsx": {
-        "tabela": "tb_pedidos_sentenca",
+        "tabela": "tb_pedidos_sentenca_import",
         "renomear": {
             "periculosidade ": "periculosidade",
-            "do_psiquica": "do_mental",
+            "do_psiquica":     "do_mental",
             "do_medica_geral": "do_ergonomica",
-            "ergonomia": "do_ergonomica",
             "obrigacoes_fazer": "obrigacao",
-            "honorarios_adv": "honorarios_advocaticios",
+            "honorarios_adv":  "honorarios_advocaticios",
         },
+        # colunas do Excel que não existem no banco — serão ignoradas
+        "ignorar": ["ergonomia"],
     },
     "tb_laudo.xlsx": {
-        "tabela": "tb_laudo",
-        "renomear": {},
+        "tabela": "tb_laudo_import",
+        "renomear": {
+            "do_psiquica":          "do_mental",
+            "grau_psiquica":        "grau_mental",
+            "do_medico_geral":      "do_medica_geral",
+            "grau_medico":          "grau_medico_geral",
+            "resultado_ergonomico": "ergonomia",
+        },
+        "ignorar": ["resultado_medico", "resultado_tecnico"],
     },
     "tb_valores.xlsx": {
-        "tabela": "tb_valores",
+        "tabela": "tb_valores_import",
         "renomear": {
             "deposito_judicial ": "deposito_judicial",
         },
     },
 }
 
-BATCH_SIZE = 100  # linhas por inserção (limite seguro da API do Supabase)
+# ─── Conversores ─────────────────────────────────────────────────────────────
 
+BOOL_TRUTHY  = {"true", "t", "yes", "sim", "1", "x"}
+BOOL_FALSY   = {"false", "f", "no", "nao", "não", "0", "flase", "falser"}
 
-# ─── Funções auxiliares ───────────────────────────────────────────────────────
+def to_bool(v):
+    if v is None: return None
+    s = str(v).strip().lower()
+    if s in ("", "nan", "none"): return None
+    if s in BOOL_TRUTHY: return True
+    if s in BOOL_FALSY:  return False
+    return None  # valores como "INCAPAZ", "CAUSA" — não são boolean, viram None
+
+def to_numeric(v):
+    if v is None: return None
+    s = str(v).strip().replace(" ", "")
+    if s in ("", "nan", "none", "true", "false"): return None
+    s = s.replace(",", ".")
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+def to_date(v):
+    if v is None: return None
+    # NaT do pandas
+    if pd.isnull(v) if not isinstance(v, str) else False: return None
+    # Timestamp do pandas — converte direto
+    if hasattr(v, 'date') and hasattr(v, 'year'):
+        try:
+            return v.date().isoformat()
+        except Exception:
+            return None
+    s = str(v).strip()
+    if s in ("", "nan", "none", "nat", "NaT"): return None
+    # Número serial do Excel (ex: 45231)
+    if s.isdigit():
+        try:
+            dt = pd.to_datetime("1899-12-30") + pd.Timedelta(days=int(s))
+            return dt.date().isoformat()
+        except Exception:
+            return None
+    # Float serial (ex: 45231.0)
+    try:
+        f = float(s)
+        dt = pd.to_datetime("1899-12-30") + pd.Timedelta(days=int(f))
+        return dt.date().isoformat()
+    except Exception:
+        pass
+    try:
+        return pd.to_datetime(s).date().isoformat()
+    except Exception:
+        return None
 
 def limpar_valor(v):
-    """Converte NaN, NaT e tipos numpy para tipos Python nativos."""
-    if v is None:
-        return None
-    if isinstance(v, float) and math.isnan(v):
-        return None
-    # Converte tipos numpy para Python nativo
+    if v is None: return None
+    if isinstance(v, float) and math.isnan(v): return None
     if hasattr(v, "item"):
-        return v.item()
-    # Converte Timestamp pandas para string ISO
-    if hasattr(v, "isoformat"):
-        return v.isoformat()
-    return v
+        val = v.item()
+        if isinstance(val, float) and math.isnan(val): return None
+        return val
+    if hasattr(v, "isoformat"): return v.isoformat()
+    s = str(v).strip()
+    if s in ("", "nan", "NaN", "None", "none"): return None
+    return s
 
+def sanitize_record(record: dict) -> dict:
+    """Remove NaN residuais que pandas pode deixar mesmo após conversão."""
+    clean = {}
+    for k, v in record.items():
+        if v is None:
+            continue
+        if isinstance(v, float) and math.isnan(v):
+            continue
+        if isinstance(v, str) and v.strip().lower() in ("nan", ""):
+            continue
+        clean[k] = v
+    return clean
 
-def linha_para_dict(row: pd.Series) -> dict:
-    return {k: limpar_valor(v) for k, v in row.items()}
-
+# ─── Importação ──────────────────────────────────────────────────────────────
 
 def importar_arquivo(xlsx_path: Path, config: dict):
-    tabela = config["tabela"]
+    tabela   = config["tabela"]
     renomear = config.get("renomear", {})
 
     print(f"\n{'─'*60}")
     print(f"  Arquivo : {xlsx_path.name}")
     print(f"  Tabela  : {tabela}")
 
-    # Lê o Excel
-    df = pd.read_excel(xlsx_path, dtype=str)  # tudo como string primeiro
+    df = pd.read_excel(xlsx_path, dtype=str)
 
-    # Remove colunas sem nome (colunas extras no Excel)
+    # Remove colunas sem nome
     df = df.loc[:, df.columns.notna()]
     df.columns = [str(c).strip() for c in df.columns]
 
-    # Renomeia colunas conforme mapeamento
+    # Renomeia colunas
     if renomear:
         df = df.rename(columns=renomear)
 
+    # Remove colunas que não existem no banco
+    ignorar = config.get("ignorar", [])
+    if ignorar:
+        df = df.drop(columns=[c for c in ignorar if c in df.columns])
+
+    # Remove colunas duplicadas (mantém a primeira)
+    df = df.loc[:, ~df.columns.duplicated()]
+
     # Remove linhas completamente vazias
     df = df.dropna(how="all")
-
-    # Converte strings "nan" para None
-    df = df.where(df.notna(), None)
-    df = df.replace("nan", None)
-    df = df.replace("", None)
 
     total = len(df)
     print(f"  Linhas  : {total}")
     print(f"  Colunas : {list(df.columns)}")
 
-    # ── Limpa a tabela ────────────────────────────────────────────────────────
-    print(f"  Limpando tabela {tabela}...", end=" ")
-    resp = supabase.table(tabela).delete().neq("numero_processo", "__NUNCA_EXISTE__").execute()
-    print("OK")
+    # Aplica conversões de tipo
+    bool_cols    = BOOL_COLS.get(tabela, [])
+    numeric_cols = NUMERIC_COLS.get(tabela, [])
+    date_cols    = DATE_COLS.get(tabela, [])
 
-    # ── Insere em batches ─────────────────────────────────────────────────────
+    for col in df.columns:
+        if col in bool_cols:
+            df[col] = df[col].apply(to_bool)
+        elif col in numeric_cols:
+            df[col] = df[col].apply(to_numeric)
+        elif col in date_cols:
+            df[col] = df[col].apply(to_date)
+        else:
+            df[col] = df[col].apply(limpar_valor)
+
+    # Remove coluna 'id' se existir (o banco gera automaticamente)
+    if "id" in df.columns:
+        df = df.drop(columns=["id"])
+
+    # Limpa a tabela
+    print(f"  Limpando tabela {tabela}...", end=" ", flush=True)
+    try:
+        supabase.table(tabela).delete().neq("numero_processo", "__NUNCA_EXISTE__").execute()
+        print("OK")
+    except Exception as e:
+        print(f"ERRO: {e}")
+        return
+
+    # Insere em batches
     erros = 0
     inseridos = 0
     num_batches = math.ceil(total / BATCH_SIZE)
 
     for i in range(num_batches):
-        batch_df = df.iloc[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
-        registros = [linha_para_dict(row) for _, row in batch_df.iterrows()]
+        batch_df  = df.iloc[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
+        registros = [
+            sanitize_record(row.to_dict())
+            for _, row in batch_df.iterrows()
+        ]
 
         try:
             supabase.table(tabela).insert(registros).execute()
             inseridos += len(registros)
-            print(f"  Batch {i+1}/{num_batches} — {inseridos}/{total} inseridos", end="\r")
+            print(f"  Batch {i+1}/{num_batches} — {inseridos}/{total} inseridos", end="\r", flush=True)
         except Exception as e:
             erros += len(registros)
             print(f"\n  ERRO no batch {i+1}: {e}")
 
-    print(f"  Inseridos: {inseridos}/{total} {'✓' if erros == 0 else f'({erros} erros)'}     ")
-
+    status = "✓" if erros == 0 else f"({erros} erros)"
+    print(f"  Inseridos: {inseridos}/{total} {status}     ")
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
     print("=" * 60)
-    print("  IMPORTAÇÃO — Dashboard CAT")
+    print("  IMPORTACAO — Dashboard CAT")
     print("=" * 60)
 
     xlsx_files = sorted(IMPORT_DIR.glob("*.xlsx"))
@@ -178,7 +327,7 @@ def main():
     for xlsx_path in xlsx_files:
         config = TABELAS.get(xlsx_path.name)
         if not config:
-            print(f"\nAVISO: {xlsx_path.name} não tem configuração em TABELAS, pulando.")
+            print(f"\nAVISO: {xlsx_path.name} sem configuracao em TABELAS, pulando.")
             continue
         try:
             importar_arquivo(xlsx_path, config)
@@ -186,7 +335,7 @@ def main():
             print(f"\nERRO ao processar {xlsx_path.name}: {e}")
 
     print(f"\n{'='*60}")
-    print("  Importação concluída.")
+    print("  Importacao concluida.")
     print("=" * 60)
 
 
