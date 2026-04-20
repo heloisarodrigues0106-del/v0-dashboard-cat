@@ -51,16 +51,16 @@ export interface PedidoSentenca {
 
 export interface ValorRisco {
   numero_processo: string
-  quarter: string
+  trimestre: string
   ano: number
   principal_provavel: number
-  correcao_monetaria_provavel: number
+  correcao_provavel: number
   juros_provavel: number
   principal_possivel: number
-  correcao_monetaria_possivel: number
+  correcao_possivel: number
   juros_possivel: number
   principal_remoto: number
-  correcao_monetaria_remoto: number
+  correcao_remoto: number
   juros_remoto: number
 }
 
@@ -398,114 +398,114 @@ export const pedidosSentenca: PedidoSentenca[] = [
 export const valoresRisco: ValorRisco[] = [
   {
     numero_processo: "0001234-56.2024.5.02.0001",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 85000,
-    correcao_monetaria_provavel: 8500,
+    correcao_provavel: 8500,
     juros_provavel: 5950,
     principal_possivel: 45000,
-    correcao_monetaria_possivel: 4500,
+    correcao_possivel: 4500,
     juros_possivel: 3150,
     principal_remoto: 25000,
-    correcao_monetaria_remoto: 2500,
+    correcao_remoto: 2500,
     juros_remoto: 1750
   },
   {
     numero_processo: "0002345-67.2024.5.02.0002",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 120000,
-    correcao_monetaria_provavel: 12000,
+    correcao_provavel: 12000,
     juros_provavel: 8400,
     principal_possivel: 65000,
-    correcao_monetaria_possivel: 6500,
+    correcao_possivel: 6500,
     juros_possivel: 4550,
     principal_remoto: 35000,
-    correcao_monetaria_remoto: 3500,
+    correcao_remoto: 3500,
     juros_remoto: 2450
   },
   {
     numero_processo: "0003456-78.2024.5.15.0003",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 95000,
-    correcao_monetaria_provavel: 9500,
+    correcao_provavel: 9500,
     juros_provavel: 6650,
     principal_possivel: 55000,
-    correcao_monetaria_possivel: 5500,
+    correcao_possivel: 5500,
     juros_possivel: 3850,
     principal_remoto: 30000,
-    correcao_monetaria_remoto: 3000,
+    correcao_remoto: 3000,
     juros_remoto: 2100
   },
   {
     numero_processo: "0004567-89.2023.5.02.0004",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 250000,
-    correcao_monetaria_provavel: 25000,
+    correcao_provavel: 25000,
     juros_provavel: 17500,
     principal_possivel: 150000,
-    correcao_monetaria_possivel: 15000,
+    correcao_possivel: 15000,
     juros_possivel: 10500,
     principal_remoto: 80000,
-    correcao_monetaria_remoto: 8000,
+    correcao_remoto: 8000,
     juros_remoto: 5600
   },
   {
     numero_processo: "0001234-56.2024.5.02.0001",
-    quarter: "Q2",
+    trimestre: "Q2",
     ano: 2024,
     principal_provavel: 88000,
-    correcao_monetaria_provavel: 9200,
+    correcao_provavel: 9200,
     juros_provavel: 6440,
     principal_possivel: 47000,
-    correcao_monetaria_possivel: 4900,
+    correcao_possivel: 4900,
     juros_possivel: 3430,
     principal_remoto: 26000,
-    correcao_monetaria_remoto: 2700,
+    correcao_remoto: 2700,
     juros_remoto: 1890
   },
   {
     numero_processo: "0007890-12.2024.5.02.0007",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 75000,
-    correcao_monetaria_provavel: 7500,
+    correcao_provavel: 7500,
     juros_provavel: 5250,
     principal_possivel: 40000,
-    correcao_monetaria_possivel: 4000,
+    correcao_possivel: 4000,
     juros_possivel: 2800,
     principal_remoto: 20000,
-    correcao_monetaria_remoto: 2000,
+    correcao_remoto: 2000,
     juros_remoto: 1400
   },
   {
     numero_processo: "0008901-23.2024.5.02.0008",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 180000,
-    correcao_monetaria_provavel: 18000,
+    correcao_provavel: 18000,
     juros_provavel: 12600,
     principal_possivel: 95000,
-    correcao_monetaria_possivel: 9500,
+    correcao_possivel: 9500,
     juros_possivel: 6650,
     principal_remoto: 50000,
-    correcao_monetaria_remoto: 5000,
+    correcao_remoto: 5000,
     juros_remoto: 3500
   },
   {
     numero_processo: "0010123-45.2024.5.02.0010",
-    quarter: "Q1",
+    trimestre: "Q1",
     ano: 2024,
     principal_provavel: 110000,
-    correcao_monetaria_provavel: 11000,
+    correcao_provavel: 11000,
     juros_provavel: 7700,
     principal_possivel: 60000,
-    correcao_monetaria_possivel: 6000,
+    correcao_possivel: 6000,
     juros_possivel: 4200,
     principal_remoto: 32000,
-    correcao_monetaria_remoto: 3200,
+    correcao_remoto: 3200,
     juros_remoto: 2240
   }
 ]
