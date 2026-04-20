@@ -26,15 +26,22 @@ export async function middleware(request: NextRequest) {
   )
 
   let user = null
+  const isProtected = request.nextUrl.pathname.startsWith('/dashboard')
+
   try {
     const { data } = await supabase.auth.getUser()
     user = data.user
   } catch {
-    // Auth check failed (e.g. TLS issues in edge runtime) — allow page to render
+    // Auth check failed — redirecionar para login se rota protegida
+    if (isProtected) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   // Protect dashboard: redirect unauthed to login
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!user && isProtected) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
