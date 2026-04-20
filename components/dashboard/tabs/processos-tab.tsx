@@ -173,8 +173,8 @@ export function ProcessosTab({
           </p>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-lg border border-border">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-lg border border-border w-full" style={{ boxSizing: 'border-box' }}>
+            <table className="w-full text-sm table-auto border-collapse">
               <thead>
                 <tr className="bg-[#111111] text-white">
                   <th className="text-left px-4 py-3 font-semibold min-w-[200px] border-r border-slate-700">Pedido</th>

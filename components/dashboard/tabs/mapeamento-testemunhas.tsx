@@ -162,7 +162,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
   }
 
   return (
-    <Card className="bg-white rounded-xl shadow-sm border border-slate-200">
+    <Card className="bg-white rounded-xl shadow-sm border border-slate-200 w-full max-w-full overflow-hidden">
       <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div className="space-y-1">
           <CardTitle className="text-xl font-semibold text-[#111111] flex items-center gap-2">
