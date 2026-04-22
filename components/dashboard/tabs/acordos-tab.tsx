@@ -27,24 +27,27 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
     // Filtrar apenas processos com status ACORDO
     const acordos = processos.filter(p => p?.status?.toUpperCase() === 'ACORDO')
     
-    let totalPedido = 0
+    let totalCausa = 0
     let totalAcordado = 0
     
     const validScatterData: any[] = []
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      const pedido = Number(p.valor_acao || p.valor_causa || 0)
+      // Priorizando valor_causa como valor de referência oficial
+      const causa = Number(p.valor_causa || p.valor_acao || 0)
       const acordado = Number(p.valor_acordo || 0)
-      const savingVal = pedido - acordado
-      const savingPerc = pedido > 0 ? (savingVal / pedido) * 100 : 0
       
-      totalPedido += pedido
+      // Cálculo de economia (saving)
+      const savingVal = causa - acordado
+      const savingPerc = causa > 0 ? (savingVal / causa) * 100 : 0
+      
+      totalCausa += causa
       totalAcordado += acordado
       
-      if (pedido > 0 || acordado > 0) {
+      if (causa > 0 || acordado > 0) {
         validScatterData.push({
-          x: pedido,
+          x: causa,
           y: acordado,
           economia: savingVal
         })
@@ -55,7 +58,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         reclamante: p.nome_reclamante || "Não informado",
         juizo: `${p.vara || "?"} VARA DE ${p.comarca || "?"}`.toUpperCase(),
         advogado: p.advogado_reclamante || "Não informado",
-        valorOriginal: pedido,
+        valorOriginal: causa,
         valorAcordo: acordado,
         savingValor: savingVal,
         savingPercent: savingPerc,
@@ -71,17 +74,17 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       a.funcao.toLowerCase().includes(searchQuery.toLowerCase())
     )
     
-    const economiaTotal = totalPedido - totalAcordado
-    const taxaEconomia = totalPedido > 0 ? (economiaTotal / totalPedido) * 100 : 0
+    const economiaTotal = totalCausa - totalAcordado
+    const taxaEconomia = totalCausa > 0 ? (economiaTotal / totalCausa) * 100 : 0
     const qtdAcordos = acordos.length
     
-    const mediaPedido = qtdAcordos > 0 ? totalPedido / qtdAcordos : 0
+    const mediaCausa = qtdAcordos > 0 ? totalCausa / qtdAcordos : 0
     const mediaAcordado = qtdAcordos > 0 ? totalAcordado / qtdAcordos : 0
     const mediaEconomia = qtdAcordos > 0 ? economiaTotal / qtdAcordos : 0
 
     return {
       metrics: {
-        totalPedido,
+        totalCausa,
         totalAcordado,
         economiaTotal,
         taxaEconomia,
@@ -89,7 +92,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         mediaDesconto: taxaEconomia
       },
       chartData: [
-        { name: "Valor Total Pedido", total: totalPedido, media: mediaPedido },
+        { name: "Valor Total da Causa", total: totalCausa, media: mediaCausa },
         { name: "Valor Total Acordado", total: totalAcordado, media: mediaAcordado },
         { name: "Economia Total Gerada", total: economiaTotal, media: mediaEconomia }
       ],
@@ -114,7 +117,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
               <div className="text-4xl md:text-5xl font-bold text-emerald-700">
                 {formatCurrency(metrics.economiaTotal)}
               </div>
-              <p className="text-emerald-700/80 text-sm">Diferença entre valor pedido e valor acordado</p>
+              <p className="text-emerald-700/80 text-sm">Diferença entre valor da causa e valor acordado</p>
             </div>
             
             <div className="flex gap-4">
@@ -137,10 +140,10 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total Pedido</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total da Causa</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{formatCurrency(metrics.totalPedido)}</div>
+            <div className="text-2xl font-bold text-slate-800">{formatCurrency(metrics.totalCausa)}</div>
           </CardContent>
         </Card>
 
@@ -198,12 +201,12 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
           </CardContent>
         </Card>
 
-        {/* Scatter Pedido vs Acordo */}
+        {/* Scatter Causa vs Acordo */}
         <Card className="flex flex-col">
           <CardHeader>
-            <CardTitle className="text-base">Comparativo: Valor Pedido vs Valor do Acordo</CardTitle>
+            <CardTitle className="text-base">Comparativo: Valor da Causa vs Valor do Acordo</CardTitle>
             <div className="flex gap-4 text-xs text-muted-foreground mt-1">
-              <span>Eixo X: Valor Pedido</span>
+              <span>Eixo X: Valor da Causa</span>
               <span>Eixo Y: Valor do Acordo</span>
             </div>
           </CardHeader>
@@ -215,7 +218,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                   <XAxis 
                     type="number" 
                     dataKey="x" 
-                    name="Valor Pedido"
+                    name="Valor da Causa"
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(val) => val >= 1000000 ? `${(val/1000000).toFixed(1)}M` : val >= 1000 ? `${(val/1000).toFixed(0)}K` : val}
@@ -235,8 +238,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                     formatter={(value: number, name: string) => [formatCurrency(value), name]}
                   />
-                  <Scatter name="Valor Pedido" data={scatterData} fill="#F6D000" />
-                  <Legend verticalAlign="bottom" height={36} formatter={(val) => <span className="text-sm font-medium">Valor Pedido</span>}/>
+                  <Scatter name="Valor da Causa" data={scatterData} fill="#F6D000" />
+                  <Legend verticalAlign="bottom" height={36} formatter={(val) => <span className="text-sm font-medium">Valor da Causa</span>}/>
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
