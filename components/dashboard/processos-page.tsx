@@ -490,7 +490,7 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
 
   const resetFilters = () => {
     setSearchTerm("")
-    setSelectedTrt("all")
+    setSelectedUf("all")
     setSelectedComarca("all")
     setSelectedVara("all")
     setSelectedStatus("all")
