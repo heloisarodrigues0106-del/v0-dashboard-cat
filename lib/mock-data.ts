@@ -6,7 +6,7 @@ export interface Processo {
   fopag: string
   status_reclamante: "Ativo" | "Demitido" | "Aposentado" | string
   funcao_reclamante: string
-  trt: string
+  uf: string
   comarca: string
   vara: string
   data_ajuizamento: string
@@ -78,7 +78,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-001",
     status_reclamante: "Demitido",
     funcao_reclamante: "Auxiliar Administrativo",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "São Paulo",
     vara: "1ª Vara do Trabalho",
     data_ajuizamento: "2024-01-15",
@@ -94,7 +94,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-002",
     status_reclamante: "Demitido",
     funcao_reclamante: "Operador de Produção",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "Campinas",
     vara: "2ª Vara do Trabalho",
     data_ajuizamento: "2024-02-20",
@@ -110,7 +110,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-003",
     status_reclamante: "Demitido",
     funcao_reclamante: "Analista de RH",
-    trt: "TRT-15",
+    uf: "SP",
     comarca: "Ribeirão Preto",
     vara: "3ª Vara do Trabalho",
     data_ajuizamento: "2023-11-05",
@@ -126,7 +126,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-004",
     status_reclamante: "Demitido",
     funcao_reclamante: "Supervisor de Logística",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "São Paulo",
     vara: "4ª Vara do Trabalho",
     data_ajuizamento: "2023-08-12",
@@ -142,7 +142,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-005",
     status_reclamante: "Ativo",
     funcao_reclamante: "Assistente Financeiro",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "Santos",
     vara: "1ª Vara do Trabalho",
     data_ajuizamento: "2024-01-08",
@@ -158,7 +158,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-006",
     status_reclamante: "Demitido",
     funcao_reclamante: "Técnico de Manutenção",
-    trt: "TRT-15",
+    uf: "SP",
     comarca: "Campinas",
     vara: "5ª Vara do Trabalho",
     data_ajuizamento: "2023-03-20",
@@ -174,7 +174,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-007",
     status_reclamante: "Demitido",
     funcao_reclamante: "Coordenadora de Vendas",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "São Paulo",
     vara: "6ª Vara do Trabalho",
     data_ajuizamento: "2024-03-01",
@@ -190,7 +190,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-008",
     status_reclamante: "Aposentado",
     funcao_reclamante: "Gerente de Operações",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "Guarulhos",
     vara: "2ª Vara do Trabalho",
     data_ajuizamento: "2024-02-10",
@@ -206,7 +206,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-009",
     status_reclamante: "Demitido",
     funcao_reclamante: "Analista de Sistemas",
-    trt: "TRT-15",
+    uf: "SP",
     comarca: "Sorocaba",
     vara: "1ª Vara do Trabalho",
     data_ajuizamento: "2023-06-15",
@@ -222,7 +222,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-010",
     status_reclamante: "Demitido",
     funcao_reclamante: "Engenheiro de Produção",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "São Paulo",
     vara: "7ª Vara do Trabalho",
     data_ajuizamento: "2024-02-28",
@@ -238,7 +238,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-011",
     status_reclamante: "Demitido",
     funcao_reclamante: "Recepcionista",
-    trt: "TRT-2",
+    uf: "SP",
     comarca: "São Paulo",
     vara: "8ª Vara do Trabalho",
     data_ajuizamento: "2024-03-05",
@@ -254,7 +254,7 @@ export const processos: Processo[] = [
     fopag: "FOPAG-012",
     status_reclamante: "Ativo",
     funcao_reclamante: "Motorista",
-    trt: "TRT-15",
+    uf: "SP",
     comarca: "Piracicaba",
     vara: "1ª Vara do Trabalho",
     data_ajuizamento: "2024-01-22",
@@ -606,7 +606,7 @@ export const kpis = {
   crescimentoAnual: 12.5
 }
 
-export const trts = ["TRT-2", "TRT-15", "TRT-1", "TRT-3", "TRT-4"]
+export const ufs = ["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"]
 export const comarcas = ["São Paulo", "Campinas", "Ribeirão Preto", "Santos", "Guarulhos", "Sorocaba", "Piracicaba"]
 export const varas = [
   "1ª Vara do Trabalho",

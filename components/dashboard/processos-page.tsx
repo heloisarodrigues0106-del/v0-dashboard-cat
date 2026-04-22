@@ -57,7 +57,7 @@ import {
   pedidosIniciais,
   pedidosSentenca,
   valoresRisco,
-  trts,
+  ufs,
   comarcas,
   varas,
   statusOptions,
@@ -184,8 +184,8 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">TRT</span>
-                <span className="text-sm font-medium">{processo.trt}</span>
+                <span className="text-sm text-muted-foreground">UF</span>
+                <span className="text-sm font-medium">{processo.uf}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Comarca</span>
@@ -399,7 +399,7 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
 
 export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedTrt, setSelectedTrt] = useState<string>("all")
+  const [selectedUf, setSelectedUf] = useState<string>("all")
   const [selectedComarca, setSelectedComarca] = useState<string>("all")
   const [selectedVara, setSelectedVara] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
@@ -416,7 +416,7 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
         processo.nome_reclamante.toLowerCase().includes(searchTerm.toLowerCase()) ||
         processo.advogado_reclamante.toLowerCase().includes(searchTerm.toLowerCase())
 
-      const matchesTrt = selectedTrt === "all" || processo.trt === selectedTrt
+      const matchesTrt = selectedUf === "all" || processo.uf === selectedUf
       const matchesComarca =
         selectedComarca === "all" || processo.comarca === selectedComarca
       const matchesVara = selectedVara === "all" || processo.vara === selectedVara
@@ -465,7 +465,7 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
     })
   }, [
     searchTerm,
-    selectedTrt,
+    selectedUf,
     selectedComarca,
     selectedVara,
     selectedStatus,
@@ -598,11 +598,11 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">TRT</label>
+              <label className="text-sm font-medium text-muted-foreground">UF</label>
               <Select
-                value={selectedTrt}
+                value={selectedUf}
                 onValueChange={(value) => {
-                  setSelectedTrt(value)
+                  setSelectedUf(value)
                   setCurrentPage(1)
                 }}
               >
@@ -611,9 +611,9 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  {trts.map((trt) => (
-                    <SelectItem key={trt} value={trt}>
-                      {trt}
+                  {ufs.map((uf) => (
+                    <SelectItem key={uf} value={uf}>
+                      {uf}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -760,7 +760,7 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{processo.trt}</p>
+                          <p className="font-medium">{processo.uf}</p>
                           <p className="text-xs text-muted-foreground">
                             {processo.comarca}
                           </p>

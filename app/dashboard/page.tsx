@@ -16,8 +16,8 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     supabase.from('tb_processo').select(
       'id, numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
-      'reclamada, centro_custo, empresa_terceirizada, tipo_acao, vara, comarca, trt, ' +
-      'data_ajuizamento, data_arquivamento, valor_causa, status, fase, instancia, ' +
+      'reclamada, centro_custo, empresa_terceirizada, tipo_acao, vara, comarca, uf, ' +
+      'data_ajuizamento, data_arquivamento, valor_causa, status, fase_processual, instancia, ' +
       'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico'
     ),
     supabase.from('tb_pedidos_inicial').select(

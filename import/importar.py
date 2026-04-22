@@ -53,13 +53,13 @@ BATCH_SIZE = 100
 
 # Colunas que o banco espera como boolean
 BOOL_COLS = {
-    "tb_pedidos_inicial_import": [
+    "tb_pedidos_inicial": [
         "do_at", "reintegracao", "periculosidade", "insalubridade",
         "rescisao_indireta", "danos_morais", "danos_materiais", "horas_extras",
         "intrajornada", "horas_itinere", "acumulo_funcao", "equip_salarial",
         "rec_vinculo", "honorarios_advocaticios",
     ],
-    "tb_pedidos_sentenca_import": [
+    "tb_pedidos_sentenca": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
         "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
@@ -67,16 +67,16 @@ BOOL_COLS = {
         "incapacidade",
     ],
     # tb_laudo: do_mental é boolean no banco, mas Excel tem CONCAUSA/SEM NEXO → vira None
-    "tb_laudo_import": [
+    "tb_laudo": [
         "do_mental", "acidente_trabalho", "periculosidade", "insalubridade",
     ],
-    "tb_valores_import": ["apolice"],
+    "tb_valores": ["apolice"],
 }
 
 NUMERIC_COLS = {
-    "tb_processo_import": ["valor_causa", "valor_acordo", "honorario_pericia"],
-    "tb_laudo_import": ["grau_mental", "grau_medico_geral", "grau_insalubridade"],
-    "tb_valores_import": [
+    "tb_processo": ["valor_causa", "valor_acordo", "honorario_pericia"],
+    "tb_laudo": ["grau_mental", "grau_medico_geral", "grau_insalubridade"],
+    "tb_valores": [
         "deposito_recursal", "custas_processuais", "deposito_judicial",
         "provavel_principal_quarter_anterior", "provavel_correcao_quarter_anterior",
         "provavel_juros_quarter_anterior", "provavel_total_anterior",
@@ -92,7 +92,7 @@ NUMERIC_COLS = {
 
 # Colunas que o banco espera como date
 DATE_COLS = {
-    "tb_processo_import": [
+    "tb_processo": [
         "data_ajuizamento", "data_arquivamento",
         "data_admissao_reclamante", "data_demissao_reclamante",
     ],
@@ -102,21 +102,21 @@ DATE_COLS = {
 
 TABELAS = {
     "tb_processo.xlsx": {
-        "tabela": "tb_processo_import",
+        "tabela": "tb_processo",
         "renomear": {
             "numero_ processo_apenso": "numero_processo_apenso",
             "testemunha reclamante": "testemunha_reclamante",
         },
     },
     "tb_pedidos_inicial.xlsx": {
-        "tabela": "tb_pedidos_inicial_import",
+        "tabela": "tb_pedidos_inicial",
         "renomear": {
             "periculosidade ": "periculosidade",
             "honorarios_adv": "honorarios_advocaticios",
         },
     },
     "tb_pedidos_sentenca.xlsx": {
-        "tabela": "tb_pedidos_sentenca_import",
+        "tabela": "tb_pedidos_sentenca",
         "renomear": {
             "periculosidade ": "periculosidade",
             "do_psiquica":     "do_mental",
@@ -128,7 +128,7 @@ TABELAS = {
         "ignorar": ["ergonomia"],
     },
     "tb_laudo.xlsx": {
-        "tabela": "tb_laudo_import",
+        "tabela": "tb_laudo",
         "renomear": {
             "do_psiquica":          "do_mental",
             "grau_psiquica":        "grau_mental",
@@ -139,7 +139,7 @@ TABELAS = {
         "ignorar": ["resultado_medico", "resultado_tecnico"],
     },
     "tb_valores.xlsx": {
-        "tabela": "tb_valores_import",
+        "tabela": "tb_valores",
         "renomear": {
             "deposito_judicial ": "deposito_judicial",
         },

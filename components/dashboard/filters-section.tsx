@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { trts, comarcas, statusOptions, trimestres, anos } from "@/lib/mock-data"
+import { ufs, comarcas, statusOptions, trimestres, anos } from "@/lib/mock-data"
 import { CalendarIcon, Filter, RotateCcw } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils"
 export function FiltersSection() {
   const [dataInicial, setDataInicial] = useState<Date>()
   const [dataFinal, setDataFinal] = useState<Date>()
-  const [trt, setTrt] = useState<string>("")
+  const [uf, setUf] = useState<string>("")
   const [comarca, setComarca] = useState<string>("")
   const [status, setStatus] = useState<string>("")
   const [trimestre, setTrimestre] = useState<string>("")
@@ -33,7 +33,7 @@ export function FiltersSection() {
   const handleReset = () => {
     setDataInicial(undefined)
     setDataFinal(undefined)
-    setTrt("")
+    setUf("")
     setComarca("")
     setStatus("")
     setTrimestre("")
@@ -96,14 +96,14 @@ export function FiltersSection() {
           </PopoverContent>
         </Popover>
 
-        {/* TRT */}
-        <Select value={trt} onValueChange={setTrt}>
+        {/* UF */}
+        <Select value={uf} onValueChange={setUf}>
           <SelectTrigger className="w-[130px]">
-            <SelectValue placeholder="TRT" />
+            <SelectValue placeholder="UF" />
           </SelectTrigger>
           <SelectContent>
-            {trts.map((t) => (
-              <SelectItem key={t} value={t}>{t}</SelectItem>
+            {ufs.map((u) => (
+              <SelectItem key={u} value={u}>{u}</SelectItem>
             ))}
           </SelectContent>
         </Select>
