@@ -15,9 +15,9 @@ export default async function DashboardPage() {
     { data: valores, error: errValores }
   ] = await Promise.all([
     supabase.from('tb_processo').select(
-      'id, numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
-      'reclamada, centro_custo, empresa_terceirizada, tipo_acao, vara, comarca, trt, ' +
-      'data_ajuizamento, data_arquivamento, valor_causa, status, fase, instancia, ' +
+      'numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
+      'reclamada, centro_custo, empresa_terceirizada, tipo_acao, vara, comarca, ' +
+      'data_ajuizamento, data_arquivamento, valor_causa, status, fase_processual, instancia, ' +
       'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico'
     ),
     supabase.from('tb_pedidos_inicial').select(
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     ),
     supabase.from('tb_laudo').select('*'),
     supabase.from('tb_valores').select(
-      'id, numero_processo, deposito_recursal, apolice, custas_processuais, ' +
+      'numero_processo, deposito_recursal, apolice, custas_processuais, ' +
       'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
       'provavel_juros_quarter_anterior, provavel_total_anterior, provavel_principal_quarter_atual, ' +
       'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
@@ -56,14 +56,26 @@ export default async function DashboardPage() {
     if (errValores) console.error('Erro tb_valores:', errValores)
   }
 
+  const errorMsg = [errProc, errValores, errLaudos]
+    .filter(Boolean)
+    .map(e => e.message)
+    .join(" | ")
+
   return (
-    <DashboardClient
-      processos={processos || []}
-      pedidosInicial={pedidosInicial || []}
-      pedidosSentenca={pedidosSentenca || []}
-      pedidosAcordao={pedidosAcordao || []}
-      laudos={laudos || []}
-      valores={valores || []}
-    />
+    <>
+      {errorMsg && (
+        <div className="bg-red-500 text-white p-4 font-bold rounded m-4 shadow-lg text-sm">
+          Erro no banco de dados (A API falhou e retornou 0 resultados): {errorMsg}
+        </div>
+      )}
+      <DashboardClient
+        processos={processos || []}
+        pedidosInicial={pedidosInicial || []}
+        pedidosSentenca={pedidosSentenca || []}
+        pedidosAcordao={pedidosAcordao || []}
+        laudos={laudos || []}
+        valores={valores || []}
+      />
+    </>
   )
 }
