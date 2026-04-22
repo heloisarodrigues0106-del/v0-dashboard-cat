@@ -35,7 +35,6 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
     // Status groups as requested by user
     const statusAtivos = ['PROCEDENTE', 'PARCIALMENTE PROCEDENTE', 'SOBRESTADO', 'IMPROCEDENTE', 'ACORDO']
-    const statusArquivados = ['ARQUIVADO', 'EXTINTO SEM MÉRITO']
 
     let processosAtivosCount = 0
     let processosArquivadosCount = 0
@@ -65,12 +64,13 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       valorTotal += (p.valor_causa || 0)
 
       const statusVal = (p.status || p.status_processo || "").toUpperCase().trim()
+      const instanciaVal = (p.instancia || "").toUpperCase().trim()
       
-      // Update Active/Archived count based on status
-      if (statusAtivos.includes(statusVal)) {
-        processosAtivosCount++
-      } else if (statusArquivados.includes(statusVal)) {
+      // Update Active/Archived count with priority for 'ARQUIVADO' in instancia
+      if (instanciaVal === 'ARQUIVADO') {
         processosArquivadosCount++
+      } else if (statusAtivos.includes(statusVal)) {
+        processosAtivosCount++
       }
 
       if (p.advogado_reclamante) dictAdvogados[p.advogado_reclamante] = (dictAdvogados[p.advogado_reclamante] || 0) + 1

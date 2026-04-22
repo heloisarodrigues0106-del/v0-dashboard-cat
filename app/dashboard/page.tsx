@@ -42,11 +42,11 @@ export default async function DashboardPage() {
     supabase.from('tb_valores').select(
       'numero_processo, deposito_recursal, apolice, custas_processuais, ' +
       'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
-      'provavel_juros_quarter_anterior, provavel_principal_quarter_atual, ' +
-      'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, ' +
+      'provavel_juros_quarter_anterior, provavel_total_anterior, provavel_principal_quarter_atual, ' +
+      'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, ' +
-      'possivel_juros_quarter_atual, remoto_principal_quarter_atual, ' +
-      'remoto_correcao_quarter_atual, remoto_juros_quarter_atual, ' +
+      'possivel_juros_quarter_atual, possivel_total_atual, remoto_principal_quarter_atual, ' +
+      'remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual, ' +
       'justificativa_reavaliacao_quarter_anterior, justificativa_reavaliacao_quarter_atual'
     ),
   ])
@@ -56,14 +56,26 @@ export default async function DashboardPage() {
     if (v) console.error(`[dashboard] ${k}:`, JSON.stringify(v))
   })
 
+  const errorMsg = [errProc, errValores, errLaudos]
+    .filter(Boolean)
+    .map(e => e.message)
+    .join(" | ")
+
   return (
-    <DashboardClient
-      processos={processos || []}
-      pedidosInicial={pedidosInicial || []}
-      pedidosSentenca={pedidosSentenca || []}
-      pedidosAcordao={pedidosAcordao || []}
-      laudos={laudos || []}
-      valores={valores || []}
-    />
+    <>
+      {errorMsg && (
+        <div className="bg-red-500 text-white p-4 font-bold rounded m-4 shadow-lg text-sm">
+          Erro no banco de dados (A API falhou e retornou 0 resultados): {errorMsg}
+        </div>
+      )}
+      <DashboardClient
+        processos={processos || []}
+        pedidosInicial={pedidosInicial || []}
+        pedidosSentenca={pedidosSentenca || []}
+        pedidosAcordao={pedidosAcordao || []}
+        laudos={laudos || []}
+        valores={valores || []}
+      />
+    </>
   )
 }

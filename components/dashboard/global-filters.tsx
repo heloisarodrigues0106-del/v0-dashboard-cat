@@ -100,7 +100,7 @@ export function GlobalFilters({
     tipoAcao.length > 0 ||
     vara.length > 0 ||
     funcaoReclamante.length > 0 ||
-    valorAcaoRange[0] !== 1000 ||
+    valorAcaoRange[0] !== 0 ||
     valorAcaoRange[1] !== 5000000;
 
   const resetFilters = () => {
@@ -115,7 +115,7 @@ export function GlobalFilters({
     setTipoAcao([])
     setVara([])
     setFuncaoReclamante([])
-    setValorAcaoRange([1000, 5000000])
+    setValorAcaoRange([0, 5000000])
   }
 
   return (
@@ -224,7 +224,7 @@ export function GlobalFilters({
                 <div className="-mx-2">
                   <FilterHistogramSlider 
                     data={processos.map(p => Number(p.valor_causa) || 0)}
-                    min={1000}
+                    min={0}
                     max={5000000}
                     step={1000}
                     value={valorAcaoRange}

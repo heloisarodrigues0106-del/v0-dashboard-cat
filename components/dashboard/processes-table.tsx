@@ -96,7 +96,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
             />
           </div>
         </CardHeader>
-        <CardContent className="p-0 px-6">
+        <CardContent className="p-0 px-6 pb-8">
           <div className="flex flex-col gap-2">
             {currentProcesses.map((processo) => {
               const laudo = laudos.find(l => String(l.numero_processo) === String(processo.numero_processo)) || {}
@@ -300,7 +300,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
           </div>
 
           {/* Pagination */}
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-slate-100 pt-6">
             <p className="text-xs md:text-sm text-muted-foreground">
               {filteredProcessos.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredProcessos.length)} de {filteredProcessos.length}
             </p>

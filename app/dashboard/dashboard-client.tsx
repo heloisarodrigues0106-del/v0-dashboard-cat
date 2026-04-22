@@ -89,7 +89,7 @@ export default function DashboardClient({
   const [funcaoReclamante, setFuncaoReclamante] = useState<string[]>([])
   
   // Filtro de Faixa de Valor da Causa
-  const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([1000, 5000000])
+  const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([0, 5000000])
 
   // Extract unique options for dropdowns
   const filterOptions = useMemo(() => {

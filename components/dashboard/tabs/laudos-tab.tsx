@@ -307,22 +307,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     rawData = rawData.sort((a, b) => b.Desfavorável - a.Desfavorável) // Prioridade: Maior volume de desfavoráveis no topo
     
-    // Se não houver dados reais na base, mostramos o demo, apenas se a base estiver VAZIA.
-    if (stats.total === 0) {
-      return [
-        { name: "Dr. Carlos Silva", Desfavorável: 45, Favorável: 5, Total: 50 },
-        { name: "Dra. Ana Pereira", Desfavorável: 40, Favorável: 10, Total: 50 },
-        { name: "Eng. Marcos Souza", Desfavorável: 35, Favorável: 15, Total: 50 },
-        { name: "Dr. Roberto Dias", Desfavorável: 30, Favorável: 20, Total: 50 },
-        { name: "Dra. Juliana Lima", Desfavorável: 25, Favorável: 25, Total: 50 },
-        { name: "Eng. Paulo Rocha", Desfavorável: 15, Favorável: 35, Total: 50 },
-        { name: "Dr. Fernando Costa", Desfavorável: 10, Favorável: 40, Total: 50 },
-        { name: "Dra. Beatriz Santos", Desfavorável: 5, Favorável: 45, Total: 50 },
-        { name: "Eng. Ricardo Oliveira", Desfavorável: 2, Favorável: 48, Total: 50 },
-        { name: "Dr. Sergio Martins", Desfavorável: 0, Favorável: 50, Total: 50 },
-      ]
-    }
-    
     return rawData.slice(0, 15)
   }, [stats.statsPerito, peritoFilter])
 
