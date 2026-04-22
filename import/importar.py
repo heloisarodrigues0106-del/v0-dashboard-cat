@@ -66,6 +66,13 @@ BOOL_COLS = {
         "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
         "incapacidade",
     ],
+    "tb_pedidos_acordao": [
+        "reintegracao", "periculosidade", "insalubridade", "danos_morais",
+        "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
+        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
+        "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
+        "incapacidade",
+    ],
     # tb_laudo: do_mental é boolean no banco, mas Excel tem CONCAUSA/SEM NEXO → vira None
     "tb_laudo": [
         "do_mental", "acidente_trabalho", "periculosidade", "insalubridade",
@@ -125,6 +132,17 @@ TABELAS = {
             "honorarios_adv":  "honorarios_advocaticios",
         },
         # colunas do Excel que não existem no banco — serão ignoradas
+        "ignorar": ["ergonomia"],
+    },
+    "tb_pedidos_acordao.xlsx": {
+        "tabela": "tb_pedidos_acordao",
+        "renomear": {
+            "periculosidade ": "periculosidade",
+            "do_psiquica":     "do_mental",
+            "do_medica_geral": "do_ergonomica",
+            "obrigacoes_fazer": "obrigacao",
+            "honorarios_adv":  "honorarios_advocaticios",
+        },
         "ignorar": ["ergonomia"],
     },
     "tb_laudo.xlsx": {
