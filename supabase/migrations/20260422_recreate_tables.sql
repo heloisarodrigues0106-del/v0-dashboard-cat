@@ -114,13 +114,14 @@ CREATE TABLE public.tb_pedidos_acordao (
 );
 
 -- ─── tb_laudo ─────────────────────────────────────────────────────────────────
+-- do_mental e do_medica_geral são texto no Excel: "CAUSA", "CONCAUSA", "SEM NEXO"
 DROP TABLE IF EXISTS public.tb_laudo;
 CREATE TABLE public.tb_laudo (
   id                  bigserial PRIMARY KEY,
   numero_processo     text,
-  do_mental           boolean,
+  do_mental           text,
   grau_mental         numeric,
-  do_medica_geral     boolean,
+  do_medica_geral     text,
   grau_medico_geral   numeric,
   ergonomia           text,
   incapacidade        text,

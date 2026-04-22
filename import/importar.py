@@ -73,9 +73,10 @@ BOOL_COLS = {
         "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
         "incapacidade",
     ],
-    # tb_laudo: do_mental é boolean no banco, mas Excel tem CONCAUSA/SEM NEXO → vira None
+    # tb_laudo: do_mental e do_medica_geral são text ("CAUSA","CONCAUSA","SEM NEXO")
+    # apenas acidente_trabalho, periculosidade e insalubridade são boolean
     "tb_laudo": [
-        "do_mental", "acidente_trabalho", "periculosidade", "insalubridade",
+        "acidente_trabalho", "periculosidade", "insalubridade",
     ],
     "tb_valores": ["apolice"],
 }
