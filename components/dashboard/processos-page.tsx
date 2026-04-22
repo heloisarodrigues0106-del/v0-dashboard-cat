@@ -502,7 +502,7 @@ export function ProcessosPage({ processos = [] }: { processos?: any[] }) {
 
   const hasActiveFilters =
     searchTerm ||
-    selectedTrt !== "all" ||
+    selectedUf !== "all" ||
     selectedComarca !== "all" ||
     selectedVara !== "all" ||
     selectedStatus !== "all" ||
