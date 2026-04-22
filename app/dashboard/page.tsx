@@ -11,8 +11,8 @@ export default async function DashboardPage() {
     { data: pedidosInicial },
     { data: pedidosSentenca },
     { data: pedidosAcordao },
-    { data: laudos },
-    { data: valores }
+    { data: laudos, error: errLaudos },
+    { data: valores, error: errValores }
   ] = await Promise.all([
     supabase.from('tb_processo').select(
       'id, numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
@@ -51,8 +51,9 @@ export default async function DashboardPage() {
     ),
   ])
 
-  if (errProc && process.env.NODE_ENV !== 'production') {
-    console.error('Erro ao buscar processos no Supabase:', errProc)
+  if (process.env.NODE_ENV !== 'production') {
+    if (errProc) console.error('Erro tb_processo:', errProc)
+    if (errValores) console.error('Erro tb_valores:', errValores)
   }
 
   return (

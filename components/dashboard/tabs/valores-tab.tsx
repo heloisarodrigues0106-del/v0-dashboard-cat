@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon, DollarSign, WalletCards, Landmark, ShieldCheck, Search } from "lucide-react"
+import { FinancialAnalysis } from "../financial-analysis"
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -38,19 +39,21 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       if (v.apolice === true || String(v.apolice).toLowerCase() === "true") kpiGeral.apolice++
       kpiGeral.depositoJudicial += (Number(v.deposito_judicial) || 0)
 
-      // Variables for the specific risk currently selected via Tabs
+      // Usar os campos consolidados do Quarter Atual
+      const totalAtual = Number(v[`${riscoAtivo}_total_atual`]) || 0
+      const totalAnterior = Number(v[`${riscoAtivo}_total_anterior`]) || 0
+
+      kpiQuarter.atual += totalAtual
+      kpiQuarter.anterior += totalAnterior
+
+      // Para o drill-down detalhado, ainda mantemos os campos individuais se existirem
       const principalAtual = Number(v[`${riscoAtivo}_principal_quarter_atual`]) || 0
       const correcaoAtual = Number(v[`${riscoAtivo}_correcao_quarter_atual`]) || 0
       const jurosAtual = Number(v[`${riscoAtivo}_juros_quarter_atual`]) || 0
-      const totalAtual = principalAtual + correcaoAtual + jurosAtual
 
       const principalAnterior = Number(v[`${riscoAtivo}_principal_quarter_anterior`]) || 0
       const correcaoAnterior = Number(v[`${riscoAtivo}_correcao_quarter_anterior`]) || 0
       const jurosAnterior = Number(v[`${riscoAtivo}_juros_quarter_anterior`]) || 0
-      const totalAnterior = principalAnterior + correcaoAnterior + jurosAnterior
-
-      kpiQuarter.atual += totalAtual
-      kpiQuarter.anterior += totalAnterior
 
       // Análise de Variação (Drill-Down Logic)
       if (totalAtual !== totalAnterior) {
@@ -101,7 +104,11 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       </div>
 
       {activeMainTab === "provisionamento" && (
-        <Tabs defaultValue="provavel" onValueChange={setRiscoAtivo} className="w-full space-y-6">
+        <div className="space-y-6">
+          {/* Gráfico de Análise Financeira Consolidada */}
+          <FinancialAnalysis valoresRisco={valores} />
+          
+          <Tabs defaultValue="provavel" onValueChange={setRiscoAtivo} className="w-full space-y-6">
           
           <TabsList className="w-full flex flex-wrap justify-start gap-3 bg-transparent border-none p-0 h-auto">
             <TabsTrigger value="provavel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Provável</TabsTrigger>

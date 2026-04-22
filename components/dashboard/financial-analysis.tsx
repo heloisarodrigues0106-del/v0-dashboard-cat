@@ -1,7 +1,6 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { valoresRisco } from "@/lib/mock-data"
 import {
   BarChart,
   Bar,
@@ -13,6 +12,7 @@ import {
   ResponsiveContainer
 } from "recharts"
 import { Banknote, TrendingUp, Percent } from "lucide-react"
+import { ValorRisco } from "@/lib/mock-data"
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat("pt-BR", {
@@ -33,7 +33,7 @@ const formatCompact = (value: number) => {
   return `R$ ${value}`
 }
 
-export function FinancialAnalysis() {
+export function FinancialAnalysis({ valoresRisco }: { valoresRisco: ValorRisco[] }) {
   // Consolidação dos totais da carteira para os dois períodos
   const totals = valoresRisco.reduce((acc, item) => ({
     prevProvavel: acc.prevProvavel + (item.provavel_total_anterior || 0),
