@@ -34,33 +34,53 @@ const formatCompact = (value: number) => {
 }
 
 export function FinancialAnalysis() {
-  // Transform data for stacked bar chart
-  const chartData = valoresRisco.map((item) => ({
-    periodo: `${item.trimestre}/${item.ano}`,
-    Provável: item.principal_provavel + item.correcao_provavel + item.juros_provavel,
-    Possível: item.principal_possivel + item.correcao_possivel + item.juros_possivel,
-    Remoto: item.principal_remoto + item.correcao_remoto + item.juros_remoto
-  }))
+  // Consolidação dos totais da carteira para os dois períodos
+  const totals = valoresRisco.reduce((acc, item) => ({
+    prevProvavel: acc.prevProvavel + (item.provavel_total_anterior || 0),
+    currProvavel: acc.currProvavel + (item.provavel_total_atual || 0),
+    currPossivel: acc.currPossivel + (item.possivel_total_atual || 0),
+    currRemoto: acc.currRemoto + (item.remoto_total_atual || 0),
+    // Breakdown do Quarter Atual
+    currPrincipal: acc.currPrincipal + (item.provavel_principal_quarter_atual || 0),
+    currCorrecao: acc.currCorrecao + (item.provavel_correcao_quarter_atual || 0),
+    currJuros: acc.currJuros + (item.provavel_juros_quarter_atual || 0),
+  }), {
+    prevProvavel: 0, currProvavel: 0, currPossivel: 0, currRemoto: 0,
+    currPrincipal: 0, currCorrecao: 0, currJuros: 0
+  })
 
-  // Current quarter breakdown (last item)
-  const currentQuarter = valoresRisco[valoresRisco.length - 1]
+  const chartData = [
+    {
+      periodo: "Quarter Anterior",
+      Provável: totals.prevProvavel,
+      Possível: 0, // Não temos histórico anterior no banco para Possível
+      Remoto: 0    // Não temos histórico anterior no banco para Remoto
+    },
+    {
+      periodo: "Quarter Atual",
+      Provável: totals.currProvavel,
+      Possível: totals.currPossivel,
+      Remoto: totals.currRemoto,
+    }
+  ]
+
   const breakdown = [
     {
       title: "Principal",
       icon: Banknote,
-      value: currentQuarter.principal_provavel,
+      value: totals.currPrincipal,
       color: "text-chart-1"
     },
     {
       title: "Correção",
       icon: TrendingUp,
-      value: currentQuarter.correcao_provavel,
+      value: totals.currCorrecao,
       color: "text-chart-2"
     },
     {
       title: "Juros",
       icon: Percent,
-      value: currentQuarter.juros_provavel,
+      value: totals.currJuros,
       color: "text-chart-3"
     }
   ]
@@ -130,7 +150,7 @@ export function FinancialAnalysis() {
           <Card className="border border-border bg-card shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Trimestre Atual ({currentQuarter.trimestre}/{currentQuarter.ano})
+                Fechamento Atual (Consolidado)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -155,16 +175,12 @@ export function FinancialAnalysis() {
 
           <Card className="border border-border bg-card shadow-sm flex-1">
             <CardContent className="flex h-full flex-col justify-center p-5">
-              <p className="text-sm font-medium text-muted-foreground">Total Provável (Trimestre)</p>
+              <p className="text-sm font-medium text-muted-foreground">Total Provável (Carteira)</p>
               <p className="mt-1 text-3xl font-bold text-card-foreground">
-                {formatCurrency(
-                  currentQuarter.principal_provavel + 
-                  currentQuarter.correcao_provavel + 
-                  currentQuarter.juros_provavel
-                )}
+                {formatCurrency(totals.currProvavel)}
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Principal + Correção + Juros
+                Volume total provisionado no Quarter atual
               </p>
             </CardContent>
           </Card>
