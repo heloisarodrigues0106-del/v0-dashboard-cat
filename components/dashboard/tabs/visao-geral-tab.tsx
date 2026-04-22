@@ -9,7 +9,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
 import { ConcessoesLiminares } from "./concessoes-liminares"
 
-const geoUrl = "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson"
+const geoUrl = "/brazil-states.geojson"
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
