@@ -58,7 +58,7 @@ export default async function DashboardPage() {
 
   const errorMsg = [errProc, errValores, errLaudo]
     .filter(Boolean)
-    .map(e => e.message)
+    .map((e: any) => e.message)
     .join(" | ")
 
   return (
