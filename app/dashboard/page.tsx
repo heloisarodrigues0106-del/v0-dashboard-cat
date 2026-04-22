@@ -56,7 +56,7 @@ export default async function DashboardPage() {
     if (v) console.error(`[dashboard] ${k}:`, JSON.stringify(v))
   })
 
-  const errorMsg = [errProc, errValores, errLaudos]
+  const errorMsg = [errProc, errValores, errLaudo]
     .filter(Boolean)
     .map(e => e.message)
     .join(" | ")
