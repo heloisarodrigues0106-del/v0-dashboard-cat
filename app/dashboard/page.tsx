@@ -42,11 +42,11 @@ export default async function DashboardPage() {
     supabase.from('tb_valores').select(
       'id, numero_processo, deposito_recursal, apolice, custas_processuais, ' +
       'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
-      'provavel_juros_quarter_anterior, provavel_principal_quarter_atual, ' +
-      'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, ' +
+      'provavel_juros_quarter_anterior, provavel_total_anterior, provavel_principal_quarter_atual, ' +
+      'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, ' +
-      'possivel_juros_quarter_atual, remoto_principal_quarter_atual, ' +
-      'remoto_correcao_quarter_atual, remoto_juros_quarter_atual, ' +
+      'possivel_juros_quarter_atual, possivel_total_atual, remoto_principal_quarter_atual, ' +
+      'remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual, ' +
       'justificativa_reavaliacao_quarter_anterior, justificativa_reavaliacao_quarter_atual'
     ),
   ])

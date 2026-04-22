@@ -304,36 +304,44 @@ function ProcessoDetails({ processo }: { processo: Processo }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {valores.map((v) => {
-                    const totalProvavel =
-                      v.principal_provavel +
-                      v.correcao_monetaria_provavel +
-                      v.juros_provavel
-                    const totalPossivel =
-                      v.principal_possivel +
-                      v.correcao_monetaria_possivel +
-                      v.juros_possivel
-                    const totalRemoto =
-                      v.principal_remoto +
-                      v.correcao_monetaria_remoto +
-                      v.juros_remoto
-                    return (
-                      <TableRow key={`${v.numero_processo}-${v.quarter}-${v.ano}`}>
-                        <TableCell className="font-medium">
-                          {v.quarter}/{v.ano}
+                  {valores.length > 0 ? (
+                    valores.flatMap((v) => [
+                      // Linha do Trimestre Anterior (Foco no Risco Provável)
+                      <TableRow key={`${v.numero_processo}-anterior`} className="bg-muted/30">
+                        <TableCell className="font-medium flex items-center gap-2">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          Anterior
                         </TableCell>
-                        <TableCell className="text-right text-destructive font-medium">
-                          {formatCurrency(totalProvavel)}
+                        <TableCell className="text-right font-medium text-muted-foreground">
+                          {formatCurrency(v.provavel_total_anterior || 0)}
                         </TableCell>
-                        <TableCell className="text-right text-warning-foreground font-medium">
-                          {formatCurrency(totalPossivel)}
+                        <TableCell className="text-right text-muted-foreground/50">-</TableCell>
+                        <TableCell className="text-right text-muted-foreground/50">-</TableCell>
+                      </TableRow>,
+                      // Linha do Trimestre Atual (Status Completo)
+                      <TableRow key={`${v.numero_processo}-atual`} className="border-b-2">
+                        <TableCell className="font-bold flex items-center gap-2 text-primary">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Atual
                         </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                          {formatCurrency(totalRemoto)}
+                        <TableCell className="text-right text-destructive font-bold">
+                          {formatCurrency(v.provavel_total_atual || 0)}
+                        </TableCell>
+                        <TableCell className="text-right text-warning-foreground font-semibold">
+                          {formatCurrency(v.possivel_total_atual || 0)}
+                        </TableCell>
+                        <TableCell className="text-right text-slate-600">
+                          {formatCurrency(v.remoto_total_atual || 0)}
                         </TableCell>
                       </TableRow>
-                    )
-                  })}
+                    ])
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                        Nenhum dado de reavaliação disponível.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             ) : (
