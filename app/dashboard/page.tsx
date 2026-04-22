@@ -8,17 +8,17 @@ export default async function DashboardPage() {
 
   const [
     { data: processos, error: errProc },
-    { data: pedidosInicial },
-    { data: pedidosSentenca },
-    { data: pedidosAcordao },
-    { data: laudos },
-    { data: valores }
+    { data: pedidosInicial, error: errPI },
+    { data: pedidosSentenca, error: errPS },
+    { data: pedidosAcordao, error: errPA },
+    { data: laudos, error: errLaudo },
+    { data: valores, error: errValores }
   ] = await Promise.all([
     supabase.from('tb_processo').select(
-      'id, numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
+      'numero_processo, nome_reclamante, funcao_reclamante, advogado_reclamante, ' +
       'reclamada, centro_custo, empresa_terceirizada, tipo_acao, vara, comarca, uf, ' +
       'data_ajuizamento, data_arquivamento, valor_causa, status, fase_processual, instancia, ' +
-      'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico'
+      'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico, liminar'
     ),
     supabase.from('tb_pedidos_inicial').select(
       'id, numero_processo, do_at, reintegracao, periculosidade, insalubridade, ' +
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     ),
     supabase.from('tb_laudo').select('*'),
     supabase.from('tb_valores').select(
-      'id, numero_processo, deposito_recursal, apolice, custas_processuais, ' +
+      'numero_processo, deposito_recursal, apolice, custas_processuais, ' +
       'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
       'provavel_juros_quarter_anterior, provavel_principal_quarter_atual, ' +
       'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, ' +
@@ -51,9 +51,10 @@ export default async function DashboardPage() {
     ),
   ])
 
-  if (errProc && process.env.NODE_ENV !== 'production') {
-    console.error('Erro ao buscar processos no Supabase:', errProc)
-  }
+  const erros = { errProc, errPI, errPS, errPA, errLaudo, errValores }
+  Object.entries(erros).forEach(([k, v]) => {
+    if (v) console.error(`[dashboard] ${k}:`, JSON.stringify(v))
+  })
 
   return (
     <DashboardClient
