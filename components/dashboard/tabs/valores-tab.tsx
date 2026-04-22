@@ -250,7 +250,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
             </Card>
 
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
       )}
 
       {activeMainTab === "preparo_recursal" && (
