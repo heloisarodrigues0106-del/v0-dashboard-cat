@@ -855,8 +855,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 Próximo <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
