@@ -40,7 +40,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       // Gerais
       kpiGeral.custas += (Number(v.custas_processuais) || 0)
       kpiGeral.depositoRecursal += (Number(v.deposito_recursal) || 0)
-      if (v.apolice === true || String(v.apolice).toLowerCase() === "true") kpiGeral.apolice++
+      if (v.apolice === true || String(v.apolice || "").toLowerCase().trim() === "true") kpiGeral.apolice++
       kpiGeral.depositoJudicial += (Number(v.deposito_judicial) || 0)
 
       // Usar os campos consolidados do Quarter Atual
