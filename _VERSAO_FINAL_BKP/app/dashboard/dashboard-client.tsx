@@ -38,34 +38,8 @@ export default function DashboardClient({
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isExporting, setIsExporting] = useState(false)
 
-  const handleExportPDF = useCallback(async () => {
-    setIsExporting(true)
-    
-    // Atraso intencional para montar todas as 5 sub-abas invisíveis e os gráficos SVG iniciarem
-    setTimeout(async () => {
-      try {
-        const html2pdf = (await import('html2pdf.js')).default
-        const element = document.getElementById('pdf-export-container')
-        
-        if (element) {
-          const opt = {
-            margin:       [10, 10, 10, 10] as [number, number, number, number], // Margem em mm (Top, Left, Bottom, Right)
-            filename:     'Dashboard-CAT.pdf',
-            image:        { type: 'jpeg' as const, quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
-          }
-          await html2pdf().set(opt).from(element).save()
-        }
-      } catch (error) {
-        console.error("Erro ao gerar/exportar PDF:", error)
-      } finally {
-        setIsExporting(false)
-      }
-    }, 1500)
-  }, [])
+
 
   const handleLogout = useCallback(async () => {
     const supabase = createClient()
@@ -278,8 +252,6 @@ export default function DashboardClient({
         <DashboardHeader 
           breadcrumb={getBreadcrumb()} 
           onMenuClick={() => setIsMobileMenuOpen(true)}
-          isExporting={isExporting}
-          onExportPDF={handleExportPDF}
         />
 
         {/* Global Filters */}
@@ -367,57 +339,7 @@ export default function DashboardClient({
 
         </div>
 
-        {/* --- EXPORT VIEW (RENDERIZADO INVISÍVEL APENAS PARA O PDF) --- */}
-        {isExporting && (
-          <div 
-            id="pdf-export-container" 
-            className="absolute left-[9999px] top-0 w-[1400px] bg-[#f8fafc] text-slate-900 flex flex-col gap-16 p-8"
-          >
-            <div className="mb-8 text-center border-b-4 border-[#F6D000] pb-6">
-              <h1 className="text-4xl font-black uppercase text-slate-900 tracking-tight">Caterpillar - Relatório Jurídico Consolidado</h1>
-              <p className="text-slate-500 font-medium mt-2">Extração automática de métricas globais</p>
-            </div>
-            
-            <section className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Visão Geral</h2>
-              <VisaoGeralTab processos={filteredProcessos} pedidos={filteredPedidosInicial} />
-            </section>
-            
-            <div className="html2pdf__page-break"></div>
-            
-            <section className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Processos em Detalhe</h2>
-              <ProcessosTab 
-                processos={filteredProcessos} 
-                pedidosInicial={filteredPedidosInicial} 
-                pedidosSentenca={filteredPedidosSentenca} 
-                pedidosAcordao={filteredPedidosAcordao}
-                laudos={filteredLaudos}
-              />
-            </section>
-            
-            <div className="html2pdf__page-break"></div>
-            
-            <section className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Gestão de Acordos</h2>
-              <AcordosTab processos={filteredProcessos} />
-            </section>
-            
-            <div className="html2pdf__page-break"></div>
-            
-            <section className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Histórico de Laudos Periciais</h2>
-              <LaudosTab laudos={filteredLaudos} processos={filteredProcessos} />
-            </section>
-            
-            <div className="html2pdf__page-break"></div>
-            
-            <section className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-3xl font-bold mb-6 text-slate-800 border-l-8 border-[#F6D000] pl-4">Valores Envolvidos e Custos</h2>
-              <ValoresTab valores={filteredValores} />
-            </section>
-          </div>
-        )}
+
 
       </main>
     </div>
