@@ -312,7 +312,7 @@ export default function DashboardClient({
           {/* 3. Acordos */}
           {activeNavItem === "acordos" && (
             <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
-               <AcordosTab processos={filteredProcessos} />
+               <AcordosTab processos={filteredProcessos} valores={filteredValores} />
             </div>
           )}
 

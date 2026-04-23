@@ -20,7 +20,7 @@ function formatPercent(value: number) {
   return `${(value || 0).toFixed(1)}%`
 }
 
-export function AcordosTab({ processos = [] }: { processos: any[] }) {
+export function AcordosTab({ processos = [], valores = [] }: { processos: any[], valores?: any[] }) {
   const [searchQuery, setSearchQuery] = useState("")
   
   const { metrics, chartData, scatterData, listAcordos } = useMemo(() => {
@@ -30,6 +30,14 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       return status === 'ACORDO' || status.includes('ACORDO CELEBRADO') || status.includes('ACORDO JUDICIAL');
     })
     
+    // Mapear valores por numero_processo para acesso rápido
+    const valoresMap = new Map()
+    if (valores) {
+      valores.forEach(v => {
+        valoresMap.set(v.numero_processo, v)
+      })
+    }
+    
     let totalCausa = 0
     let totalAcordado = 0
     
@@ -37,11 +45,19 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      const causa = Number(p.valor_causa || p.valor_acao || 0)
+      // 1. Identificar o valor base de risco. 
+      // Busca a provisão anterior, se não tiver usa a atual, se não tiver usa o valor da causa bruto
+      const valorRecord = valoresMap.get(p.numero_processo)
+      let riscoProvavel = 0
+      
+      if (valorRecord) {
+        riscoProvavel = Number(valorRecord.provavel_total_anterior) || Number(valorRecord.provavel_total_atual) || 0
+      }
+      
+      const causa = riscoProvavel > 0 ? riscoProvavel : Number(p.valor_causa || p.valor_acao || 0)
       const acordado = Number(p.valor_acordo || 0)
       
-      // Apenas somamos para a métrica de ECONOMIA se houver um valor de causa para comparar
-      // Caso contrário, estaríamos distorcendo a taxa de economia
+      // Apenas somamos para a métrica de ECONOMIA se houver um valor base para comparar
       if (causa > 0) {
         totalCausa += causa
         totalAcordado += acordado
@@ -68,7 +84,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         valorAcordo: acordado,
         savingValor: savingVal,
         savingPercent: savingPerc,
-        funcao: p.funcao_reclamante || "Não informada"
+        funcao: p.funcao_reclamante || "Não informada",
+        usouRiscoProvavel: riscoProvavel > 0
       })
     })
 
@@ -105,7 +122,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       scatterData: validScatterData,
       listAcordos: filteredAcordos
     }
-  }, [processos, searchQuery])
+  }, [processos, valores, searchQuery])
   
   return (
     <div className="space-y-6">

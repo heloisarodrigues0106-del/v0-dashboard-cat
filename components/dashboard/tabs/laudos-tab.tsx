@@ -22,7 +22,12 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   }, [processos]);
   
   const stats = useMemo(() => {
-    let total = laudos.length
+    const hasValue = (val: any) => {
+      const str = String(val).trim().toLowerCase();
+      return str !== "" && str !== "null" && str !== "undefined" && str !== "nan" && str !== "false";
+    }
+
+    let total = 0
     let favoraveis = 0
     let desfavoraveis = 0
     let motivos = {
@@ -33,10 +38,15 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       "Outros": 0
     }
     let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number, classificacao: string }> = {}
-    let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Ergonômica": 0, "Médica Mental": 0, "Outros/Não Especificado": 0 }
+    let tiposLaudo: Record<string, number> = { 
+      "Técnica": 0, 
+      "Médica Geral": 0, 
+      "Médica Mental": 0, 
+      "Ergonômica": 0 
+    }
     let nexos = { Causa: 0, Concausa: 0, "Incapacidade/Restrição": 0 }
     let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
-    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } // Manter se for usar separadamente, mas para o gráfico principal vamos usar medicaGeralStatus
+    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } 
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
@@ -44,6 +54,16 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let grausInsalubridade = { "Mínimo (10%)": 0, "Médio (20%)": 0, "Máximo (40%)": 0 }
 
     laudos.forEach(laudo => {
+      const hasTecnica = hasValue(laudo.insalubridade) || hasValue(laudo.periculosidade);
+      const hasMedicaGeral = hasValue(laudo.do_medica_geral);
+      const hasMental = hasValue(laudo.do_mental);
+      const hasErgonomia = hasValue(laudo.ergonomia);
+
+      const hasAnyMarking = hasTecnica || hasMedicaGeral || hasMental || hasErgonomia;
+      if (!hasAnyMarking) return;
+
+      total++;
+
       // Checar se há risco/desfavorabilidade nas colunas críticas
       const valores = [
         laudo.doenca,
@@ -76,20 +96,12 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         favoraveis++
       }
 
-      // Tipologia de Perícia Atualizada
-      const isTecnica = laudo.insalubridade === true || String(laudo.insalubridade).toLowerCase() === "true" ||
-                        laudo.periculosidade === true || String(laudo.periculosidade).toLowerCase() === "true";
-      
-      const ergoStr = String(laudo.do_ergonomica || laudo.doenca_ergonomica || "").trim().toLowerCase();
-      const isErgonomica = ergoStr !== "" && ergoStr !== "null" && ergoStr !== "false" && ergoStr !== "undefined";
-      
-      const mentalStr = String(laudo.do_mental || laudo.doenca_mental || "").trim().toLowerCase();
-      const isMental = laudo.do_mental === true || (mentalStr !== "" && mentalStr !== "null" && mentalStr !== "false" && mentalStr !== "undefined");
+      if (hasTecnica) tiposLaudo["Técnica"]++;
+      if (hasMedicaGeral) tiposLaudo["Médica Geral"]++;
+      if (hasMental) tiposLaudo["Médica Mental"]++;
+      if (hasErgonomia) tiposLaudo["Ergonômica"]++;
 
-      if (isTecnica) tiposLaudo["Técnica"]++;
-      if (isErgonomica) tiposLaudo["Médica Ergonômica"]++;
-      if (isMental) tiposLaudo["Médica Mental"]++;
-      if (!isTecnica && !isErgonomica && !isMental) tiposLaudo["Outros/Não Especificado"]++;
+      const mentalStr = String(laudo.do_mental || laudo.doenca_mental || "").trim().toLowerCase();
 
       // Nexo e Capacidade
       const joinedValores = valores.join(" ")
@@ -144,15 +156,10 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         ergonomiaStatus.Negativo++
       }
 
-      // Nova Correlação de Peritos solicitada: Extração via tb_processo e validação de seus respectivos campos no laudo
+      // Nova Correlação de Peritos solicitada
       const processoRelacionado = processos.find(p => 
         String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()
       ) || {};
-
-      const hasValue = (val: any) => {
-         const str = String(val).trim().toLowerCase();
-         return str !== "" && str !== "null" && str !== "undefined" && str !== "nan" && str !== "false";
-      }
 
       // Além de identificar 'bad words', lidamos com caso o campo seja true
       const isBadForCompany = (val: any) => {
@@ -461,7 +468,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                        dataKey="value"
                      >
                        {tiposData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={['#F6D000', '#d97706', '#9ca3af'][index % 3]} />
+                         <Cell key={`cell-${index}`} fill={['#F6D000', '#9ca3af', '#d97706', '#4b5563'][index % 4]} />
                        ))}
                      </Pie>
                      <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
