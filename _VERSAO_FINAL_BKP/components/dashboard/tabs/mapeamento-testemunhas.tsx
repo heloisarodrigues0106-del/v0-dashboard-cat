@@ -247,9 +247,9 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                         </div>
                       </div>
                       
-                      <div className="flex flex-wrap gap-2 sm:max-w-md justify-start sm:justify-end">
+                      <div className="flex flex-wrap gap-2 sm:max-w-md justify-end">
                         {item.processos.map((proc, i) => (
-                          <div key={i} className="shrink-0">{renderProcessInfo(proc)}</div>
+                          <div key={i}>{renderProcessInfo(proc)}</div>
                         ))}
                       </div>
                     </div>

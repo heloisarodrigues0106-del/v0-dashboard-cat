@@ -34,7 +34,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     let processCount = processos.length
 
     // Status groups as requested by user
-
+    const statusAtivos = ['PROCEDENTE', 'PARCIALMENTE PROCEDENTE', 'SOBRESTADO', 'IMPROCEDENTE', 'ACORDO']
 
     let processosAtivosCount = 0
     let processosArquivadosCount = 0
@@ -66,10 +66,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       const statusVal = (p.status || p.status_processo || "").toUpperCase().trim()
       const instanciaVal = (p.instancia || "").toUpperCase().trim()
       
-      // Regra: Se a instância é 'ARQUIVADO', conta como arquivado. Caso contrário, é ATIVO.
+      // Update Active/Archived count with priority for 'ARQUIVADO' in instancia
       if (instanciaVal === 'ARQUIVADO') {
         processosArquivadosCount++
-      } else {
+      } else if (statusAtivos.includes(statusVal)) {
         processosAtivosCount++
       }
 
@@ -501,17 +501,17 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
           <CardHeader>
             <CardTitle>Volumetria por desfecho</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1">
+          <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.status.length > 0 ? (
-              <div className="h-[480px] relative">
+              <div className="h-[350px] relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={ranks.status}
                       cx="50%"
-                      cy="45%"
-                      innerRadius={80}
-                      outerRadius={105}
+                      cy="50%"
+                      innerRadius={90}
+                      outerRadius={110}
                       paddingAngle={5}
                       dataKey="value"
                       nameKey="name"
@@ -550,18 +550,17 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     />
                     <Legend 
                       verticalAlign="bottom" 
-                      align="center"
-                      wrapperStyle={{ paddingTop: "20px", bottom: 0 }}
+                      height={36} 
                       content={(props) => {
                         const { payload } = props;
                         return (
-                          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 px-2">
+                          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4">
                             {payload?.map((entry: any, index: number) => {
                               const percentage = ((entry.payload.value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
                               return (
-                                <div key={`item-${index}`} className="flex items-center gap-2 text-[10px] md:text-xs font-semibold">
-                                  <span className="w-2.5 h-2.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: entry.color }} />
-                                  <span className="text-muted-foreground uppercase truncate max-w-[130px]" title={entry.value}>{entry.value} ({percentage}%)</span>
+                                <div key={`item-${index}`} className="flex items-center gap-2 text-xs font-semibold">
+                                  <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
+                                  <span className="text-muted-foreground uppercase truncate max-w-[120px]" title={entry.value}>{entry.value} ({percentage}%)</span>
                                 </div>
                               );
                             })}

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { ChevronLeft, ChevronRight, Eye, AlertCircle, Link as LinkIcon, Activity, AlertTriangle, ShieldAlert, HeartPulse, Stethoscope, Search, Check, X, ChevronDown } from "lucide-react"
 
-const ITEMS_PER_PAGE = 15
+const ITEMS_PER_PAGE = 5
 
 const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
@@ -96,8 +96,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
             />
           </div>
         </CardHeader>
-        <CardContent className="p-0 px-6 pb-8 overflow-x-auto">
-          <div className="flex flex-col gap-2 min-w-[800px] md:min-w-0">
+        <CardContent className="p-0 px-6 pb-8">
+          <div className="flex flex-col gap-2">
             {currentProcesses.map((processo) => {
               const laudo = laudos.find(l => String(l.numero_processo) === String(processo.numero_processo)) || {}
               
@@ -139,7 +139,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                     <div className="w-full md:w-[30%] shrink-0">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{processo.fase_processual}</span>
                     </div>
-                    <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
+                    <div className="flex items-center w-full md:w-[35%] gap-5 justify-between md:justify-end shrink-0">
                       <Badge variant={getStatusVariant(processo.status)} className={`${getStatusColor(processo.status)} text-[10px] px-2.5 py-0.5 font-bold uppercase`}>
                         {processo.status}
                       </Badge>

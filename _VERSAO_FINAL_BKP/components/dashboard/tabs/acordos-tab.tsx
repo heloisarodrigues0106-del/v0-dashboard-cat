@@ -268,8 +268,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="relative max-h-[600px] overflow-y-auto overflow-x-auto">
-            <Table className="min-w-[1000px]">
+          <div className="relative max-h-[500px] overflow-y-auto overflow-x-auto">
+            <Table>
               <TableHeader className="sticky top-0 z-10 bg-slate-50 border-b shadow-sm">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[180px]">Processo</TableHead>

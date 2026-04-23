@@ -401,7 +401,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     <div className="space-y-6">
       
       {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Laudos</CardTitle>
@@ -544,8 +544,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[650px] w-full pt-4 overflow-x-auto">
-            <div className="h-full min-w-[700px]">
+          <div className="h-[650px] w-full pt-4">
             {peritosData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart  
@@ -630,8 +629,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
             ) : (
                <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                  <span className="font-semibold text-lg text-slate-500">Nenhum perito encontrado.</span>
@@ -698,8 +695,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </div>
           </CardHeader>
 
-          <CardContent className="p-0 px-6 overflow-x-auto">
-            <div className="flex flex-col gap-2 min-w-[850px] md:min-w-0 pb-4">
+          <CardContent className="p-0 px-6">
+            <div className="flex flex-col gap-2">
               {paginatedHonorarios.map((item, idx) => (
                  <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
                     
