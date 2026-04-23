@@ -61,6 +61,8 @@ export default function DashboardClient({
   const [tipoAcao, setTipoAcao] = useState<string[]>([])
   const [vara, setVara] = useState<string[]>([])
   const [funcaoReclamante, setFuncaoReclamante] = useState<string[]>([])
+  const [statusReclamante, setStatusReclamante] = useState<string[]>([])
+  const [statusProcesso, setStatusProcesso] = useState<string[]>([])
   
   // Filtro de Faixa de Valor da Causa
   const [valorAcaoRange, setValorAcaoRange] = useState<[number, number]>([0, 5000000])
@@ -74,6 +76,7 @@ export default function DashboardClient({
     const tiposAcao = new Set<string>()
     const varas = new Set<string>()
     const funcoes = new Set<string>()
+    const statusReclamantes = new Set<string>()
 
     processos.forEach(p => {
       if (p.reclamada) empresas.add(p.reclamada)
@@ -82,6 +85,7 @@ export default function DashboardClient({
       if (p.empresa_terceirizada) terceirizadas.add(p.empresa_terceirizada)
       if (p.tipo_acao) tiposAcao.add(p.tipo_acao)
       if (p.funcao_reclamante) funcoes.add(p.funcao_reclamante)
+      if (p.status_reclamante) statusReclamantes.add(p.status_reclamante)
       
       const v = p.vara ? p.vara.trim() : ""
       const c = p.comarca ? p.comarca.trim() : ""
@@ -96,7 +100,9 @@ export default function DashboardClient({
       terceirizadas: Array.from(terceirizadas).sort(),
       tiposAcao: Array.from(tiposAcao).sort(),
       varas: Array.from(varas).sort(),
-      funcoes: Array.from(funcoes).sort()
+      funcoes: Array.from(funcoes).sort(),
+      statusReclamantes: Array.from(statusReclamantes).sort(),
+      statusProcesso: ["Ativo", "Arquivado"]
     }
   }, [processos])
 
@@ -162,6 +168,13 @@ export default function DashboardClient({
       const matchesTerceirizada = terceirizada.length === 0 || terceirizada.includes(p.empresa_terceirizada)
       const matchesTipoAcao = tipoAcao.length === 0 || tipoAcao.includes(p.tipo_acao)
       const matchesFuncao = funcaoReclamante.length === 0 || funcaoReclamante.includes(p.funcao_reclamante)
+      const matchesStatusReclamante = statusReclamante.length === 0 || statusReclamante.includes(p.status_reclamante)
+      
+      const matchesStatusProcesso = statusProcesso.length === 0 || (() => {
+        const isArquivado = String(p.instancia || "").toUpperCase().includes("ARQUIVADO")
+        const currentStatus = isArquivado ? "Arquivado" : "Ativo"
+        return statusProcesso.includes(currentStatus)
+      })()
       
       const matchesVara = vara.length === 0 || (() => {
         const v = p.vara ? p.vara.trim() : ""
@@ -185,13 +198,15 @@ export default function DashboardClient({
         matchesTerceirizada &&
         matchesTipoAcao &&
         matchesFuncao &&
+        matchesStatusReclamante &&
+        matchesStatusProcesso &&
         matchesVara &&
         matchesValorAcao
       )
     })
   }, [
     processos, dataAjuizamentoInicio, dataAjuizamentoFim, dataArquivamentoInicio, dataArquivamentoFim,
-    empresa, unidade, advogado, terceirizada, tipoAcao, vara, funcaoReclamante, valorAcaoRange
+    empresa, unidade, advogado, terceirizada, tipoAcao, vara, funcaoReclamante, statusReclamante, statusProcesso, valorAcaoRange
   ])
 
   // Extract valid numero_processos for cascading filters to other arrays
@@ -281,6 +296,10 @@ export default function DashboardClient({
             setFuncaoReclamante={setFuncaoReclamante}
             valorAcaoRange={valorAcaoRange}
             setValorAcaoRange={setValorAcaoRange}
+            statusReclamante={statusReclamante}
+            setStatusReclamante={setStatusReclamante}
+            statusProcesso={statusProcesso}
+            setStatusProcesso={setStatusProcesso}
             processos={processos} // For the histogram
             filterOptions={filterOptions}
           />

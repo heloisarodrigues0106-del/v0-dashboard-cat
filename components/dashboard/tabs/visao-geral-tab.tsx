@@ -9,6 +9,8 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
 import { ConcessoesLiminares } from "./concessoes-liminares"
 
+const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+
 const geoUrl = "/brazil-states.geojson"
 
 function formatCurrency(value: number) {
@@ -446,7 +448,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       isAnimationActive={true}
                     >
                       {ranks.instancias.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#F6D000', '#111111', '#d97706', '#78716c', '#b45309'][index % 5]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
                       ))}
                       <Label
                         value={kpis.totalProcessos.toLocaleString("pt-BR")}
@@ -519,15 +521,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       isAnimationActive={true}
                     >
                       {ranks.status.map((entry, index) => {
-                        let fColor = "#94a3b8";
-                        const nm = entry.name.toUpperCase();
-                        if (nm.includes("PARCIALMENTE PROCEDENTE")) fColor = "#10b981";
-                        else if (nm.includes("PROCEDENTE")) fColor = "#F6D000";
-                        else if (nm.includes("ACORDO")) fColor = "#f97316";
-                        else if (nm.includes("ARQUIVADO")) fColor = "#86efac";
-                        else if (nm.includes("IMPROCEDENTE")) fColor = "#ef4444";
-                        
-                        return <Cell key={`cell-${index}`} fill={fColor} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
+                        return <Cell key={`cell-${index}`} fill={CHART_COLORS[(index + 1) % CHART_COLORS.length]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
                       })}
                       <Label
                         value={kpis.totalProcessos.toLocaleString("pt-BR")}
@@ -596,12 +590,12 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
               <AreaChart data={ranks.anos} margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorYellowArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F6D000" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#F6D000" stopOpacity={0}/>
+                    <stop offset="5%" stopColor={CHART_COLORS[0]} stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor={CHART_COLORS[0]} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} tick={{fontSize: 12, fontWeight: 500}} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" opacity={0.5} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 500 }} dy={10} />
                 <YAxis 
                    stroke="hsl(var(--muted-foreground))" 
                    tickLine={false} 

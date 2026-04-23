@@ -9,6 +9,8 @@ import {
 } from "recharts"
 import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
 
+const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -216,8 +218,8 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
                     formatter={(value: number, name: string) => [formatCurrency(value), name === 'total' ? 'Total' : 'Média']}
                   />
                   <Legend verticalAlign="bottom" height={36} formatter={(value) => <span className="text-sm font-medium capitalize">{value}</span>} />
-                  <Bar yAxisId="left" dataKey="total" fill="#F6D000" radius={[4, 4, 0, 0]} maxBarSize={150} />
-                  <Line yAxisId="left" type="monotone" dataKey="media" stroke="#0f172a" strokeWidth={2} dot={{ r: 4, fill: "#0f172a" }} />
+                  <Bar yAxisId="left" dataKey="total" fill={CHART_COLORS[0]} radius={[4, 4, 0, 0]} maxBarSize={150} />
+                  <Line yAxisId="left" type="monotone" dataKey="media" stroke={CHART_COLORS[4]} strokeWidth={2} dot={{ r: 4, fill: CHART_COLORS[4] }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -261,7 +263,11 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
                     contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                     formatter={(value: number, name: string) => [formatCurrency(value), name]}
                   />
-                  <Scatter name="Valor da Causa" data={scatterData} fill="#F6D000" />
+                  <Scatter name="Acordos" data={scatterData} fill={CHART_COLORS[4]} opacity={0.6}>
+                    {scatterData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Scatter>
                   <Legend verticalAlign="bottom" height={36} formatter={(val) => <span className="text-sm font-medium">Valor da Causa</span>}/>
                 </ScatterChart>
               </ResponsiveContainer>

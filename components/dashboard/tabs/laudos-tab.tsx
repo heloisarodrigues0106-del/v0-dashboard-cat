@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight } from "lucide-react"
 
+const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   const [honorariosPage, setHonorariosPage] = useState(1);
   const [honorariosSearch, setHonorariosSearch] = useState("");
@@ -325,8 +327,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     .map(([name, Quantidade]) => ({ name, Quantidade, percent: stats.total > 0 ? ((Quantidade / stats.total) * 100).toFixed(1) : 0 }))
 
   const pieData = [
-    { name: "Favoráveis", value: stats.favoraveis, color: "#10b981" },
-    { name: "Desfavoráveis", value: stats.desfavoraveis, color: "#ef4444" },
+    { name: "Favoráveis", value: stats.favoraveis, color: CHART_COLORS[0] }, // Yellow
+    { name: "Desfavoráveis", value: stats.desfavoraveis, color: CHART_COLORS[3] }, // Graphite
   ]
 
   const motivosData = Object.entries(stats.motivos)
@@ -335,36 +337,36 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     .sort((a, b) => b.Quantidade - a.Quantidade)
 
   const medicaGeralData = [
-    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: "#eab308" },
-    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: "#f97316" },
-    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: "#9ca3af" }
+    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: CHART_COLORS[2] },
+    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: CHART_COLORS[1] },
+    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: CHART_COLORS[3] }
   ].filter(d => d.value > 0)
 
   const mentalData = [
-    { name: "Causa", value: stats.mentalStatus.Causa, color: "#F6D000" },
-    { name: "Concausa", value: stats.mentalStatus.Concausa, color: "#d97706" },
-    { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: "#9ca3af" }
+    { name: "Causa", value: stats.mentalStatus.Causa, color: CHART_COLORS[0] },
+    { name: "Concausa", value: stats.mentalStatus.Concausa, color: CHART_COLORS[2] },
+    { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: CHART_COLORS[1] }
   ].filter(d => d.value > 0)
 
   const insalubridadeData = [
-    { name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: "#ef4444" },
-    { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: "#9ca3af" }
+    { name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: CHART_COLORS[3] },
+    { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: CHART_COLORS[1] }
   ].filter(d => d.value > 0)
 
   const periculosidadeData = [
-    { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: "#ef4444" },
-    { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: "#9ca3af" }
+    { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: CHART_COLORS[3] },
+    { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: CHART_COLORS[1] }
   ].filter(d => d.value > 0)
 
   const ergonomiaData = [
-    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: "#10b981" },
-    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: "#ef4444" }
+    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: CHART_COLORS[0] },
+    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: CHART_COLORS[3] }
   ].filter(d => d.value > 0)
 
   const grausInsalubridadeData = [
-    { name: "Mínimo (10%)", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#9ca3af" },
-    { name: "Médio (20%)", value: stats.grausInsalubridade["Médio (20%)"], color: "#f97316" },
-    { name: "Máximo (40%)", value: stats.grausInsalubridade["Máximo (40%)"], color: "#ef4444" }
+    { name: "Mínimo (10%)", value: stats.grausInsalubridade["Mínimo (10%)"], color: CHART_COLORS[1] },
+    { name: "Médio (20%)", value: stats.grausInsalubridade["Médio (20%)"], color: CHART_COLORS[2] },
+    { name: "Máximo (40%)", value: stats.grausInsalubridade["Máximo (40%)"], color: CHART_COLORS[3] }
   ].filter(d => d.value > 0)
 
   // Subcomponent wrapper render logic for inner repetitive pies
@@ -468,7 +470,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                        dataKey="value"
                      >
                        {tiposData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={['#F6D000', '#9ca3af', '#d97706', '#4b5563'][index % 4]} />
+                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                        ))}
                      </Pie>
                      <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
@@ -597,13 +599,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
                   formatter={(value) => <span className="text-slate-700 font-semibold px-2">{value}</span>}
                 />
-                <Bar 
-                  dataKey="Desfavorável" 
-                  stackId="a" 
-                  fill="#ef4444" 
-                  radius={[0, 0, 0, 0]}
-                  barSize={32}
-                >
+                <Bar dataKey="Desfavorável" stackId="a" fill={CHART_COLORS[2]} radius={[0, 0, 0, 0]} barSize={32}>
                   <LabelList 
                     dataKey="Desfavorável" 
                     position="center" 

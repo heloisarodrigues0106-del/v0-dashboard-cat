@@ -24,11 +24,11 @@
   --border: oklch(0.88 0 0);
   --input: oklch(0.88 0 0);
   --ring: oklch(0.85 0.19 95); /* Cat Yellow */
-  --chart-1: oklch(0.85 0.19 95);
-  --chart-2: oklch(0.45 0.18 200);
-  --chart-3: oklch(0.55 0.15 140);
-  --chart-4: oklch(0.6 0.2 30);
-  --chart-5: oklch(0.5 0.12 300);
+  --chart-1: #F6D000; /* Yellow */
+  --chart-2: #9CA3AF; /* Gray */
+  --chart-3: #D97706; /* Orange */
+  --chart-4: #4B5563; /* Graphite */
+  --chart-5: #0038A8; /* Blue */
   --radius: 0.75rem; /* Modern rounded cards */
   --sidebar: oklch(0.18 0.06 260);
   --sidebar-foreground: oklch(0.96 0 0);
@@ -64,11 +64,11 @@
   --border: oklch(0.25 0 0);
   --input: oklch(0.25 0 0);
   --ring: oklch(0.85 0.19 95); /* Cat Yellow */
-  --chart-1: oklch(0.85 0.19 95);
-  --chart-2: oklch(0.55 0.18 200);
-  --chart-3: oklch(0.65 0.15 140);
-  --chart-4: oklch(0.7 0.2 30);
-  --chart-5: oklch(0.6 0.12 300);
+  --chart-1: #F6D000;
+  --chart-2: #9CA3AF;
+  --chart-3: #F59E0B;
+  --chart-4: #6B7280;
+  --chart-5: #3B82F6;
   --sidebar: oklch(0.15 0.06 260);
   --sidebar-foreground: oklch(0.96 0 0);
   --sidebar-primary: oklch(0.45 0.12 260);

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip, LabelList } from "recharts"
 import { Scale } from "lucide-react"
 
+const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+
 export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const [agrupamento, setAgrupamento] = useState<"Assunto" | "Origem">("Assunto")
   const [assuntoFilter, setAssuntoFilter] = useState<string>("all")
@@ -212,7 +214,6 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                   />
                   <Bar 
                     dataKey="count" 
-                    fill="#F6D000" 
                     radius={[0, 4, 4, 0]} 
                     barSize={28}
                     isAnimationActive={true}
@@ -223,7 +224,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                       style={{ fill: "#0F172A", fontSize: 13, fontWeight: "bold" }}
                     />
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} className="hover:opacity-85 transition-opacity duration-200" />
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} className="hover:opacity-85 transition-opacity duration-200" />
                     ))}
                   </Bar>
                 </BarChart>

@@ -45,6 +45,10 @@ interface GlobalFiltersProps {
   setVara: (val: string[]) => void
   funcaoReclamante: string[]
   setFuncaoReclamante: (val: string[]) => void
+  statusReclamante: string[]
+  setStatusReclamante: (val: string[]) => void
+  statusProcesso: string[]
+  setStatusProcesso: (val: string[]) => void
   filterOptions: {
     empresas: string[]
     unidades: string[]
@@ -53,6 +57,8 @@ interface GlobalFiltersProps {
     tiposAcao: string[]
     varas: string[]
     funcoes: string[]
+    statusReclamantes: string[]
+    statusProcesso: string[]
   }
   valorAcaoRange: [number, number]
   setValorAcaoRange: (val: [number, number]) => void
@@ -82,6 +88,10 @@ export function GlobalFilters({
   setVara,
   funcaoReclamante,
   setFuncaoReclamante,
+  statusReclamante,
+  setStatusReclamante,
+  statusProcesso,
+  setStatusProcesso,
   filterOptions,
   valorAcaoRange,
   setValorAcaoRange,
@@ -100,6 +110,8 @@ export function GlobalFilters({
     tipoAcao.length > 0 ||
     vara.length > 0 ||
     funcaoReclamante.length > 0 ||
+    statusReclamante.length > 0 ||
+    statusProcesso.length > 0 ||
     valorAcaoRange[0] !== 0 ||
     valorAcaoRange[1] !== 5000000;
 
@@ -115,6 +127,8 @@ export function GlobalFilters({
     setTipoAcao([])
     setVara([])
     setFuncaoReclamante([])
+    setStatusReclamante([])
+    setStatusProcesso([])
     setValorAcaoRange([0, 5000000])
   }
 
@@ -276,6 +290,16 @@ export function GlobalFilters({
                 <div className="space-y-2">
                   <label className="text-xs font-medium uppercase tracking-wider">Função Reclamante</label>
                   <MultiSelect options={filterOptions.funcoes} selected={funcaoReclamante} onChange={setFuncaoReclamante} placeholder="Todas as Funções" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium uppercase tracking-wider">Status do Reclamante</label>
+                  <MultiSelect options={filterOptions.statusReclamantes} selected={statusReclamante} onChange={setStatusReclamante} placeholder="Todos os Status" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium uppercase tracking-wider">Status do Processo</label>
+                  <MultiSelect options={filterOptions.statusProcesso} selected={statusProcesso} onChange={setStatusProcesso} placeholder="Todos os Status" />
                 </div>
               </div>
             </div>
