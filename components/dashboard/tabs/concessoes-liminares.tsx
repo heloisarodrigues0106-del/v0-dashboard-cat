@@ -224,7 +224,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                       style={{ fill: "#0F172A", fontSize: 13, fontWeight: "bold" }}
                     />
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} className="hover:opacity-85 transition-opacity duration-200" />
+                      <Cell key={`cell-${index}`} fill="#F6D000" className="hover:opacity-85 transition-opacity duration-200" />
                     ))}
                   </Bar>
                 </BarChart>
