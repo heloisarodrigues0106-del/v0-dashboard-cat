@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-  ScatterChart, Scatter, ComposedChart, Line, Legend
+  ScatterChart, Scatter, ComposedChart, Line, Legend, Cell
 } from "recharts"
 import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
 
