@@ -744,6 +744,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
              </div>
           )}
         </div>
+      </div>
 
           {/* Pagination */}
           <div className="mt-4 flex items-center justify-between pb-6">

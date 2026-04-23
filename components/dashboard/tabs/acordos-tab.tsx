@@ -334,6 +334,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
               </TableBody>
             </Table>
           </div>
+        </div>
         </CardContent>
       </Card>
     </div>
