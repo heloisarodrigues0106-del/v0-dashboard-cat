@@ -702,54 +702,56 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </Card>
 
       {/* Controle de Honorários Prévios */}
-      <div className="space-y-4 pt-8 mt-8 border-t border-slate-100">
+      <div className="space-y-6 pt-10 mt-10 border-t border-slate-100">
         
-        {/* Banner de Métricas (Header) */}
-        <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
-          <CardContent className="p-0">
-            <div className="bg-[#102A63] p-8 text-white">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                  <div className="text-4xl md:text-5xl font-black tracking-tighter">
-                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
-                  </div>
-                  <div className="text-[11px] font-black text-blue-200 uppercase tracking-[2px] opacity-80">
-                    Investimento Consolidado em Honorários Prévios
-                  </div>
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10 flex flex-col items-center justify-center min-w-[150px]">
-                    <span className="text-2xl font-black text-white tracking-tight">
-                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
-                    </span>
-                    <span className="text-[10px] text-blue-200 font-black uppercase tracking-widest mt-1 opacity-70">Ticket Médio</span>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10 flex flex-col items-center justify-center min-w-[150px]">
-                    <span className="text-2xl font-black text-white tracking-tight">{honorariosData.qtdProcessos}</span>
-                    <span className="text-[10px] text-blue-200 font-black uppercase tracking-widest mt-1 opacity-70">Volume de Processos</span>
-                  </div>
-                </div>
-              </div>
+        {/* Novas Métricas de Destaque (Sem Tarja Azul) */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {/* Valor Principal - Destaque em Branco */}
+          <Card className="md:col-span-6 bg-white border-slate-200 shadow-sm overflow-hidden flex flex-col justify-center p-8">
+            <div className="text-sm font-black text-slate-400 uppercase tracking-[2px] mb-2">
+              Investimento Consolidado em Honorários Prévios
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-4xl md:text-5xl font-black tracking-tighter text-[#102A63]">
+              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
+            </div>
+          </Card>
+
+          {/* Ticket Médio - Azul */}
+          <Card className="md:col-span-3 bg-[#183B8C] border-none shadow-lg overflow-hidden flex flex-col items-center justify-center p-6 text-white transition-transform hover:scale-[1.02] duration-300">
+            <div className="p-2 bg-white/10 rounded-lg mb-3">
+              <TrendingUp className="h-5 w-5 text-blue-100" />
+            </div>
+            <div className="text-[22px] font-black tracking-tight">
+              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
+            </div>
+            <div className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80">Ticket Médio</div>
+          </Card>
+
+          {/* Volume - Azul Profundo */}
+          <Card className="md:col-span-3 bg-[#102A63] border-none shadow-lg overflow-hidden flex flex-col items-center justify-center p-6 text-white transition-transform hover:scale-[1.02] duration-300">
+            <div className="p-2 bg-white/10 rounded-lg mb-3">
+              <Users className="h-5 w-5 text-blue-100" />
+            </div>
+            <div className="text-[28px] font-black tracking-tight">{honorariosData.qtdProcessos}</div>
+            <div className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80">Volume de Processos</div>
+          </Card>
+        </div>
 
         {/* Lista com Paginação, Header e Busca */}
-        <Card className="border border-border bg-card shadow-sm mt-4">
-          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
+        <Card className="border border-border bg-card shadow-sm mt-4 overflow-hidden">
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 bg-slate-50/50 border-b border-slate-100 px-8 py-6">
             <div className="space-y-1">
-              <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <CardTitle className="text-xl font-black text-slate-800 flex items-center gap-2">
                 Listagem Detalhada
               </CardTitle>
-              <p className="text-sm text-muted-foreground">Relatório de honorários pagos por processo e reclamante</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Relatório de honorários pagos por processo e reclamante</p>
             </div>
             
-            <div className="relative w-full md:w-[350px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-full md:w-[400px]">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
-                placeholder="Buscar por nº processo, reclamante ou cargo..." 
-                className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm h-10"
+                placeholder="Buscar por nº processo, reclamante ou perito..." 
+                className="pl-11 bg-white border-slate-200 focus:border-[#183B8C] focus:ring-4 focus:ring-blue-50 transition-all text-sm h-12 rounded-xl"
                 value={honorariosSearch}
                 onChange={(e) => {
                    setHonorariosSearch(e.target.value)
@@ -759,62 +761,65 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </div>
           </CardHeader>
 
-          <CardContent className="p-0 px-6">
+          <CardContent className="p-0 px-8 pt-6">
             <div className="w-full overflow-x-auto pb-4">
-              <div className="flex flex-col gap-2 min-w-[850px] pb-4">
+              <div className="flex flex-col gap-4 min-w-[850px] pb-4">
               {paginatedHonorarios.map((item, idx) => {
-                const peritoCat = peritoClassificacaoMap[String(item.peritos[0]?.nome || "").trim().toUpperCase()] || "N/A";
-                
                 return (
-                 <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white border border-slate-200 rounded-xl transition-all hover:border-slate-300 hover:shadow-md mb-3">
+                 <div key={`hon-${idx}`} className="flex flex-col p-6 bg-white border border-slate-100 rounded-2xl transition-all hover:border-slate-200 hover:shadow-xl group">
                     
-                    {/* Esquerda: Número do Processo e Reclamante */}
-                    <div className="w-full md:w-[30%] flex flex-col gap-1 mb-3 md:mb-0 shrink-0">
-                      <span className="font-black text-slate-800 text-sm tracking-tight">{item.numero}</span>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.reclamante}</span>
+                    {/* Camada Superior: Dados Principais */}
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-5 pb-5 border-b border-dashed border-slate-100">
+                      <div className="flex flex-col gap-1.5">
+                        <div className="flex items-center gap-3">
+                          <span className="font-black text-[#102A63] text-base tracking-tight">{item.numero}</span>
+                          <div className="h-1 w-1 rounded-full bg-slate-300" />
+                          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{item.reclamante}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <MapPin className="h-3 w-3 text-slate-300" />
+                           <span className="text-[10px] font-black text-slate-400 uppercase tracking-[1px]">
+                             {item.vara ? `${item.vara} ` : ""}
+                             {item.comarca ? `${item.vara ? '• ' : ''}${item.comarca}` : "Vara não informada"}
+                           </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valor Pago</span>
+                        <div className="text-2xl font-black text-[#102A63] tracking-tighter">
+                          {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
+                        </div>
+                      </div>
                     </div>
                     
-                    {/* Centro: Vara/Juízo e Peritos */}
-                    <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[55%] gap-4 shrink-0">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">Vara / Comarca</span>
-                        <span className="text-xs font-bold text-slate-600 truncate max-w-[200px]">
-                          {item.vara ? `${item.vara} ` : ""}
-                          {item.comarca ? `${item.vara ? '- ' : ''}${item.comarca}` : ""}
-                        </span>
-                      </div>
-                      
-                      <div className="h-8 w-px bg-slate-100 hidden md:block" />
-                      
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 w-full">
+                    {/* Camada Inferior: Peritos (Com espaço total) */}
+                    <div className="flex flex-col gap-3">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[2px]">Peritos Nomeados</span>
+                      <div className="flex flex-wrap gap-3">
                         {item.peritos.map((perito: any, pIdx: number) => {
                           const pType = perito.tipo?.toUpperCase() || "N/A";
-                          let badgeStyles = "bg-slate-100 text-slate-600";
+                          let badgeStyles = "bg-slate-100 text-slate-600 border-slate-200";
                           
-                          if (pType.includes("TÉCNICO")) badgeStyles = "bg-[#DCE6F8] text-[#183B8C]";
-                          else if (pType.includes("MÉDICO")) badgeStyles = "bg-[#EEF2F7] text-[#4B5563]";
-                          else if (pType.includes("ERGONÔMICO")) badgeStyles = "bg-[#D9F3EF] text-[#0F766E]";
-                          else if (pType.includes("MENTAL") || pType.includes("PSIQ")) badgeStyles = "bg-[#FEF3C7] text-[#B45309]";
+                          if (pType.includes("TÉCNICO")) badgeStyles = "bg-[#DCE6F8] text-[#183B8C] border-[#B8D1F3]";
+                          else if (pType.includes("MÉDICO")) badgeStyles = "bg-[#EEF2F7] text-[#4B5563] border-[#D1D5DB]";
+                          else if (pType.includes("ERGONÔMICO")) badgeStyles = "bg-[#D9F3EF] text-[#0F766E] border-[#A7F3D0]";
+                          else if (pType.includes("MENTAL") || pType.includes("PSIQ")) badgeStyles = "bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]";
 
                           return (
-                            <div key={pIdx} className="flex items-center gap-2 shrink-0 bg-slate-50/50 pr-2 rounded-full border border-slate-100">
-                              <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-tight", badgeStyles)}>
+                            <div key={pIdx} className="flex items-center gap-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100 group-hover:bg-white group-hover:border-slate-200 transition-colors">
+                              <span className={cn("inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tight border", badgeStyles)}>
                                 {perito.tipo}
                               </span>
-                              <span className="text-[12px] text-slate-700 font-bold truncate max-w-[150px]" title={perito.nome}>
+                              <span className="text-[13px] text-slate-700 font-black tracking-tight whitespace-normal break-words max-w-[400px]">
                                 {perito.nome}
                               </span>
                             </div>
                           )
                         })}
-                      </div>
-                    </div>
-
-                    {/* Direita: Valor Pago */}
-                    <div className="w-full md:w-[15%] text-right mt-3 md:mt-0 shrink-0">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Valor Pago</div>
-                      <div className="text-base font-black text-[#102A63]">
-                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
+                        {item.peritos.length === 0 && (
+                          <span className="text-[11px] font-bold text-slate-300 italic">Nenhum perito listado</span>
+                        )}
                       </div>
                     </div>
                  </div>
