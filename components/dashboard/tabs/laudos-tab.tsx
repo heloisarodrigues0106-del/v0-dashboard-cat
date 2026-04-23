@@ -5,7 +5,30 @@ import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight } from "lucide-react"
 
-const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+const THEME = {
+  azulProfundo: "#102A63",
+  azulInstitucional: "#183B8C",
+  azulClaro: "#DCE6F8",
+  favoravel: "#14B8A6",
+  intermediario: "#F59E0B",
+  critico: "#DC2626",
+  neutro: "#94A3B8",
+  slate700: "#4B5563",
+  background: "#F8FAFC",
+  border: "#E5E7EB",
+  textPrimary: "#1F2937",
+  textSecondary: "#6B7280",
+  amberLight: "#FEF3C7",
+  tealLight: "#D9F3EF",
+  slateLight: "#EEF2F7",
+}
+
+const CATEGORICAL_COLORS = {
+  tecnica: "#183B8C",
+  medicaGeral: "#94A3B8",
+  medicaMental: "#F59E0B",
+  ergonomica: "#4B5563"
+}
 
 export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos?: any[] }) {
   const [honorariosPage, setHonorariosPage] = useState(1);
@@ -319,16 +342,19 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     return rawData.slice(0, 15)
   }, [stats.statsPerito, peritoFilter])
 
-  const tiposData = Object.entries(stats.tiposLaudo)
-    .filter(([_, value]) => value > 0)
-    .map(([name, value]) => ({ name, value }))
+  const tiposData = [
+    { name: "Técnica", value: stats.tiposLaudo["Técnica"], color: CATEGORICAL_COLORS.tecnica },
+    { name: "Médica Geral", value: stats.tiposLaudo["Médica Geral"], color: CATEGORICAL_COLORS.medicaGeral },
+    { name: "Médica Mental", value: stats.tiposLaudo["Médica Mental"], color: CATEGORICAL_COLORS.medicaMental },
+    { name: "Ergonômica", value: stats.tiposLaudo["Ergonômica"], color: CATEGORICAL_COLORS.ergonomica },
+  ].filter(d => d.value > 0)
 
   const nexosData = Object.entries(stats.nexos)
     .map(([name, Quantidade]) => ({ name, Quantidade, percent: stats.total > 0 ? ((Quantidade / stats.total) * 100).toFixed(1) : 0 }))
 
   const pieData = [
-    { name: "Favoráveis", value: stats.favoraveis, color: CHART_COLORS[0] }, // Yellow
-    { name: "Desfavoráveis", value: stats.desfavoraveis, color: CHART_COLORS[3] }, // Graphite
+    { name: "Favoráveis", value: stats.favoraveis, color: THEME.favoravel }, 
+    { name: "Desfavoráveis", value: stats.desfavoraveis, color: THEME.critico }, 
   ]
 
   const motivosData = Object.entries(stats.motivos)
@@ -337,70 +363,80 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     .sort((a, b) => b.Quantidade - a.Quantidade)
 
   const medicaGeralData = [
-    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: CHART_COLORS[2] },
-    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: CHART_COLORS[1] },
-    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: CHART_COLORS[3] }
+    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: THEME.critico },
+    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: THEME.intermediario },
+    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: THEME.neutro }
   ].filter(d => d.value > 0)
 
   const mentalData = [
-    { name: "Causa", value: stats.mentalStatus.Causa, color: CHART_COLORS[0] },
-    { name: "Concausa", value: stats.mentalStatus.Concausa, color: CHART_COLORS[2] },
-    { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: CHART_COLORS[1] }
+    { name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico },
+    { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario },
+    { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }
   ].filter(d => d.value > 0)
 
   const insalubridadeData = [
-    { name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: CHART_COLORS[3] },
-    { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: CHART_COLORS[1] }
+    { name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico },
+    { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }
   ].filter(d => d.value > 0)
 
   const periculosidadeData = [
-    { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: CHART_COLORS[3] },
-    { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: CHART_COLORS[1] }
+    { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico },
+    { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }
   ].filter(d => d.value > 0)
 
   const ergonomiaData = [
-    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: CHART_COLORS[0] },
-    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: CHART_COLORS[3] }
+    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel },
+    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }
   ].filter(d => d.value > 0)
 
   const grausInsalubridadeData = [
-    { name: "Mínimo (10%)", value: stats.grausInsalubridade["Mínimo (10%)"], color: CHART_COLORS[1] },
-    { name: "Médio (20%)", value: stats.grausInsalubridade["Médio (20%)"], color: CHART_COLORS[2] },
-    { name: "Máximo (40%)", value: stats.grausInsalubridade["Máximo (40%)"], color: CHART_COLORS[3] }
+    { name: "Mínimo", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#FBBF24" },
+    { name: "Médio", value: stats.grausInsalubridade["Médio (20%)"], color: THEME.intermediario },
+    { name: "Máximo", value: stats.grausInsalubridade["Máximo (40%)"], color: THEME.critico }
   ].filter(d => d.value > 0)
 
   // Subcomponent wrapper render logic for inner repetitive pies
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
+    <Card className="border-border shadow-sm bg-white overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-bold text-slate-800">{title}</CardTitle>
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">{subtitle}</p>
       </CardHeader>
       <CardContent>
           {dataArray.length > 0 && stats.total > 0 ? (
-            <div className="h-[250px]">
+            <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={dataArray}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={65}
+                    outerRadius={85}
+                    paddingAngle={6}
                     dataKey="value"
+                    stroke="none"
                   >
                     {dataArray.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
-                  <Legend />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
+                    itemStyle={{ fontSize: '12px', fontWeight: 600 }}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    align="center" 
+                    iconType="circle" 
+                    iconSize={8}
+                    formatter={(value) => <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-[250px] items-center justify-center text-muted-foreground">Sem dados</div>
+            <div className="flex h-[220px] items-center justify-center text-[11px] font-bold text-slate-300 uppercase">Sem amostragem</div>
           )}
       </CardContent>
     </Card>
@@ -411,39 +447,45 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       
       {/* KPI Cards */}
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Laudos</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total de Laudos</CardTitle>
+            <div className="bg-slate-100 p-2 rounded-lg">
+              <FileText className="h-4 w-4 text-slate-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">Laudos registrados na base</p>
+            <div className="text-3xl font-black text-slate-800">{stats.total}</div>
+            <p className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-tight">Perícias analisadas</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Laudos Favoráveis</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Favoráveis</CardTitle>
+            <div className="bg-teal-50 p-2 rounded-lg">
+              <CheckCircle2 className="h-4 w-4 text-teal-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{stats.favoraveis}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.total > 0 ? ((stats.favoraveis / stats.total) * 100).toFixed(1) : 0}% do total
+            <div className="text-3xl font-black text-teal-600">{stats.favoraveis}</div>
+            <p className="text-[11px] font-bold text-teal-600/60 mt-1 uppercase tracking-tight">
+              {stats.total > 0 ? ((stats.favoraveis / stats.total) * 100).toFixed(1) : 0}% de êxito
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Laudos Desfavoráveis</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-500" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Desfavoráveis</CardTitle>
+            <div className="bg-red-50 p-2 rounded-lg">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.desfavoraveis}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.total > 0 ? ((stats.desfavoraveis / stats.total) * 100).toFixed(1) : 0}% do total
+            <div className="text-3xl font-black text-red-600">{stats.desfavoraveis}</div>
+            <p className="text-[11px] font-bold text-red-600/60 mt-1 uppercase tracking-tight">
+              {stats.total > 0 ? ((stats.desfavoraveis / stats.total) * 100).toFixed(1) : 0}% de risco
             </p>
           </CardContent>
         </Card>
@@ -451,71 +493,91 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
       {/* Tipologia e Nexos */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Natureza da Perícia</CardTitle>
+        <Card className="border-border shadow-sm bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-black text-slate-800 tracking-tight">Natureza da Perícia</CardTitle>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Distribuição por especialidade técnica</p>
           </CardHeader>
           <CardContent>
              {tiposData.length > 0 ? (
-               <div className="h-[250px]">
+               <div className="h-[280px]">
                  <ResponsiveContainer width="100%" height="100%">
                    <PieChart>
                      <Pie
                        data={tiposData}
                        cx="50%"
                        cy="50%"
-                       innerRadius={50}
-                       outerRadius={80}
+                       innerRadius={70}
+                       outerRadius={95}
                        paddingAngle={5}
                        dataKey="value"
+                       stroke="none"
                      >
                        {tiposData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                         <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
                        ))}
                      </Pie>
-                     <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
-                     <Legend />
+                     <Tooltip 
+                        contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }} 
+                        itemStyle={{ fontSize: '13px', fontWeight: 600 }}
+                     />
+                     <Legend 
+                        verticalAlign="bottom" 
+                        align="center" 
+                        iconType="circle" 
+                        iconSize={10}
+                        formatter={(value) => <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest px-2">{value}</span>}
+                     />
                    </PieChart>
                  </ResponsiveContainer>
                </div>
              ) : (
-                <div className="flex h-[250px] items-center justify-center text-muted-foreground">Sem dados de tipologia</div>
+                <div className="flex h-[280px] items-center justify-center text-[11px] font-black text-slate-300 uppercase tracking-widest">Sem dados de tipologia</div>
              )}
           </CardContent>
         </Card>
 
         {/* Distribuição Favorável vs Desfavorável */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Taxa de Êxito em Perícias</CardTitle>
+        <Card className="border-border shadow-sm bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-black text-slate-800 tracking-tight">Taxa de Êxito em Perícias</CardTitle>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Equilíbrio entre êxito e risco jurídico</p>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             {stats.total > 0 ? (
-              <div className="h-[300px] min-w-[300px]">
+               <div className="h-[280px] min-w-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
+                      innerRadius={70}
+                      outerRadius={95}
                       paddingAngle={5}
                       dataKey="value"
+                      stroke="none"
                     >
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
                       ))}
                     </Pie>
                     <Tooltip 
-                       contentStyle={{ borderRadius: "8px", border: "1px solid hsl(var(--border))" }}
+                       contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
+                       itemStyle={{ fontSize: '13px', fontWeight: 600 }}
                     />
-                    <Legend />
+                    <Legend 
+                       verticalAlign="bottom" 
+                       align="center" 
+                       iconType="circle" 
+                       iconSize={10}
+                       formatter={(value) => <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest px-2">{value}</span>}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-               <div className="flex h-[300px] items-center justify-center text-muted-foreground">Sem dados suficientes</div>
+                <div className="flex h-[280px] items-center justify-center text-[11px] font-black text-slate-300 uppercase tracking-widest">Sem amostragem suficiente</div>
             )}
           </CardContent>
         </Card>
@@ -563,71 +625,63 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
                 barGap={0}
               >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke="hsl(var(--muted))" opacity={0.4} />
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke={THEME.border} opacity={0.4} />
                 <XAxis 
                   type="number" 
                   allowDecimals={false}
                   domain={[0, 'dataMax + 1']}
-                  stroke="hsl(var(--muted-foreground))" 
-                  tick={{ fontSize: 13, fontWeight: 500 }}
+                  stroke={THEME.textSecondary} 
+                  tick={{ fontSize: 11, fontWeight: 600 }}
                   axisLine={false}
                 />
                 <YAxis 
                   dataKey="name" 
                   type="category" 
                   width={180} 
-                  stroke="hsl(var(--muted-foreground))" 
-                  tick={{ fontSize: 13, fontWeight: 600, fill: '#334155' }} 
+                  stroke={THEME.textPrimary} 
+                  tick={{ fontSize: 12, fontWeight: 700, fill: THEME.textPrimary }} 
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip 
-                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.1 }}
+                  cursor={{ fill: THEME.slateLight, opacity: 0.5 }}
                   contentStyle={{ 
                     borderRadius: "12px", 
-                    border: "none", 
-                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                    border: "1px solid #E5E7EB", 
+                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)",
                     padding: "12px"
                   }}
-                  itemStyle={{ fontSize: '13px', fontWeight: 500 }}
+                  itemStyle={{ fontSize: '13px', fontWeight: 600 }}
                 />
                 <Legend 
                   verticalAlign="top" 
                   align="center"
-                  iconType="rect"
-                  iconSize={14}
+                  iconType="circle"
+                  iconSize={10}
                   wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
-                  formatter={(value) => <span className="text-slate-700 font-semibold px-2">{value}</span>}
-                />
-                <Bar dataKey="Desfavorável" stackId="a" fill={CHART_COLORS[2]} radius={[0, 0, 0, 0]} barSize={32}>
+                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 0, 0, 0]} barSize={24}>
                   <LabelList 
                     dataKey="Desfavorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '12px', fontWeight: 700 }} 
+                    style={{ fontSize: '10px', fontWeight: 900 }}
                     formatter={(val: any) => val > 0 ? val : ""}
                   />
                 </Bar>
-                <Bar 
-                  dataKey="Favorável" 
-                  stackId="a" 
-                  fill="#14b8a6" 
-                  radius={[0, 8, 8, 0]}
-                  barSize={32}
-                >
+                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 4, 4, 0]} barSize={24}>
                   <LabelList 
                     dataKey="Favorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '12px', fontWeight: 700 }} 
+                    style={{ fontSize: '10px', fontWeight: 900 }} 
                     formatter={(val: any) => val > 0 ? val : ""}
                   />
                   <LabelList 
-                    dataKey="Total" 
+                    dataKey="total" 
                     position="right" 
                     offset={15}
-                    fill="#64748b" 
-                    style={{ fontSize: '12px', fontWeight: 700 }}
+                    fill={THEME.textSecondary} 
+                    style={{ fontSize: '11px', fontWeight: 800 }}
                     formatter={(val: any) => `Total: ${val}`}
                   />
                 </Bar>
@@ -648,28 +702,30 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="space-y-4 pt-8 mt-8 border-t border-slate-100">
         
         {/* Banner de Métricas (Header) */}
-        <Card className="bg-slate-50 border-slate-200 shadow-none">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-1">
-                <div className="text-3xl md:text-4xl font-black text-slate-800">
-                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
+        <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+          <CardContent className="p-0">
+            <div className="bg-[#102A63] p-8 text-white">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-1">
+                  <div className="text-4xl md:text-5xl font-black tracking-tighter">
+                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
+                  </div>
+                  <div className="text-[11px] font-black text-blue-200 uppercase tracking-[2px] opacity-80">
+                    Investimento Consolidado em Honorários Prévios
+                  </div>
                 </div>
-                <div className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
-                  Investimento Total em Honorários Prévios
-                </div>
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="bg-white rounded-md p-4 border border-slate-200 flex flex-col items-center justify-center min-w-[140px]">
-                  <span className="text-xl font-bold text-slate-800">
-                    {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
-                  </span>
-                  <span className="text-xs text-slate-500 font-medium">Ticket Médio</span>
-                </div>
-                <div className="bg-white rounded-md p-4 border border-slate-200 flex flex-col items-center justify-center min-w-[140px]">
-                  <span className="text-xl font-bold text-slate-800">{honorariosData.qtdProcessos}</span>
-                  <span className="text-xs text-slate-500 font-medium">Qtd de Processos</span>
+                
+                <div className="flex gap-4">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10 flex flex-col items-center justify-center min-w-[150px]">
+                    <span className="text-2xl font-black text-white tracking-tight">
+                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
+                    </span>
+                    <span className="text-[10px] text-blue-200 font-black uppercase tracking-widest mt-1 opacity-70">Ticket Médio</span>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10 flex flex-col items-center justify-center min-w-[150px]">
+                    <span className="text-2xl font-black text-white tracking-tight">{honorariosData.qtdProcessos}</span>
+                    <span className="text-[10px] text-blue-200 font-black uppercase tracking-widest mt-1 opacity-70">Volume de Processos</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -703,44 +759,64 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardContent className="p-0 px-6">
             <div className="w-full overflow-x-auto pb-4">
               <div className="flex flex-col gap-2 min-w-[850px] pb-4">
-              {paginatedHonorarios.map((item, idx) => (
-                 <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
+              {paginatedHonorarios.map((item, idx) => {
+                const peritoCat = peritoClassificacaoMap[String(item.peritos[0]?.nome || "").trim().toUpperCase()] || "N/A";
+                
+                return (
+                 <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white border border-slate-200 rounded-xl transition-all hover:border-slate-300 hover:shadow-md mb-3">
                     
                     {/* Esquerda: Número do Processo e Reclamante */}
-                    <div className="w-full md:w-[30%] flex flex-col gap-1 mb-2 md:mb-0 shrink-0">
-                      <span className="font-bold text-slate-900 text-sm tracking-tight">{item.numero}</span>
-                      <span className="text-[11px] font-bold text-slate-500 uppercase">{item.reclamante}</span>
+                    <div className="w-full md:w-[30%] flex flex-col gap-1 mb-3 md:mb-0 shrink-0">
+                      <span className="font-black text-slate-800 text-sm tracking-tight">{item.numero}</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.reclamante}</span>
                     </div>
                     
                     {/* Centro: Vara/Juízo e Peritos */}
-                    <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[55%] gap-2 shrink-0">
-                  <span className="text-sm text-slate-500 shrink-0">
-                    {item.vara ? `${item.vara} ` : ""}
-                    {item.comarca ? `${item.vara ? '-' : ''} ${item.comarca}` : ""}
-                  </span>
-                  <span className="text-slate-300 hidden md:inline">|</span>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 w-full">
-                    {item.peritos.map((perito: any, pIdx: number) => (
-                      <div key={pIdx} className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-sm rounded-sm text-slate-700 font-medium truncate" title={perito.nome}>
-                           {perito.nome}
+                    <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-[55%] gap-4 shrink-0">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">Vara / Comarca</span>
+                        <span className="text-xs font-bold text-slate-600 truncate max-w-[200px]">
+                          {item.vara ? `${item.vara} ` : ""}
+                          {item.comarca ? `${item.vara ? '- ' : ''}${item.comarca}` : ""}
                         </span>
-                        {perito.tipo !== "N/A" && (
-                          <span className="inline-flex items-center rounded bg-slate-100 flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-600 ring-1 ring-inset ring-slate-400/20">
-                            {perito.tipo}
-                          </span>
-                        )}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      
+                      <div className="h-8 w-px bg-slate-100 hidden md:block" />
+                      
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 w-full">
+                        {item.peritos.map((perito: any, pIdx: number) => {
+                          const pType = perito.tipo?.toUpperCase() || "N/A";
+                          let badgeStyles = "bg-slate-100 text-slate-600";
+                          
+                          if (pType.includes("TÉCNICO")) badgeStyles = "bg-[#DCE6F8] text-[#183B8C]";
+                          else if (pType.includes("MÉDICO")) badgeStyles = "bg-[#EEF2F7] text-[#4B5563]";
+                          else if (pType.includes("ERGONÔMICO")) badgeStyles = "bg-[#D9F3EF] text-[#0F766E]";
+                          else if (pType.includes("MENTAL") || pType.includes("PSIQ")) badgeStyles = "bg-[#FEF3C7] text-[#B45309]";
 
-                {/* Direita: Valor Pago */}
-                <div className="w-full md:w-[15%] font-bold text-slate-900 text-right mt-2 md:mt-0 shrink-0 text-sm">
-                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
-                </div>
-             </div>
-          ))}
+                          return (
+                            <div key={pIdx} className="flex items-center gap-2 shrink-0 bg-slate-50/50 pr-2 rounded-full border border-slate-100">
+                              <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-tight", badgeStyles)}>
+                                {perito.tipo}
+                              </span>
+                              <span className="text-[12px] text-slate-700 font-bold truncate max-w-[150px]" title={perito.nome}>
+                                {perito.nome}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Direita: Valor Pago */}
+                    <div className="w-full md:w-[15%] text-right mt-3 md:mt-0 shrink-0">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Valor Pago</div>
+                      <div className="text-base font-black text-[#102A63]">
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
+                      </div>
+                    </div>
+                 </div>
+                )
+              })}
           {honorariosData.lista.length === 0 && (
              <div className="p-8 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
                Nenhum honorário pericial registrado.
@@ -750,31 +826,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </div>
 
           {/* Pagination */}
-          <div className="mt-4 flex items-center justify-between pb-6">
-            <p className="text-xs md:text-sm text-muted-foreground">
-              {honorariosData.lista.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, honorariosData.lista.length)} de {honorariosData.lista.length}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setHonorariosPage((prev) => Math.max(prev - 1, 1))}
-                disabled={honorariosPage === 1}
-                className="gap-1.5"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Anterior
-              </Button>
-              <div className="hidden md:flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={honorariosPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setHonorariosPage(page)}
-                    className={`h-8 w-8 p-0 ${honorariosPage === page ? 'bg-[#F6D000] text-[#111111] hover:bg-[#d97706]' : ''}`}
-                  >
-                    {page}
                   </Button>
                 ))}
               </div>
