@@ -12,6 +12,22 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const [assuntoFilter, setAssuntoFilter] = useState<string>("all")
   const [ufFilter, setUfFilter] = useState<string>("all")
 
+  // Helper para normalizar o assunto da liminar (Unifica categorias semelhantes)
+  const getAssuntoNormalizado = (liminar: any) => {
+    let valor = String(liminar || "")
+      .replace(/concedida\s*-\s*/i, '')
+      .replace(/parcialmente concedida\s*-\s*/i, '')
+      .trim()
+      .toUpperCase();
+    
+    // Unificação: MANUTENCAO DO PLANO DE SAUDE -> PLANO DE SAUDE
+    if (valor.includes("MANUTENCAO DO PLANO DE SAUDE")) {
+      valor = valor.replace("MANUTENCAO DO PLANO DE SAUDE", "PLANO DE SAUDE");
+    }
+    
+    return valor || "Não Especificado";
+  }
+
   // Extrair base de liminares
   const baseLiminares = useMemo(() => {
     return processos.filter(p => {
@@ -51,9 +67,8 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const assuntosUnicos = useMemo(() => {
     const s = new Set<string>();
     baseLiminares.forEach(p => {
-      // Limpeza de string caso o status venha concatenado ("Concedida - REINTEGRACAO")
-      let valor = String(p.liminar).replace(/concedida\s*-\s*/i, '').replace(/parcialmente concedida\s*-\s*/i, '').trim();
-      if (valor) s.add(valor);
+      const valor = getAssuntoNormalizado(p.liminar);
+      if (valor && valor !== "Não Especificado") s.add(valor);
     });
     return Array.from(s).sort();
   }, [baseLiminares]);
@@ -72,7 +87,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const chartData = useMemo(() => {
     // 1. Aplica filtros principais (Dropdowns) se houver
     const filtered = baseLiminares.filter(p => {
-      if (assuntoFilter !== "all" && !String(p.liminar).includes(assuntoFilter)) return false;
+      if (assuntoFilter !== "all" && getAssuntoNormalizado(p.liminar) !== assuntoFilter) return false;
       if (ufFilter !== "all" && (p.uf ? String(p.uf).trim().toUpperCase() : "") !== ufFilter) return false;
       return true;
     });
@@ -82,7 +97,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
     filtered.forEach(p => {
       let chave = "";
       if (agrupamento === "Assunto") {
-        chave = String(p.liminar).replace(/concedida\s*-\s*/i, '').replace(/parcialmente concedida\s*-\s*/i, '').trim() || "Não Especificado";
+        chave = getAssuntoNormalizado(p.liminar);
       } else if (agrupamento === "Origem") {
         const v = p.vara ? String(p.vara).trim() : "";
         const c = p.comarca ? String(p.comarca).trim() : "";
