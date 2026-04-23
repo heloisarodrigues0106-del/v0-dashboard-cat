@@ -143,7 +143,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       </Card>
 
       {/* 3 Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total da Causa</CardTitle>

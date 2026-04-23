@@ -242,7 +242,7 @@ export default function DashboardClient({
 
       {/* Main Content */}
       <main className={cn(
-        "flex-1 transition-all duration-300",
+        "flex-1 min-w-0 max-w-full overflow-x-hidden transition-all duration-300",
         // Desktop: offset by sidebar width
         isCollapsed ? "md:ml-20" : "md:ml-64",
         // Mobile: no offset (sidebar overlays)
