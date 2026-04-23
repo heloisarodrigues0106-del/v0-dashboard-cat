@@ -172,14 +172,17 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
 
         {/* Pilulas de Agrupamento */}
         <div className="flex items-center gap-2 pt-2">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest mr-2">Agrupar via:</span>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2">Agrupar via:</span>
           {(["Assunto", "Origem"] as const).map(mod => (
             <Button 
               key={mod}
               variant={agrupamento === mod ? "default" : "outline"}
               size="sm"
               onClick={() => setAgrupamento(mod)}
-              className={agrupamento === mod ? "bg-[#F6D000] hover:bg-[#d97706] text-slate-900 font-semibold rounded-full px-5 shadow-sm" : "rounded-full px-5 text-slate-600 border-slate-200 hover:bg-slate-50"}
+              className={agrupamento === mod 
+                ? "bg-[#183B8C] hover:bg-[#102A63] text-white font-black text-[10px] uppercase tracking-widest rounded-full px-5 shadow-md border-none" 
+                : "rounded-full px-5 text-slate-500 font-bold text-[10px] uppercase tracking-widest border-slate-200 bg-[#F8FAFC] hover:bg-slate-100"
+              }
             >
               {mod}
             </Button>
@@ -189,8 +192,8 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
       
       <CardContent className="flex-1 pt-2">
         {chartData.length === 0 ? (
-          <div className="flex h-[250px] items-center justify-center text-sm font-medium text-slate-400 bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
-            Nenhuma concessão de liminar encontrada para os filtros atuais.
+          <div className="flex h-[250px] items-center justify-center text-[11px] font-black uppercase tracking-widest text-slate-300 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            Nenhuma concessão encontrada
           </div>
         ) : (
           <div className="pr-4" style={{ height: isScrollable ? '400px' : 'auto', overflowY: isScrollable ? 'auto' : 'visible' }}>
@@ -205,26 +208,26 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                     axisLine={false} 
                     tickLine={false} 
                     width={220}
-                    tick={{ fontSize: 13, fill: "#334155", fontWeight: 500 }}
+                    tick={{ fontSize: 11, fill: "#64748B", fontWeight: 700 }}
                   />
                   <Tooltip 
-                    cursor={{ fill: "transparent" }}
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", fontWeight: 500 }}
+                    cursor={{ fill: "#F8FAFC", opacity: 0.5 }}
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)", fontWeight: 700 }}
                     formatter={(val: number) => [`${val} concessões`, agrupamento]}
                   />
                   <Bar 
                     dataKey="count" 
-                    radius={[0, 4, 4, 0]} 
-                    barSize={28}
+                    radius={[0, 50, 50, 0]} 
+                    barSize={24}
                     isAnimationActive={true}
                   >
                     <LabelList 
                       dataKey="count" 
                       position="right" 
-                      style={{ fill: "#0F172A", fontSize: 13, fontWeight: "bold" }}
+                      style={{ fill: "#1F2937", fontSize: 12, fontWeight: 900 }}
                     />
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill="#F6D000" className="hover:opacity-85 transition-opacity duration-200" />
+                      <Cell key={`cell-${index}`} fill="#F59E0B" className="hover:fill-[#D97706] transition-all duration-300" />
                     ))}
                   </Bar>
                 </BarChart>

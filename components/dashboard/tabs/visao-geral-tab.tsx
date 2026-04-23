@@ -9,7 +9,21 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
 import { ConcessoesLiminares } from "./concessoes-liminares"
 
-const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+const THEME = {
+  azulProfundo: "#102A63",
+  azulInstitucional: "#183B8C",
+  azulMedio: "#4F6DB8",
+  azulClaro: "#DCE6F8",
+  favoravel: "#14B8A6",
+  atencao: "#F59E0B",
+  critico: "#DC2626",
+  neutro: "#94A3B8",
+  apoio: "#CBD5E1",
+  background: "#F8FAFC",
+  border: "#E5E7EB",
+  textPrimary: "#1F2937",
+  textSecondary: "#6B7280",
+}
 
 const geoUrl = "/brazil-states.geojson"
 
@@ -160,72 +174,79 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
   const maxUfCount = Math.max(...Object.values(mapData).map(d => d.count), 1)
   const colorScale = scaleLinear<string>()
     .domain([0, maxUfCount])
-    .range(["#fefce8", "#b45309"]) // yellow-50 to amber-700
+    .range([THEME.azulClaro, THEME.azulProfundo])
 
   return (
     <div className="space-y-6">
       
       {/* 1. KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Total de Processos</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Total de Processos</CardTitle>
+            <div className="bg-slate-100 p-2 rounded-lg">
+              <FileText className="h-4 w-4 text-slate-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{kpis.totalProcessos}</div>
+            <div className="text-3xl font-black text-slate-800">{kpis.totalProcessos}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Processos Ativos</CardTitle>
-            <Activity className="h-4 w-4 text-[#F6D000]" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Processos Ativos</CardTitle>
+            <div className="bg-blue-50 p-2 rounded-lg">
+              <Activity className="h-4 w-4 text-[#183B8C]" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-[#F6D000]">{kpis.processosAtivos}</div>
+            <div className="text-3xl font-black text-[#183B8C]">{kpis.processosAtivos}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Processos Arquivados</CardTitle>
-            <Archive className="h-4 w-4 text-orange-500" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Processos Arquivados</CardTitle>
+            <div className="bg-slate-50 p-2 rounded-lg">
+              <Archive className="h-4 w-4 text-slate-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{kpis.processosArquivados}</div>
+            <div className="text-3xl font-black text-slate-500">{kpis.processosArquivados}</div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle>Valor Total das Causas</CardTitle>
-            <DollarSign className="h-4 w-4 text-emerald-500" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Valor em Risco (Causa)</CardTitle>
+            <div className="bg-emerald-50 p-2 rounded-lg">
+              <DollarSign className="h-4 w-4 text-emerald-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{formatCurrency(kpis.valorCausa)}</div>
+            <div className="text-3xl font-black text-emerald-600 tracking-tighter">{formatCurrency(kpis.valorCausa)}</div>
           </CardContent>
         </Card>
-
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* 2a. Top 5 Localidades Ranking */}
-        <Card className="flex flex-col border-2 border-muted md:col-span-1">
-          <CardHeader className="bg-muted/30 border-b">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-amber-500" />
-              Comarcas com maior volume de ajuizamento
+        <Card className="flex flex-col border-border shadow-sm md:col-span-1">
+          <CardHeader className="border-b bg-slate-50/50">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-800">
+              <MapPin className="h-4 w-4 text-[#183B8C]" />
+              Concentração de Ajuizamentos
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 p-4 space-y-3 bg-[#f8fafc]/50">
+          <CardContent className="flex-1 p-4 space-y-3 bg-white">
             {kpis.topComarcasDetalhes.map((city, idx) => {
               const maxCount = Math.max(...kpis.topComarcasDetalhes.map(c => c.count))
               const widthPerc = Math.max(10, (city.count / maxCount) * 100)
               return (
                 <div 
                   key={idx} 
-                  className="relative p-3 rounded-lg border bg-background shadow-sm overflow-hidden group cursor-pointer hover:border-amber-300 transition-colors"
+                  className="relative p-3 rounded-lg border border-slate-100 bg-background shadow-sm overflow-hidden group cursor-pointer hover:border-blue-200 transition-colors"
                   onMouseEnter={() => {
                     if (city.uf && mapData[city.uf]) {
                       setHoveredUF({ sigla: city.uf, details: mapData[city.uf] })
@@ -235,13 +256,13 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 >
                   {/* Fundo de barra de progresso */}
                   <div 
-                    className="absolute inset-y-0 left-0 bg-amber-100/30 transition-all duration-500 ease-in-out" 
+                    className="absolute inset-y-0 left-0 bg-blue-50/50 transition-all duration-500 ease-in-out" 
                     style={{ width: `${widthPerc}%`, zIndex: 0 }}
                   />
                   
                   <div className="relative flex justify-between items-center z-10 text-sm">
-                    <div className="flex items-center gap-2 font-medium truncate">
-                      <span className="text-muted-foreground min-w-[16px]">{idx + 1}º</span>
+                    <div className="flex items-center gap-2 font-bold text-slate-700 truncate">
+                      <span className="text-slate-400 min-w-[16px] font-medium">{idx + 1}º</span>
                       <span className="truncate max-w-[140px]" title={city.name}>{city.name}</span>
                       {city.trend === "up" ? (
                         <ArrowUpRight className="h-4 w-4 text-red-500 flex-shrink-0" />
@@ -249,7 +270,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         <ArrowDownRight className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                       )}
                     </div>
-                    <Badge variant="outline" className="ml-2 font-bold shrink-0 bg-white/60">
+                    <Badge variant="outline" className="ml-2 font-black shrink-0 bg-white border-slate-200 text-[#183B8C]">
                       {city.count.toLocaleString('pt-BR')}
                     </Badge>
                   </div>
@@ -260,34 +281,37 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         </Card>
 
          {/* 2b. Mapa do Brasil (Heatmap por UF) */}
-        <Card className="relative overflow-hidden border-2 border-muted md:col-span-2">
-          <CardHeader className="bg-muted/30 border-b">
-            <CardTitle>Mapa de Processos Ativos por UF</CardTitle>
+        <Card className="relative overflow-hidden border-border shadow-sm md:col-span-2">
+          <CardHeader className="border-b bg-slate-50/50">
+            <CardTitle className="text-slate-800 font-bold">Mapa de Calor: Processos por UF</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center items-center h-[550px] relative p-0 bg-[#f8fafc]/50">
+          <CardContent className="flex justify-center items-center h-[550px] relative p-0 bg-white">
             
             {/* Pop-up Hover Card */}
             {hoveredUF && (
               <div 
-                className="absolute top-6 right-6 z-10 w-64 p-5 bg-background border rounded-lg shadow-xl animate-in fade-in-50 zoom-in-95 pointer-events-none"
+                className="absolute top-6 right-6 z-10 w-64 p-5 bg-background border border-slate-200 rounded-xl shadow-2xl animate-in fade-in-50 zoom-in-95 pointer-events-none"
               >
-                <div className="flex items-center gap-3 border-b pb-3 mb-3">
-                  <MapPin className="h-5 w-5 text-amber-600" />
-                  <h4 className="font-bold text-lg text-foreground">{hoveredUF.sigla}</h4>
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-3 mb-3">
+                  <MapPin className="h-5 w-5 text-[#183B8C]" />
+                  <h4 className="font-black text-lg text-slate-800 tracking-tight">{hoveredUF.sigla}</h4>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground text-sm font-medium">Processos:</span>
-                    <span className="font-bold text-base bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">
+                    <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest">Processos:</span>
+                    <span className="font-black text-base text-[#183B8C]">
                       {hoveredUF.details.count}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground text-sm font-medium">Valor Total:</span>
+                    <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest">Valor Total:</span>
                     <span className="font-bold text-emerald-600 text-sm">
                       {formatCurrency(hoveredUF.details.valorTotal)}
                     </span>
                   </div>
+                </div>
+              </div>
+            )}
                   {hoveredUF.details.comarcas && Object.keys(hoveredUF.details.comarcas).length > 0 && (
                      <div className="mt-3 pt-3 border-t">
                        <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-2">Por Comarca</span>
@@ -327,17 +351,17 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     }
 
                     const d = mapData[mappedSigla]
-                    const fillValue = d && d.count > 0 ? colorScale(d.count) : "#e2e8f0"
+                    const fillValue = d && d.count > 0 ? colorScale(d.count) : "#F1F5F9"
                     const isHovered = hoveredUF?.sigla === mappedSigla
-                    const actualFill = isHovered ? "#F6D000" : fillValue
+                    const actualFill = isHovered ? THEME.azulMedio : fillValue
                     
                     return (
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
                         fill={actualFill}
-                        stroke="#cbd5e1"
-                        strokeWidth={0.7}
+                        stroke="#fff"
+                        strokeWidth={1}
                         onMouseEnter={() => {
                           if (d) setHoveredUF({ sigla: mappedSigla, details: d })
                         }}
@@ -346,7 +370,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         }}
                         style={{
                           default: { outline: "none", transition: "all 250ms" },
-                          hover: { fill: "#F6D000", outline: "none", cursor: "pointer", transition: "all 250ms" },
+                          hover: { fill: THEME.azulMedio, outline: "none", cursor: "pointer", transition: "all 250ms" },
                           pressed: { outline: "none" },
                         }}
                       />
@@ -362,28 +386,35 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         {/* 3. Fases Processuais (Gráfico Barras Horizontal) */}
-        <Card className="flex flex-col">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              Processos Ativos por Fase <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
+            <CardTitle className="flex items-center justify-between text-slate-800 font-bold">
+              Processos Ativos por Fase 
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Total</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ranks.fases} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorFases" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke={THEME.border} opacity={0.4} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={110} axisLine={false} tickLine={false} stroke="hsl(var(--foreground))" tick={{fontSize: 12, fontWeight: 500}} />
-                  <Tooltip cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} />
-                  <Bar dataKey="count" fill="url(#colorFases)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
-                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  <YAxis dataKey="name" type="category" width={110} axisLine={false} tickLine={false} stroke={THEME.textPrimary} tick={{fontSize: 11, fontWeight: 700}} />
+                  <Tooltip 
+                    cursor={{ fill: THEME.azulClaro, opacity: 0.3 }} 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
+                    itemStyle={{ fontSize: '13px', fontWeight: 600 }}
+                  />
+                  <Bar dataKey="count" radius={[0, 50, 50, 0]} barSize={24} isAnimationActive={true}>
+                    {ranks.fases.map((entry: any, index: number) => {
+                      let barColor = THEME.azulInstitucional;
+                      const name = String(entry.name).toUpperCase();
+                      if (name.includes("CONHECIMENTO")) barColor = "#183B8C";
+                      else if (name.includes("RECURSAL")) barColor = "#4F6DB8";
+                      else if (name.includes("EXECUÇÃO") || name.includes("EXECUCAO")) barColor = "#94A3B8";
+                      return <Cell key={`cell-${index}`} fill={barColor} />;
+                    })}
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: THEME.textPrimary, fontSize: 13, fontWeight: 900 }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -392,32 +423,24 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         </Card>
 
         {/* 4. Distribuição por Tipo de Ação */}
-        <Card className="flex flex-col">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              Distribuição por Tipo de Ação
-            </CardTitle>
+            <CardTitle className="text-slate-800 font-bold">Distribuição por Tipo de Ação</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ranks.tiposAcao} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorTiposAcao" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#111111" stopOpacity={0.85}/>
-                      <stop offset="100%" stopColor="#333333" stopOpacity={1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke={THEME.border} opacity={0.4} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={110} axisLine={false} tickLine={false} stroke="hsl(var(--foreground))" tick={{fontSize: 12, fontWeight: 500}} />
+                  <YAxis dataKey="name" type="category" width={110} axisLine={false} tickLine={false} stroke={THEME.textPrimary} tick={{fontSize: 11, fontWeight: 700}} />
                   <Tooltip 
-                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                    cursor={{ fill: THEME.azulClaro, opacity: 0.3 }} 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
                     formatter={(value: number) => [`${value.toLocaleString('pt-BR')} proc. (${((value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1)}%)`, 'Total']}
                   />
-                  <Bar dataKey="count" fill="url(#colorTiposAcao)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
-                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  <Bar dataKey="count" fill={THEME.azulProfundo} radius={[0, 50, 50, 0]} barSize={24} isAnimationActive={true}>
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: THEME.textPrimary, fontSize: 13, fontWeight: 900 }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -426,9 +449,9 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         </Card>
 
         {/* Instâncias (Gráfico de Pizza) */}
-        <Card className="flex flex-col">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Volumetria por instância</CardTitle>
+            <CardTitle className="text-slate-800 font-bold">Volumetria por instância</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.instancias.length > 0 ? (
@@ -439,55 +462,48 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       data={ranks.instancias}
                       cx="50%"
                       cy="50%"
-                      innerRadius={90}
-                      outerRadius={110}
-                      paddingAngle={5}
+                      innerRadius={85}
+                      outerRadius={105}
+                      paddingAngle={4}
                       dataKey="value"
                       nameKey="name"
                       stroke="none"
                       isAnimationActive={true}
                     >
-                      {ranks.instancias.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
-                      ))}
+                      {ranks.instancias.map((entry, index) => {
+                         let cellColor = THEME.azulMedio;
+                         const name = String(entry.name).toUpperCase();
+                         if (name.includes("PRIMEIRA")) cellColor = "#183B8C";
+                         else if (name.includes("SEGUNDA")) cellColor = "#94A3B8";
+                         else if (name.includes("TERCEIRA")) cellColor = "#4B5563";
+                         else if (name.includes("ARQUIVADO")) cellColor = "#CBD5E1";
+                         return <Cell key={`cell-${index}`} fill={cellColor} className="hover:opacity-80 transition-opacity duration-300" />;
+                      })}
                       <Label
                         value={kpis.totalProcessos.toLocaleString("pt-BR")}
                         position="center"
-                        className="text-4xl font-extrabold fill-foreground"
+                        className="text-4xl font-black fill-slate-800"
                       />
                       <Label
-                        value="Processos"
+                        value="Instâncias"
                         position="center"
                         dy={25}
-                        className="text-sm font-medium fill-muted-foreground"
+                        className="text-[10px] font-black fill-slate-400 uppercase tracking-widest"
                       />
                     </Pie>
                     <Tooltip 
-                       contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                       contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
                        formatter={(value: number, name: string) => {
                          const percentage = ((value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
-                         return [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
+                         return [<span className="font-bold text-slate-700">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
                        }}
                     />
                     <Legend 
                       verticalAlign="bottom" 
-                      height={36} 
-                      content={(props) => {
-                        const { payload } = props;
-                        return (
-                          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4">
-                            {payload?.map((entry: any, index: number) => {
-                              const percentage = ((entry.payload.value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
-                              return (
-                                <div key={`item-${index}`} className="flex items-center gap-2 text-xs font-semibold">
-                                  <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
-                                  <span className="text-muted-foreground uppercase">{entry.value} ({percentage}%)</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        );
-                      }}
+                      align="center"
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value) => <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">{value}</span>}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -499,9 +515,9 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         </Card>
 
         {/* Status (Gráfico de Pizza) */}
-        <Card className="flex flex-col">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Volumetria por desfecho</CardTitle>
+            <CardTitle className="text-slate-800 font-bold">Volumetria por desfecho</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             {ranks.status.length > 0 ? (
@@ -512,56 +528,56 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       data={ranks.status}
                       cx="50%"
                       cy="45%"
-                      innerRadius={80}
-                      outerRadius={105}
-                      paddingAngle={5}
+                      innerRadius={75}
+                      outerRadius={100}
+                      paddingAngle={4}
                       dataKey="value"
                       nameKey="name"
                       stroke="none"
                       isAnimationActive={true}
                     >
                       {ranks.status.map((entry, index) => {
-                        return <Cell key={`cell-${index}`} fill={CHART_COLORS[(index + 1) % CHART_COLORS.length]} className="hover:opacity-80 transition-opacity duration-300 outline-none" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))" }} />
+                         let cellColor = THEME.neutro;
+                         const name = String(entry.name).toUpperCase();
+                         
+                         if (name.includes("IMPROCEDENTE")) cellColor = THEME.favoravel;
+                         else if (name.includes("PARCIALMENTE")) cellColor = THEME.atencao;
+                         else if (name.includes("PROCEDENTE")) cellColor = THEME.critico;
+                         else if (name.includes("AGUARDANDO")) cellColor = THEME.neutro;
+                         else if (name.includes("ACORDO")) cellColor = THEME.azulInstitucional;
+                         else if (name.includes("SOBRESTADO")) cellColor = THEME.apoio;
+                         else if (name.includes("ARQUIVADO")) cellColor = THEME.neutro;
+                         else if (name.includes("EXTINTO SEM RESOLUÇÃO")) cellColor = THEME.azulMedio;
+                         else if (name.includes("EXTINTO COM RESOLUÇÃO")) cellColor = THEME.azulProfundo;
+                         
+                         return <Cell key={`cell-${index}`} fill={cellColor} className="hover:opacity-80 transition-opacity duration-300" />;
                       })}
                       <Label
                         value={kpis.totalProcessos.toLocaleString("pt-BR")}
                         position="center"
-                        className="text-4xl font-extrabold fill-foreground"
+                        className="text-4xl font-black fill-slate-800"
                       />
                       <Label
-                        value="Processos"
+                        value="Desfechos"
                         position="center"
                         dy={25}
-                        className="text-sm font-medium fill-muted-foreground"
+                        className="text-[10px] font-black fill-slate-400 uppercase tracking-widest"
                       />
                     </Pie>
                     <Tooltip 
-                       contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                       contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
                        formatter={(value: number, name: string) => {
                          const percentage = ((value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
-                         return [<span className="font-semibold">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
+                         return [<span className="font-bold text-slate-700">{`${value.toLocaleString('pt-BR')} proc. (${percentage}%)`}</span>, name];
                        }}
                     />
                     <Legend 
                       verticalAlign="bottom" 
                       align="center"
-                      wrapperStyle={{ paddingTop: "20px", bottom: 0 }}
-                      content={(props) => {
-                        const { payload } = props;
-                        return (
-                          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 px-2">
-                            {payload?.map((entry: any, index: number) => {
-                              const percentage = ((entry.payload.value / Math.max(kpis.totalProcessos, 1)) * 100).toFixed(1);
-                              return (
-                                <div key={`item-${index}`} className="flex items-center gap-2 text-[10px] md:text-xs font-semibold">
-                                  <span className="w-2.5 h-2.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: entry.color }} />
-                                  <span className="text-muted-foreground uppercase truncate max-w-[130px]" title={entry.value}>{entry.value} ({percentage}%)</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        );
-                      }}
+                      iconType="circle"
+                      iconSize={8}
+                      wrapperStyle={{ paddingTop: "20px" }}
+                      formatter={(value) => <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter px-0.5">{value}</span>}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -578,10 +594,11 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       </div>
 
       {/* 5. Volume de Processos Distribuídos por Ano */}
-      <Card>
+      <Card className="border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Volume de processos distribuídos <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700 hover:bg-amber-100">Total</Badge>
+          <CardTitle className="flex items-center justify-between text-slate-800 font-bold">
+            Volume de processos distribuídos 
+            <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Anual</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -589,41 +606,40 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={ranks.anos} margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
                 <defs>
-                  <linearGradient id="colorYellowArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={CHART_COLORS[0]} stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor={CHART_COLORS[0]} stopOpacity={0}/>
+                  <linearGradient id="colorBlueArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={THEME.azulInstitucional} stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor={THEME.azulInstitucional} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" opacity={0.5} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 500 }} dy={10} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={THEME.border} opacity={0.5} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 700, fill: THEME.textSecondary }} dy={10} />
                 <YAxis 
-                   stroke="hsl(var(--muted-foreground))" 
+                   stroke={THEME.textSecondary} 
                    tickLine={false} 
                    axisLine={false}
                    tickFormatter={(value) => value >= 1000000 ? `${(value/1000000).toFixed(1)}mi` : value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString()}
-                   tick={{fontSize: 12, fontWeight: 500}}
+                   tick={{fontSize: 11, fontWeight: 700}}
                 />
                 <Tooltip 
-                  cursor={{ stroke: "hsl(var(--muted))", strokeWidth: 1, strokeDasharray: "4 4" }} 
-                  contentStyle={{ backgroundColor: "#111111", color: "#fff", borderRadius: "8px", border: "1px solid #333333" }}
-                  itemStyle={{ color: "#F6D000", fontWeight: 600 }}
-                  formatter={(value: number) => [`${value.toLocaleString('pt-BR')} processos`, 'Total']}
-                  labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
+                  cursor={{ stroke: THEME.azulInstitucional, strokeWidth: 1, strokeDasharray: "4 4" }} 
+                  contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
+                  itemStyle={{ color: THEME.azulProfundo, fontWeight: 900 }}
+                  formatter={(value: number) => [`${value.toLocaleString('pt-BR')} processos`, 'Volume']}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="count" 
-                  stroke="#F6D000" 
+                  stroke={THEME.azulInstitucional} 
                   strokeWidth={3}
                   fillOpacity={1} 
-                  fill="url(#colorYellowArea)" 
+                  fill="url(#colorBlueArea)" 
                   isAnimationActive={true}
                 >
                   <LabelList 
                     dataKey="count" 
                     position="top" 
                     formatter={(val: number) => val.toLocaleString('pt-BR')} 
-                    style={{ fill: "hsl(var(--foreground))", fontSize: 11, fontWeight: 700 }} 
+                    style={{ fill: THEME.textPrimary, fontSize: 11, fontWeight: 900 }} 
                   />
                 </Area>
               </AreaChart>
@@ -635,23 +651,18 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       {/* 4. Rankings Inferiores */}
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         {/* Advogados */}
-        <Card className="flex flex-col shadow-sm rounded-xl">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="font-bold flex items-center gap-2 font-inter">
-              Ranking Advogado Adverso <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
+            <CardTitle className="text-slate-800 font-bold flex items-center justify-between">
+              Ranking Advogado Adverso 
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Top 5</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ranks.advogados} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorAdvogados" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke={THEME.border} opacity={0.4} />
                   <XAxis type="number" hide />
                   <YAxis 
                     dataKey="name" 
@@ -659,16 +670,20 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     width={180} 
                     axisLine={false} 
                     tickLine={false} 
-                    stroke="hsl(var(--foreground))" 
-                    tick={{fontSize: 11, fontWeight: 500}} 
+                    stroke={THEME.textPrimary} 
+                    tick={{fontSize: 11, fontWeight: 700}} 
                     tickFormatter={(val) => val.length > 25 ? val.substring(0, 25) + '...' : val}
                   />
                   <Tooltip 
-                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} 
+                    cursor={{ fill: THEME.azulClaro, opacity: 0.3 }} 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
                   />
-                  <Bar dataKey="count" fill="url(#colorAdvogados)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
-                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  <Bar dataKey="count" radius={[0, 50, 50, 0]} barSize={24} isAnimationActive={true}>
+                    {ranks.advogados.map((entry: any, index: number) => {
+                       const colors = [THEME.azulProfundo, THEME.azulInstitucional, THEME.azulMedio, THEME.neutro, THEME.neutro];
+                       return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                    })}
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: THEME.textPrimary, fontSize: 13, fontWeight: 900 }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -677,23 +692,18 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         </Card>
 
          {/* Funções */}
-        <Card className="flex flex-col shadow-sm rounded-xl">
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="font-bold flex items-center gap-2 font-inter">
-              Ajuizamento por Cargo <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700">Total</Badge>
+            <CardTitle className="text-slate-800 font-bold flex items-center justify-between">
+              Ajuizamento por Cargo 
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Top 5</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ranks.funcoes} layout="vertical" margin={{ top: 20, right: 60, left: 10, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorFuncoes" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#F6D000" stopOpacity={0.9}/>
-                      <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke="hsl(var(--border))" opacity={0.4} />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} stroke={THEME.border} opacity={0.4} />
                   <XAxis type="number" hide />
                   <YAxis 
                     dataKey="name" 
@@ -701,16 +711,20 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                     width={180} 
                     axisLine={false} 
                     tickLine={false} 
-                    stroke="hsl(var(--foreground))" 
-                    tick={{fontSize: 11, fontWeight: 500}} 
+                    stroke={THEME.textPrimary} 
+                    tick={{fontSize: 11, fontWeight: 700}} 
                     tickFormatter={(val) => val.length > 25 ? val.substring(0, 25) + '...' : val}
                   />
                   <Tooltip 
-                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }} 
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} 
+                    cursor={{ fill: THEME.azulClaro, opacity: 0.3 }} 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
                   />
-                  <Bar dataKey="count" fill="url(#colorFuncoes)" radius={[50, 50, 50, 50]} barSize={24} isAnimationActive={true}>
-                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 700 }} />
+                  <Bar dataKey="count" radius={[0, 50, 50, 0]} barSize={24} isAnimationActive={true}>
+                    {ranks.funcoes.map((entry: any, index: number) => {
+                       const colors = [THEME.azulProfundo, THEME.azulInstitucional, THEME.azulMedio, THEME.neutro, THEME.neutro];
+                       return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                    })}
+                    <LabelList dataKey="count" position="right" formatter={(val: number) => val.toLocaleString('pt-BR')} style={{ fill: THEME.textPrimary, fontSize: 13, fontWeight: 900 }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
