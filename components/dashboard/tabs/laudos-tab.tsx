@@ -630,16 +630,15 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-            ) : (
+          ) : (
                <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                  <span className="font-semibold text-lg text-slate-500">Nenhum perito encontrado.</span>
                  <span className="text-sm">Tente selecionar outra classificação ou ajustar os filtros globais.</span>
                </div>
             )}
           </div>
-        </CardContent>
+        </div>
+      </CardContent>
       </Card>
 
       {/* Controle de Honorários Prévios */}
