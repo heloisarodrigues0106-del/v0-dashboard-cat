@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight, TrendingUp, Users, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const THEME = {
@@ -742,7 +742,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 bg-slate-50/50 border-b border-slate-100 px-8 py-6">
             <div className="space-y-1">
               <CardTitle className="text-xl font-black text-slate-800 flex items-center gap-2">
-                Listagem Detalhada
+                Listagem Detalhada [REFRESHED]
               </CardTitle>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Relatório de honorários pagos por processo e reclamante</p>
             </div>
@@ -811,7 +811,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                               <span className={cn("inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tight border", badgeStyles)}>
                                 {perito.tipo}
                               </span>
-                              <span className="text-[13px] text-slate-700 font-black tracking-tight whitespace-normal break-words max-w-[400px]">
+                              <span className="text-[13px] text-slate-700 font-black tracking-tight whitespace-normal break-words flex-1 min-w-[200px]">
                                 {perito.nome}
                               </span>
                             </div>
