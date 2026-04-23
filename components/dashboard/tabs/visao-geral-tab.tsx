@@ -309,24 +309,22 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       {formatCurrency(hoveredUF.details.valorTotal)}
                     </span>
                   </div>
-                </div>
-              </div>
-            )}
+
                   {hoveredUF.details.comarcas && Object.keys(hoveredUF.details.comarcas).length > 0 && (
-                     <div className="mt-3 pt-3 border-t">
-                       <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-2">Por Comarca</span>
-                       <div className="max-h-[120px] overflow-y-auto space-y-1.5 pr-1">
-                         {Object.entries(hoveredUF.details.comarcas)
-                           .sort((a, b) => b[1] - a[1])
-                           .slice(0, 5) // top 5 comarcas in this uf
-                           .map(([cname, ccount]) => (
-                             <div key={cname} className="flex justify-between items-center text-xs">
-                               <span className="text-slate-700 truncate max-w-[140px]" title={cname}>{cname}</span>
-                               <span className="font-medium bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">{ccount}</span>
-                             </div>
-                           ))}
-                       </div>
-                     </div>
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest block mb-2">Top Comarcas</span>
+                      <div className="max-h-[120px] overflow-y-auto space-y-1.5 pr-1">
+                        {Object.entries(hoveredUF.details.comarcas)
+                          .sort((a, b) => b[1] - a[1])
+                          .slice(0, 5)
+                          .map(([cname, ccount]) => (
+                            <div key={cname} className="flex justify-between items-center text-[11px]">
+                              <span className="text-slate-700 truncate max-w-[140px] font-bold" title={cname}>{cname}</span>
+                              <span className="font-black text-[#183B8C]">{ccount}</span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
