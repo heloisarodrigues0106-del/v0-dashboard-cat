@@ -16,6 +16,7 @@ import { GlobalFilters } from "@/components/dashboard/global-filters"
 
 // Páginas secundárias
 import { ConfiguracoesPage } from "@/components/dashboard/configuracoes-page"
+import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { createClient } from "@/lib/supabase-client"
 import { cn } from "@/lib/utils"
 
@@ -257,7 +258,7 @@ export default function DashboardClient({
 
       {/* Main Content */}
       <main className={cn(
-        "flex-1 min-w-0 max-w-full overflow-x-hidden transition-all duration-300",
+        "flex-1 min-w-0 max-w-full overflow-x-hidden transition-all duration-300 flex flex-col",
         // Desktop: offset by sidebar width
         isCollapsed ? "md:ml-20" : "md:ml-64",
         // Mobile: no offset (sidebar overlays)
@@ -355,11 +356,9 @@ export default function DashboardClient({
               <ConfiguracoesPage />
             </div>
           )}
-
         </div>
 
-
-
+        <DashboardFooter />
       </main>
     </div>
   )
