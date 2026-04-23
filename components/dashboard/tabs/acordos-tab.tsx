@@ -24,8 +24,11 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
   const [searchQuery, setSearchQuery] = useState("")
   
   const { metrics, chartData, scatterData, listAcordos } = useMemo(() => {
-    // Filtrar apenas processos com status ACORDO
-    const acordos = processos.filter(p => p?.status?.toUpperCase() === 'ACORDO')
+    // Filtrar apenas processos com status ACORDO (independente de maiúsculo/minúsculo)
+    const acordos = processos.filter(p => {
+      const status = String(p?.status || "").toUpperCase();
+      return status === 'ACORDO' || status.includes('ACORDO CELEBRADO') || status.includes('ACORDO JUDICIAL');
+    })
     
     let totalCausa = 0
     let totalAcordado = 0
@@ -34,16 +37,19 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      // Priorizando valor_causa como valor de referência oficial
       const causa = Number(p.valor_causa || p.valor_acao || 0)
       const acordado = Number(p.valor_acordo || 0)
       
-      // Cálculo de economia (saving)
+      // Apenas somamos para a métrica de ECONOMIA se houver um valor de causa para comparar
+      // Caso contrário, estaríamos distorcendo a taxa de economia
+      if (causa > 0) {
+        totalCausa += causa
+        totalAcordado += acordado
+      }
+      
+      // Cálculo de economia individual para a lista
       const savingVal = causa - acordado
       const savingPerc = causa > 0 ? (savingVal / causa) * 100 : 0
-      
-      totalCausa += causa
-      totalAcordado += acordado
       
       if (causa > 0 || acordado > 0) {
         validScatterData.push({
@@ -167,15 +173,15 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         
         {/* Totais e Média */}
-        <Card className="flex flex-col">
+        <Card className="flex flex-col min-w-0">
           <CardHeader>
             <CardTitle className="text-base">Totais e Média por Acordo</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1">
-            <div className="h-[350px]">
+          <CardContent className="flex-1 overflow-x-auto">
+            <div className="h-[350px] min-w-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.5} />
@@ -202,7 +208,7 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
         </Card>
 
         {/* Scatter Causa vs Acordo */}
-        <Card className="flex flex-col">
+        <Card className="flex flex-col min-w-0">
           <CardHeader>
             <CardTitle className="text-base">Comparativo: Valor da Causa vs Valor do Acordo</CardTitle>
             <div className="flex gap-4 text-xs text-muted-foreground mt-1">
@@ -210,8 +216,8 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
               <span>Eixo Y: Valor do Acordo</span>
             </div>
           </CardHeader>
-          <CardContent className="flex-1">
-            <div className="h-[350px]">
+          <CardContent className="flex-1 overflow-x-auto">
+            <div className="h-[350px] min-w-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
@@ -268,8 +274,9 @@ export function AcordosTab({ processos = [] }: { processos: any[] }) {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="relative max-h-[600px] overflow-y-auto overflow-x-auto">
-            <Table className="min-w-[1000px]">
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-[1100px] p-0">
+              <Table>
               <TableHeader className="sticky top-0 z-10 bg-slate-50 border-b shadow-sm">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[180px]">Processo</TableHead>

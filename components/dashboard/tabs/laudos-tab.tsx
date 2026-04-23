@@ -441,7 +441,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </div>
 
       {/* Tipologia e Nexos */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Natureza da Perícia</CardTitle>
@@ -480,9 +480,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader>
             <CardTitle>Taxa de Êxito em Perícias</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             {stats.total > 0 ? (
-              <div className="h-[300px]">
+              <div className="h-[300px] min-w-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -512,7 +512,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {renderMiniPie(medicaGeralData, "Resultados de Doença Médica Geral", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(mentalData, "Resultados de Doença Mental", "Distribuição de Causa, Concausa e Sem Nexo")}
         {renderMiniPie(insalubridadeData, "Resultados de Insalubridade", "Distribuição de Caracterizada e Não Caracterizada")}
@@ -697,8 +697,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </div>
           </CardHeader>
 
-          <CardContent className="p-0 px-6 overflow-x-auto">
-            <div className="flex flex-col gap-2 min-w-[850px] md:min-w-0 pb-4">
+          <CardContent className="p-0 px-6">
+            <div className="w-full overflow-x-auto pb-4">
+              <div className="flex flex-col gap-2 min-w-[850px] pb-4">
               {paginatedHonorarios.map((item, idx) => (
                  <div key={`hon-${idx}`} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white border border-slate-200 rounded-md transition-colors hover:bg-slate-50">
                     

@@ -96,8 +96,8 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
             />
           </div>
         </CardHeader>
-        <CardContent className="p-0 px-6 pb-8 overflow-x-auto">
-          <div className="flex flex-col gap-2 min-w-[800px] md:min-w-0">
+        <CardContent className="p-0 px-4 md:px-6 pb-8 overflow-x-auto">
+          <div className="flex flex-col gap-2 min-w-[600px] lg:min-w-0">
             {currentProcesses.map((processo) => {
               const laudo = laudos.find(l => String(l.numero_processo) === String(processo.numero_processo)) || {}
               
