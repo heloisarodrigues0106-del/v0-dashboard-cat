@@ -659,6 +659,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   iconType="circle"
                   iconSize={10}
                   wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
+                  formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
+                />
                 <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 0, 0, 0]} barSize={24}>
                   <LabelList 
                     dataKey="Desfavorável" 
@@ -677,7 +679,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                     formatter={(val: any) => val > 0 ? val : ""}
                   />
                   <LabelList 
-                    dataKey="total" 
+                    dataKey="Total" 
                     position="right" 
                     offset={15}
                     fill={THEME.textSecondary} 
@@ -826,25 +828,36 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </div>
 
           {/* Pagination */}
-                  </Button>
-                ))}
+          <div className="mt-6 flex items-center justify-between pb-8">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Mostrando {honorariosData.lista.length > 0 ? startIndex + 1 : 0} - {Math.min(endIndex, honorariosData.lista.length)} de {honorariosData.lista.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest text-slate-500 disabled:opacity-30"
+                onClick={() => setHonorariosPage(p => Math.max(1, p - 1))}
+                disabled={honorariosPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
+              </Button>
+              <div className="bg-white px-4 h-9 flex items-center justify-center rounded-xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Página {honorariosPage} / {totalPages || 1}
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setHonorariosPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={honorariosPage === totalPages}
-                className="gap-1.5"
+                className="h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest text-slate-500 disabled:opacity-30"
+                onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))}
+                disabled={honorariosPage >= totalPages}
               >
-                Próximo
-                <ChevronRight className="h-4 w-4" />
+                Próximo <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
           </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
-      
     </div>
   )
 }
