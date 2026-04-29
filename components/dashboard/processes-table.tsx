@@ -130,10 +130,10 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                   <button
                     type="button"
                     onClick={() => setExpandedProcesso(isExpanded ? null : processo.numero_processo)}
-                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-amber-50/30 gap-3 text-left cursor-pointer group"
+                    className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-3 text-left cursor-pointer group"
                   >
                     <div className="w-full md:w-[35%] flex flex-col gap-0.5 shrink-0">
-                      <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-amber-600 transition-colors">{processo.numero_processo}</span>
+                      <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-[#183B8C] transition-colors">{processo.numero_processo}</span>
                       <span className="text-[11px] font-bold text-slate-500 uppercase">{processo.nome_reclamante}</span>
                     </div>
                     <div className="w-full md:w-[30%] shrink-0">
@@ -144,7 +144,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                         {processo.status}
                       </Badge>
                       <div className="p-1 rounded-md text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-all">
-                        <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-amber-500' : ''}`} />
+                        <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-[#183B8C]' : ''}`} />
                       </div>
                     </div>
                   </button>
@@ -154,7 +154,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                     <div className="border-t border-slate-200 bg-white">
                       {/* Cabeçalho estilo Reintegração */}
                       <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-100 bg-slate-50">
-                        <div className="w-1 h-8 bg-[#F6D000] rounded-full shrink-0" />
+                        <div className="w-1 h-8 bg-[#183B8C] rounded-full shrink-0" />
                         <div>
                           <h3 className="text-base font-bold text-slate-900 leading-tight">{processo.numero_processo}</h3>
                           <p className="text-sm text-slate-500">
@@ -276,7 +276,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
 
                       {/* LINHA DE ALERTAS (condicional) */}
                       {(processo.liminar || processo.numero_processo_apenso || processo.processo_apenso) && (
-                        <div className="px-6 py-2.5 border-t border-slate-100 bg-amber-50/40 flex flex-wrap items-center gap-4 text-sm">
+                        <div className="px-6 py-2.5 border-t border-slate-100 bg-blue-50/40 flex flex-wrap items-center gap-4 text-sm">
                           {processo.liminar && (
                             <span className="font-bold text-red-500 flex items-center gap-1.5">
                               <AlertCircle className="h-4 w-4" />
@@ -284,7 +284,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                             </span>
                           )}
                           {(processo.numero_processo_apenso || processo.processo_apenso) && (
-                            <span className="font-semibold text-amber-700 flex items-center gap-1.5">
+                            <span className="font-semibold text-[#183B8C] flex items-center gap-1.5">
                               <LinkIcon className="h-4 w-4 opacity-70" />
                               {processo.tipo_processo_apenso ? `${String(processo.tipo_processo_apenso).toUpperCase()}: ` : 'Apenso: '}
                               {processo.numero_processo_apenso || processo.processo_apenso}
@@ -321,7 +321,7 @@ export function ProcessesTable({ processos = [], laudos = [] }: { processos?: an
                     variant={currentPage === page ? "default" : "outline"}
                     size="sm"
                     onClick={() => setCurrentPage(page)}
-                    className={`h-8 w-8 p-0 ${currentPage === page ? 'bg-[#F6D000] text-[#111111] hover:bg-[#d97706]' : ''}`}
+                    className={`h-8 w-8 p-0 ${currentPage === page ? 'bg-[#183B8C] text-white hover:bg-[#102A63]' : ''}`}
                   >
                     {page}
                   </Button>

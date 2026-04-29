@@ -107,13 +107,13 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       <div className="flex items-center gap-8 border-b border-border/60">
         <button
           onClick={() => setActiveMainTab("provisionamento")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#183B8C]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Provisionamento
         </button>
         <button
           onClick={() => setActiveMainTab("preparo_recursal")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#183B8C]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Preparo Recursal
         </button>

@@ -11,7 +11,7 @@ const THEME = {
   azulInstitucional: "#183B8C",
   azulClaro: "#DCE6F8",
   favoravel: "#14B8A6",
-  intermediario: "#F59E0B",
+  intermediario: "#4F6DB8",
   critico: "#DC2626",
   neutro: "#94A3B8",
   slate700: "#4B5563",
@@ -27,7 +27,7 @@ const THEME = {
 const CATEGORICAL_COLORS = {
   tecnica: "#183B8C",
   medicaGeral: "#94A3B8",
-  medicaMental: "#F59E0B",
+  medicaMental: "#4F6DB8",
   ergonomica: "#4B5563"
 }
 
@@ -391,7 +391,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   ].filter(d => d.value > 0)
 
   const grausInsalubridadeData = [
-    { name: "Mínimo", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#FBBF24" },
+    { name: "Mínimo", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#94A3B8" },
     { name: "Médio", value: stats.grausInsalubridade["Médio (20%)"], color: THEME.intermediario },
     { name: "Máximo", value: stats.grausInsalubridade["Máximo (40%)"], color: THEME.critico }
   ].filter(d => d.value > 0)

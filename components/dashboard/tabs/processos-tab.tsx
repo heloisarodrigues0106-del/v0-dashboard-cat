@@ -49,8 +49,10 @@ export function ProcessosTab({
   pedidosAcordao: any[],
   laudos?: any[]
 }) {
+  const [activeInternalTab, setActiveInternalTab] = useState("detalhamento")
   const [selectedPedido, setSelectedPedido] = useState<{ key: string, label: string } | null>(null)
 
+  // ... (useMemo logic remains same)
   // Index pedidos by numero_processo for fast lookup
   const pedidosInicialMap = useMemo(() => {
     const map: Record<string, any> = {}
@@ -162,179 +164,211 @@ export function ProcessosTab({
 
   return (
     <div className="space-y-6">
-      {/* Matrix Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-normal bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8]">Inicial → Sentença → Acórdão</Badge>
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto rounded-lg border border-border w-full shadow-sm" style={{ boxSizing: 'border-box' }}>
-            <table className="w-full text-sm table-auto border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-[#111111] text-white">
-                  <th className="text-left px-4 py-3 font-semibold min-w-[200px] border-r border-slate-700">Pedido</th>
-                  <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>Inicial</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Pleiteado</span>
-                    </div>
-                  </th>
-                  <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>Sentença</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
-                    </div>
-                  </th>
-                  <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>Acórdão</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
-                    </div>
-                  </th>
-                  <th className="text-center px-3 py-3 font-semibold w-[60px]">
-                    <span className="text-[10px] text-slate-400 font-normal">Detalhe</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {matrixData.map((row, idx) => (
-                  <tr 
-                    key={idx} 
-                    className={`border-b border-border transition-colors hover:bg-blue-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                  >
-                    <td className="px-4 py-3 font-medium text-slate-800 border-r border-border">
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-6 rounded-full bg-[#183B8C] shrink-0"></span>
-                        {row.name}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-center border-r border-border">
-                      {renderCell(row.inicial)}
-                    </td>
-                    <td className="px-4 py-3 text-center border-r border-border">
-                      {renderCell(row.sentenca)}
-                    </td>
-                    <td className="px-4 py-3 text-center border-r border-border">
-                      {renderCell(row.acordao)}
-                    </td>
-                    <td className="px-3 py-3 text-center">
-                      <button
-                        onClick={() => setSelectedPedido({ key: row.key, label: row.name })}
-                        className="p-1.5 rounded-md bg-blue-50 hover:bg-[#183B8C] text-slate-600 hover:text-white transition-all duration-200 hover:shadow-sm"
-                        title={`Ver detalhe de "${row.name}" por processo`}
-                      >
-                        <Search className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Navegação Interna Horizontal */}
+      <div className="flex items-center gap-8 border-b border-border/60 mb-2">
+        <button
+          onClick={() => setActiveInternalTab("detalhamento")}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeInternalTab === "detalhamento" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+        >
+          Detalhamento dos Processos
+        </button>
+        <button
+          onClick={() => setActiveInternalTab("analise")}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeInternalTab === "analise" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+        >
+          Análise de Pedidos
+        </button>
+        <button
+          onClick={() => setActiveInternalTab("mapeamento")}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeInternalTab === "mapeamento" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+        >
+          Mapeamento de Testemunhas
+        </button>
+      </div>
 
-      {/* Per-Process Detail Dialog */}
-      <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
-        <DialogContent className="sm:max-w-[95vw] sm:w-[95vw] w-[98vw] max-h-[95vh] overflow-hidden bg-white p-0 !max-w-none">
-          <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
-            <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
-              <span className="w-2 h-8 rounded-full bg-[#183B8C] shrink-0"></span>
-              {selectedPedido?.label}
-              <Badge className="bg-[#DCE6F8] text-[#183B8C] font-normal hover:bg-[#DCE6F8]">
-                {detailRows.length} processo(s)
-              </Badge>
-            </DialogTitle>
-            <p className="text-sm text-slate-500 mt-1">
-              Movimentação do pedido por processo individual — da Inicial ao Acórdão
-            </p>
-          </DialogHeader>
+      <div className="animate-in fade-in-50 duration-300">
+        {/* Tab 1: Detalhamento dos Processos */}
+        {activeInternalTab === "detalhamento" && (
+          <ProcessesTable processos={processos} laudos={laudos} />
+        )}
 
-          <ScrollArea className="max-h-[65vh]">
-            <div className="px-6 py-4">
-              <div className="overflow-x-auto rounded-lg border border-border bg-white">
-                <table className="w-full text-sm table-auto border-collapse">
-                  <thead className="sticky top-0 z-10">
-                    <tr className="bg-[#111111] text-white">
-                      <th className="text-left px-4 py-3 font-semibold min-w-[180px] border-r border-slate-700">Nº Processo</th>
-                      <th className="text-left px-4 py-3 font-semibold min-w-[250px] border-r border-slate-700">Reclamante</th>
-                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Inicial</th>
-                      <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Sentença</th>
-                      <th className="text-center px-2 py-3 font-semibold w-[110px]">Acórdão</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {detailRows.map((row, idx) => (
-                      <tr 
-                        key={idx} 
-                        className={`border-b border-border transition-colors hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
-                      >
-                        <td className="px-4 py-2.5 font-mono text-[11px] text-slate-700 border-r border-border truncate">
-                          {row.numero}
-                        </td>
-                        <td className="px-4 py-2.5 text-slate-700 text-xs font-medium truncate border-r border-border" title={row.reclamante}>
-                          {row.reclamante}
-                        </td>
-                        <td className="px-4 py-2.5 border-r border-border">
-                          <BoolIcon value={row.inicial} />
-                        </td>
-                        <td className="px-4 py-2.5 border-r border-border">
-                          <BoolIcon value={row.sentenca} />
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <BoolIcon value={row.acordao} />
-                        </td>
+        {/* Tab 2: Análise de Pedidos */}
+        {activeInternalTab === "analise" && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-normal bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8]">Inicial → Sentença → Acórdão</Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto rounded-lg border border-border w-full shadow-sm" style={{ boxSizing: 'border-box' }}>
+                  <table className="w-full text-sm table-auto border-collapse min-w-[800px]">
+                    <thead>
+                      <tr className="bg-[#111111] text-white">
+                        <th className="text-left px-4 py-3 font-semibold min-w-[200px] border-r border-slate-700">Pedido</th>
+                        <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span>Inicial</span>
+                            <span className="text-[10px] text-slate-400 font-normal">Pleiteado</span>
+                          </div>
+                        </th>
+                        <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span>Sentença</span>
+                            <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
+                          </div>
+                        </th>
+                        <th className="text-center px-4 py-3 font-semibold border-r border-slate-700 min-w-[120px]">
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span>Acórdão</span>
+                            <span className="text-[10px] text-slate-400 font-normal">Deferido?</span>
+                          </div>
+                        </th>
+                        <th className="text-center px-3 py-3 font-semibold w-[60px]">
+                          <span className="text-[10px] text-slate-400 font-normal">Detalhe</span>
+                        </th>
                       </tr>
-                    ))}
-                    {detailRows.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
-                          Nenhum processo encontrado para este pedido.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </ScrollArea>
+                    </thead>
+                    <tbody>
+                      {matrixData.map((row, idx) => (
+                        <tr 
+                          key={idx} 
+                          className={`border-b border-border transition-colors hover:bg-blue-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                        >
+                          <td className="px-4 py-3 font-medium text-slate-800 border-r border-border">
+                            <div className="flex items-center gap-2">
+                              <span className="w-1.5 h-6 rounded-full bg-[#183B8C] shrink-0"></span>
+                              {row.name}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-center border-r border-border">
+                            {renderCell(row.inicial)}
+                          </td>
+                          <td className="px-4 py-3 text-center border-r border-border">
+                            {renderCell(row.sentenca)}
+                          </td>
+                          <td className="px-4 py-3 text-center border-r border-border">
+                            {renderCell(row.acordao)}
+                          </td>
+                          <td className="px-3 py-3 text-center">
+                            <button
+                              onClick={() => setSelectedPedido({ key: row.key, label: row.name })}
+                              className="p-1.5 rounded-md bg-blue-50 hover:bg-[#183B8C] text-slate-600 hover:text-white transition-all duration-200 hover:shadow-sm"
+                              title={`Ver detalhe de "${row.name}" por processo`}
+                            >
+                              <Search className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Summary Footer */}
-          {detailRows.length > 0 && (
-            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-6 text-xs">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                <span className="text-slate-600">
-                  Inicial: <strong className="text-emerald-600">{detailRows.filter(r => r.inicial === true).length}</strong> deferidos
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                <span className="text-slate-600">
-                  Sentença: <strong className="text-emerald-600">{detailRows.filter(r => r.sentenca === true).length}</strong> deferidos
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                <span className="text-slate-600">
-                  Acórdão: <strong className="text-emerald-600">{detailRows.filter(r => r.acordao === true).length}</strong> deferidos
-                </span>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            {/* Per-Process Detail Dialog */}
+            <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
+              <DialogContent className="sm:max-w-[95vw] sm:w-[95vw] w-[98vw] max-h-[95vh] overflow-hidden bg-white p-0 !max-w-none">
+                <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
+                  <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
+                    <span className="w-2 h-8 rounded-full bg-[#183B8C] shrink-0"></span>
+                    {selectedPedido?.label}
+                    <Badge className="bg-[#DCE6F8] text-[#183B8C] font-normal hover:bg-[#DCE6F8]">
+                      {detailRows.length} processo(s)
+                    </Badge>
+                  </DialogTitle>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Movimentação do pedido por processo individual — da Inicial ao Acórdão
+                  </p>
+                </DialogHeader>
 
-      {/* Tabela de Processos */}
-      <ProcessesTable processos={processos} laudos={laudos} />
+                <ScrollArea className="max-h-[65vh]">
+                  <div className="px-6 py-4">
+                    <div className="overflow-x-auto rounded-lg border border-border bg-white">
+                      <table className="w-full text-sm table-auto border-collapse">
+                        <thead className="sticky top-0 z-10">
+                          <tr className="bg-[#111111] text-white">
+                            <th className="text-left px-4 py-3 font-semibold min-w-[180px] border-r border-slate-700">Nº Processo</th>
+                            <th className="text-left px-4 py-3 font-semibold min-w-[250px] border-r border-slate-700">Reclamante</th>
+                            <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Inicial</th>
+                            <th className="text-center px-2 py-3 font-semibold border-r border-slate-700 w-[110px]">Sentença</th>
+                            <th className="text-center px-2 py-3 font-semibold w-[110px]">Acórdão</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {detailRows.map((row, idx) => (
+                            <tr 
+                              key={idx} 
+                              className={`border-b border-border transition-colors hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
+                            >
+                              <td className="px-4 py-2.5 font-mono text-[11px] text-slate-700 border-r border-border truncate">
+                                {row.numero}
+                              </td>
+                              <td className="px-4 py-2.5 text-slate-700 text-xs font-medium truncate border-r border-border" title={row.reclamante}>
+                                {row.reclamante}
+                              </td>
+                              <td className="px-4 py-2.5 border-r border-border">
+                                <BoolIcon value={row.inicial} />
+                              </td>
+                              <td className="px-4 py-2.5 border-r border-border">
+                                <BoolIcon value={row.sentenca} />
+                              </td>
+                              <td className="px-4 py-2.5">
+                                <BoolIcon value={row.acordao} />
+                              </td>
+                            </tr>
+                          ))}
+                          {detailRows.length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                                Nenhum processo encontrado para este pedido.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </ScrollArea>
 
-      {/* Seção Mapeamento de Testemunhas */}
-      <MapeamentoTestemunhas processos={processos} />
+                {/* Summary Footer */}
+                {detailRows.length > 0 && (
+                  <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-6 text-xs">
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                      <span className="text-slate-600">
+                        Inicial: <strong className="text-emerald-600">{detailRows.filter(r => r.inicial === true).length}</strong> deferidos
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                      <span className="text-slate-600">
+                        Sentença: <strong className="text-emerald-600">{detailRows.filter(r => r.sentenca === true).length}</strong> deferidos
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                      <span className="text-slate-600">
+                        Acórdão: <strong className="text-emerald-600">{detailRows.filter(r => r.acordao === true).length}</strong> deferidos
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+
+        {/* Tab 3: Mapeamento de Testemunhas */}
+        {activeInternalTab === "mapeamento" && (
+          <MapeamentoTestemunhas processos={processos} />
+        )}
+      </div>
     </div>
   )
 }

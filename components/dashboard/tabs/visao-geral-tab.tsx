@@ -15,7 +15,7 @@ const THEME = {
   azulMedio: "#4F6DB8",
   azulClaro: "#DCE6F8",
   favoravel: "#14B8A6",
-  atencao: "#F59E0B",
+  atencao: "#4F6DB8",
   critico: "#DC2626",
   neutro: "#94A3B8",
   apoio: "#CBD5E1",
