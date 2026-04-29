@@ -134,8 +134,8 @@ export function ProcessosTab({
 
   const kpis = useMemo(() => {
     const total = processos.length
-    // KPI Doença agora usa a coluna do_at da tb_processos (processos)
-    const doAtInicial = processos.filter(p => isPositiveValue(p.do_at)).length
+    // KPI Doença voltando a usar pedidosInicial pois a coluna não existe na tb_processo
+    const doAtInicial = pedidosInicial.filter(p => isPositiveValue(p.do_at)).length
     const estabilidade = pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length
     
     // KPI Nexo no laudo agora filtra especificamente por CAUSA ou CONCAUSA
