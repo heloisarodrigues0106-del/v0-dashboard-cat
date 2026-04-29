@@ -189,7 +189,13 @@ export function ProcessosTab({
       <div className="animate-in fade-in-50 duration-300">
         {/* Tab 1: Detalhamento dos Processos */}
         {activeInternalTab === "detalhamento" && (
-          <ProcessesTable processos={processos} laudos={laudos} />
+          <ProcessesTable 
+            processos={processos} 
+            laudos={laudos} 
+            pedidosInicial={pedidosInicial}
+            pedidosSentenca={pedidosSentenca}
+            pedidosAcordao={pedidosAcordao}
+          />
         )}
 
         {/* Tab 2: Análise de Pedidos */}
