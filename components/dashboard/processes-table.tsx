@@ -60,6 +60,13 @@ const PEDIDO_MAPPING = [
   { key: "periculosidade", label: "Periculosidade", icon: ShieldAlert },
   { key: "insalubridade", label: "Insalubridade", icon: Stethoscope },
   { key: "horas_extras", label: "Horas Extras", icon: Activity },
+  { key: "intrajornada", label: "Intrajornada", icon: Activity },
+  { key: "horas_itinere", label: "Horas in Itinere", icon: Activity },
+  { key: "acumulo_funcao", label: "Acúmulo de Função", icon: Activity },
+  { key: "equip_salarial", label: "Equiparação Salarial", icon: Landmark },
+  { key: "rec_vinculo", label: "Vínculo Empregatício", icon: ShieldCheck },
+  { key: "rescisao_indireta", label: "Rescisão Indireta", icon: Activity },
+  { key: "outros", label: "Outros Pedidos", icon: LinkIcon },
   { key: "honorarios_advocaticios", label: "Honorários", icon: DollarSign },
 ]
 
@@ -101,20 +108,22 @@ export function ProcessesTable({
     
     const s = String(val).toUpperCase()
     
-    // Check/X logic
-    if (val === true || s === "SIM" || s === "DEFERIDO" || s === "RECONHECIDO" || s === "MANTIDO") {
+    // Positive logic
+    if (val === true || s === "SIM" || s === "DEFERIDO" || s === "RECONHECIDO" || s === "MANTIDO" || s === "TRUE") {
       return (
         <div className="flex items-center gap-1.5 justify-center">
           <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-          <span className="text-emerald-600 font-medium">{String(val)}</span>
+          <span className="text-emerald-600 font-bold">Sim</span>
         </div>
       )
     }
-    if (val === false || s === "NÃO" || s === "INDEFERIDO") {
+    
+    // Negative logic
+    if (val === false || s === "NÃO" || s === "INDEFERIDO" || s === "FALSO" || s === "FALSE") {
       return (
         <div className="flex items-center gap-1.5 justify-center">
           <X className="h-4 w-4 text-red-500" strokeWidth={3} />
-          <span className="text-red-500 font-medium">{String(val)}</span>
+          <span className="text-red-500 font-bold">Não</span>
         </div>
       )
     }
@@ -124,7 +133,7 @@ export function ProcessesTable({
       return (
         <div className="flex items-center gap-1.5 justify-center">
           <div className="h-2 w-2 rounded-full bg-orange-400" />
-          <span className="text-orange-500 font-medium">{String(val)}</span>
+          <span className="text-orange-500 font-bold">Parcial</span>
         </div>
       )
     }
@@ -132,12 +141,12 @@ export function ProcessesTable({
       return (
         <div className="flex items-center gap-1.5 justify-center">
           <div className="h-2 w-2 rounded-full bg-blue-400" />
-          <span className="text-blue-500 font-medium">{String(val)}</span>
+          <span className="text-blue-500 font-bold">Liminar</span>
         </div>
       )
     }
 
-    return <span className="text-slate-600">{String(val)}</span>
+    return <span className="text-slate-600 font-bold">{String(val)}</span>
   }
 
   const formatDate = (val: any) => {
@@ -255,7 +264,7 @@ export function ProcessesTable({
                       {/* 2. Marcadores Técnicos / Processuais */}
                       <div className="space-y-4">
                         <h4 className="text-sm font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-wide">
-                          <LinkIcon className="h-4 w-4" /> Marcadores Técnicos / Processuais
+                          <LinkIcon className="h-4 w-4" /> Resumo Técnico-Pericial
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12 gap-y-6 gap-x-2 text-xs">
                           <div className="space-y-1">
