@@ -166,7 +166,7 @@ export function ProcessosTab({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-normal bg-amber-100 text-amber-700 hover:bg-amber-100">Inicial → Sentença → Acórdão</Badge>
+            Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-normal bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8]">Inicial → Sentença → Acórdão</Badge>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
@@ -205,11 +205,11 @@ export function ProcessosTab({
                 {matrixData.map((row, idx) => (
                   <tr 
                     key={idx} 
-                    className={`border-b border-border transition-colors hover:bg-amber-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                    className={`border-b border-border transition-colors hover:bg-blue-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
                   >
                     <td className="px-4 py-3 font-medium text-slate-800 border-r border-border">
                       <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-6 rounded-full bg-[#F6D000] shrink-0"></span>
+                        <span className="w-1.5 h-6 rounded-full bg-[#183B8C] shrink-0"></span>
                         {row.name}
                       </div>
                     </td>
@@ -225,7 +225,7 @@ export function ProcessosTab({
                     <td className="px-3 py-3 text-center">
                       <button
                         onClick={() => setSelectedPedido({ key: row.key, label: row.name })}
-                        className="p-1.5 rounded-md bg-amber-50 hover:bg-[#F6D000] text-slate-600 hover:text-[#111111] transition-all duration-200 hover:shadow-sm"
+                        className="p-1.5 rounded-md bg-blue-50 hover:bg-[#183B8C] text-slate-600 hover:text-white transition-all duration-200 hover:shadow-sm"
                         title={`Ver detalhe de "${row.name}" por processo`}
                       >
                         <Search className="h-4 w-4" />
@@ -244,9 +244,9 @@ export function ProcessosTab({
         <DialogContent className="sm:max-w-[95vw] sm:w-[95vw] w-[98vw] max-h-[95vh] overflow-hidden bg-white p-0 !max-w-none">
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
             <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-3">
-              <span className="w-2 h-8 rounded-full bg-[#F6D000] shrink-0"></span>
+              <span className="w-2 h-8 rounded-full bg-[#183B8C] shrink-0"></span>
               {selectedPedido?.label}
-              <Badge className="bg-amber-100 text-amber-700 font-normal hover:bg-amber-100">
+              <Badge className="bg-[#DCE6F8] text-[#183B8C] font-normal hover:bg-[#DCE6F8]">
                 {detailRows.length} processo(s)
               </Badge>
             </DialogTitle>
@@ -272,7 +272,7 @@ export function ProcessosTab({
                     {detailRows.map((row, idx) => (
                       <tr 
                         key={idx} 
-                        className={`border-b border-border transition-colors hover:bg-amber-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
+                        className={`border-b border-border transition-colors hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
                       >
                         <td className="px-4 py-2.5 font-mono text-[11px] text-slate-700 border-r border-border truncate">
                           {row.numero}

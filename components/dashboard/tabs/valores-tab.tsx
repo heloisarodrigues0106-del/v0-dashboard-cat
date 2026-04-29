@@ -107,13 +107,13 @@ export function ValoresTab({ valores }: { valores: any[] }) {
       <div className="flex items-center gap-8 border-b border-border/60">
         <button
           onClick={() => setActiveMainTab("provisionamento")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#FFCD00]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#183B8C]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Provisionamento
         </button>
         <button
           onClick={() => setActiveMainTab("preparo_recursal")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#FFCD00]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#183B8C]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Preparo Recursal
         </button>
@@ -127,9 +127,9 @@ export function ValoresTab({ valores }: { valores: any[] }) {
           <Tabs defaultValue="provavel" onValueChange={(val) => { setRiscoAtivo(val); setCurrentPage(1); setExpandedRow(null); }} className="w-full space-y-6">
           
           <TabsList className="w-full flex flex-wrap justify-start gap-3 bg-transparent border-none p-0 h-auto">
-            <TabsTrigger value="provavel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Provável</TabsTrigger>
-            <TabsTrigger value="possivel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Possível</TabsTrigger>
-            <TabsTrigger value="remoto" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#FFCD00] data-[state=active]:text-[#111111] data-[state=active]:shadow-sm hover:text-slate-700">Risco Remoto</TabsTrigger>
+            <TabsTrigger value="provavel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#183B8C] data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-slate-700">Risco Provável</TabsTrigger>
+            <TabsTrigger value="possivel" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#183B8C] data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-slate-700">Risco Possível</TabsTrigger>
+            <TabsTrigger value="remoto" className="px-5 py-2 text-xs md:text-sm font-semibold rounded-md transition-all text-slate-500 border-none data-[state=active]:bg-[#183B8C] data-[state=active]:text-white data-[state=active]:shadow-sm hover:text-slate-700">Risco Remoto</TabsTrigger>
           </TabsList>
 
           <TabsContent value={riscoAtivo} className="space-y-6 mt-0">
@@ -205,10 +205,10 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                           <button
                             type="button"
                             onClick={() => setExpandedRow(isExpanded ? null : item.numero_processo)}
-                            className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-amber-50/30 gap-3 text-left cursor-pointer group"
+                            className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-3 text-left cursor-pointer group"
                           >
                             <div className="w-full md:w-[30%] flex flex-col gap-0.5 shrink-0">
-                              <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-amber-600 transition-colors">{item.numero_processo}</span>
+                              <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-[#183B8C] transition-colors">{item.numero_processo}</span>
                               <span className="text-[11px] font-bold text-slate-500 uppercase">Q. Anterior: {formatCurrency(item.totalAnterior)}</span>
                             </div>
                             
@@ -229,7 +229,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                                 {item.tipo}
                               </Badge>
                               <div className="p-1 rounded-md text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-all">
-                                <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-amber-500' : ''}`} />
+                                <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-[#183B8C]' : ''}`} />
                               </div>
                             </div>
                           </button>
@@ -239,7 +239,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                             <div className="border-t border-slate-200 bg-white">
                               {/* Cabeçalho estilo Reintegração */}
                               <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-100 bg-slate-50">
-                                <div className="w-1 h-8 bg-[#F6D000] rounded-full shrink-0" />
+                                <div className="w-1 h-8 bg-[#183B8C] rounded-full shrink-0" />
                                 <div>
                                   <h3 className="text-base font-bold text-slate-900 leading-tight">{item.numero_processo}</h3>
                                   <p className="text-sm text-slate-500">
@@ -273,7 +273,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                                 </div>
 
                                 {item.justificativa && (
-                                  <div className="mt-4 bg-white border-l-4 border-l-[#FFCD00] border-y border-r border-slate-200 rounded p-3 text-sm flex items-start gap-3 shadow-sm">
+                                  <div className="mt-4 bg-white border-l-4 border-l-[#183B8C] border-y border-r border-slate-200 rounded p-3 text-sm flex items-start gap-3 shadow-sm">
                                     <span className="font-semibold text-[#111111] whitespace-nowrap pt-0.5">Justificativa:</span>
                                     <span className="italic text-slate-600 pt-0.5">{item.justificativa}</span>
                                   </div>

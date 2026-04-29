@@ -9,7 +9,7 @@ import {
 } from "recharts"
 import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
 
-const CHART_COLORS = ['#F6D000', '#9CA3AF', '#D97706', '#4B5563', '#0038A8'];
+const CHART_COLORS = ['#102A63', '#183B8C', '#4F6DB8', '#94A3B8', '#14B8A6'];
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {

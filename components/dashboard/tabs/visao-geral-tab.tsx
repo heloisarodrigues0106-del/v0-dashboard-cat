@@ -483,7 +483,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         className="text-4xl font-black fill-slate-800"
                       />
                       <Label
-                        value="Instâncias"
+                        value="PROCESSOS"
                         position="center"
                         dy={25}
                         className="text-[10px] font-black fill-slate-400 uppercase tracking-widest"
@@ -556,7 +556,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                         className="text-4xl font-black fill-slate-800"
                       />
                       <Label
-                        value="Desfechos"
+                        value="PROCESSOS"
                         position="center"
                         dy={25}
                         className="text-[10px] font-black fill-slate-400 uppercase tracking-widest"
