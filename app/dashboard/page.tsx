@@ -27,19 +27,21 @@ export default async function DashboardPage() {
       'id, numero_processo, do_at, reintegracao, periculosidade, insalubridade, ' +
       'danos_morais, horas_extras, intrajornada, horas_itinere, acumulo_funcao, ' +
       'equip_salarial, rec_vinculo, outros, rescisao_indireta, danos_materiais, ' +
-      'honorarios_advocaticios'
+      'honorarios_advocaticios, estabilidade, plano_saude, pensao, ppp'
     ),
     supabase.from('tb_pedidos_sentenca').select(
       'id, numero_processo, reintegracao, periculosidade, insalubridade, danos_morais, ' +
       'horas_extras, intrajornada, horas_itinere, acumulo_funcao, equip_salarial, ' +
       'rec_vinculo, outros, do_mental, do_ergonomica, incapacidade, acidente_trabalho, ' +
-      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao'
+      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, ' +
+      'estabilidade, plano_saude, pensao, ppp'
     ),
     supabase.from('tb_pedidos_acordao').select(
       'id, numero_processo, reintegracao, periculosidade, insalubridade, danos_morais, ' +
       'horas_extras, intrajornada, horas_itinere, acumulo_funcao, equip_salarial, ' +
       'rec_vinculo, outros, do_mental, do_ergonomica, incapacidade, acidente_trabalho, ' +
-      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao'
+      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, ' +
+      'estabilidade, plano_saude, pensao, ppp'
     ),
     supabase.from('tb_laudo').select('*'),
     supabase.from('tb_valores').select(

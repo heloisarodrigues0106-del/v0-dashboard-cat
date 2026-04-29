@@ -169,7 +169,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
             <UserSearch className="h-6 w-6 text-[#183B8C]" />
             Mapeamento de Testemunhas
           </CardTitle>
-          <CardDescription className="text-slate-500 max-w-2xl">
+          <CardDescription className="text-slate-500">
             Análise de recorrência e cruzamento de dados de testemunhas com o polo ativo (Reclamantes) para identificação de padrões.
           </CardDescription>
         </div>
@@ -187,7 +187,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       <CardContent className="pt-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
-            <TabsList className="bg-slate-100/50 p-1 w-full md:max-w-md grid grid-cols-2">
+            <TabsList className="bg-slate-100/50 p-1 w-full grid grid-cols-2">
               <TabsTrigger 
                 value="ranking" 
                 className="data-[state=active]:bg-white data-[state=active]:text-[#111111] data-[state=active]:shadow-sm font-medium"
@@ -229,7 +229,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                 Nenhuma testemunha registrada para a opção selecionada.
               </div>
             ) : (
-              <ScrollArea className="h-[400px] w-full rounded-md border border-slate-200">
+              <ScrollArea className="h-[700px] w-full rounded-md border border-slate-200">
                 <div className="p-4 space-y-4">
                   {ranking.map((item, idx) => (
                     <div key={idx} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 rounded-lg bg-slate-50 border border-slate-100 hover:border-slate-300 transition-colors">
@@ -247,7 +247,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                         </div>
                       </div>
                       
-                      <div className="flex flex-wrap gap-2 sm:max-w-md justify-start sm:justify-end">
+                      <div className="flex flex-wrap gap-2 flex-1 justify-start sm:justify-end">
                         {item.processos.map((proc, i) => (
                           <div key={i} className="shrink-0">{renderProcessInfo(proc)}</div>
                         ))}
@@ -265,7 +265,7 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                 Nenhum cruzamento de nomes encontrado entre Testemunhas e Reclamantes.
               </div>
             ) : (
-              <ScrollArea className="h-[400px] w-full rounded-md border border-slate-200">
+              <ScrollArea className="h-[700px] w-full rounded-md border border-slate-200">
                 <div className="p-4 space-y-4">
                   {cruzamentos.map((item, idx) => (
                     <div key={idx} className="p-4 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-colors flex flex-col gap-4">

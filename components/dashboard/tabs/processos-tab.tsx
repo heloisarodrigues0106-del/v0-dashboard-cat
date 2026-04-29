@@ -12,13 +12,19 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ProcessesTable } from "@/components/dashboard/processes-table"
 import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
-import { Check, X, Search } from "lucide-react"
+import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale, FileText, Landmark, ShieldAlert, AlertTriangle, UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
 
 const PEDIDO_KEYS = [
+  { key: "do_at", label: "Doença/Acidente" },
+  { key: "estabilidade", label: "Estabilidade" },
+  { key: "plano_saude", label: "Plano de Saúde" },
   { key: "reintegracao", label: "Reintegração" },
-  { key: "periculosidade", label: "Periculosidade" },
-  { key: "insalubridade", label: "Insalubridade" },
+  { key: "pensao", label: "Pensão" },
+  { key: "ppp", label: "PPP" },
   { key: "danos_morais", label: "Danos Morais" },
+  { key: "danos_materiais", label: "Danos Materiais" },
+  { key: "insalubridade", label: "Insalubridade" },
+  { key: "periculosidade", label: "Periculosidade" },
   { key: "horas_extras", label: "Horas Extras" },
   { key: "intrajornada", label: "Intrajornada" },
   { key: "horas_itinere", label: "Horas in Itinere" },
@@ -26,7 +32,6 @@ const PEDIDO_KEYS = [
   { key: "equip_salarial", label: "Equiparação Salarial" },
   { key: "rec_vinculo", label: "Vínculo Empregatício" },
   { key: "rescisao_indireta", label: "Rescisão Indireta" },
-  { key: "danos_materiais", label: "Danos Materiais" },
   { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
 ]
 
@@ -110,6 +115,39 @@ export function ProcessosTab({
     .filter(item => item.totalPedidos > 0)
     .sort((a, b) => b.totalPedidos - a.totalPedidos)
   }, [pedidosInicial, pedidosSentenca, pedidosAcordao])
+
+  const kpis = useMemo(() => {
+    const total = processos.length
+    const doAtInicial = pedidosInicial.filter(p => p.do_at === true).length
+    const estabilidade = pedidosInicial.filter(p => p.estabilidade === true).length
+    
+    const nexoLaudo = laudos.filter(l => 
+      (l.do_mental && !String(l.do_mental).toUpperCase().includes("AUSENTE") && !String(l.do_mental).toUpperCase().includes("NÃO")) || 
+      (l.do_medica_geral && !String(l.do_medica_geral).toUpperCase().includes("AUSENTE") && !String(l.do_medica_geral).toUpperCase().includes("NÃO"))
+    ).length
+    
+    const recSentenca = pedidosSentenca.filter(p => p.do_at === true).length
+    const recAcordao = pedidosAcordao.filter(p => p.do_at === true).length
+    
+    return {
+      total,
+      doAtInicial,
+      estabilidade,
+      nexoLaudo,
+      recSentenca,
+      recAcordao
+    }
+  }, [processos, pedidosInicial, pedidosSentenca, pedidosAcordao, laudos])
+
+  const rankingObrigacoes = useMemo(() => {
+    return [
+      { label: "Estabilidade", count: pedidosInicial.filter(p => p.estabilidade === true).length },
+      { label: "Plano de Saúde", count: pedidosInicial.filter(p => p.plano_saude === true).length },
+      { label: "Reintegração", count: pedidosInicial.filter(p => p.reintegracao === true).length },
+      { label: "PPP", count: pedidosInicial.filter(p => p.ppp === true).length },
+      { label: "Pensão", count: pedidosInicial.filter(p => p.pensao === true).length },
+    ].sort((a, b) => b.count - a.count)
+  }, [pedidosInicial])
 
   // Per-process detail for the selected pedido
   const detailRows = useMemo(() => {
@@ -200,7 +238,132 @@ export function ProcessosTab({
 
         {/* Tab 2: Análise de Pedidos */}
         {activeInternalTab === "analise" && (
-          <>
+          <div className="space-y-6">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#183B8C]/10" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-blue-50 rounded-full">
+                    <FileText className="h-4 w-4 text-[#183B8C]" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Processos Mapeados</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.total}</div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400/20" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-yellow-50 rounded-full">
+                    <HeartPulse className="h-4 w-4 text-yellow-600" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Doença na Inicial</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.doAtInicial}</div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#F6D000]/30" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-yellow-50 rounded-full">
+                    <ShieldCheck className="h-4 w-4 text-[#F6D000]" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Estabilidade</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.estabilidade}</div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-emerald-500/10" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-emerald-50 rounded-full">
+                    <Scale className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nexo no Laudo</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.nexoLaudo}</div>
+                <span className="text-[9px] text-emerald-600 font-medium">casos com nexo técnico</span>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#183B8C]/20" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-blue-50 rounded-full">
+                    <Scale className="h-4 w-4 text-[#183B8C]" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sentença</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.recSentenca}</div>
+                <span className="text-[9px] text-blue-600 font-medium">materialização jurídica</span>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#F6D000]/40" />
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1.5 bg-yellow-50 rounded-full">
+                    <Scale className="h-4 w-4 text-[#183B8C]" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Acórdão</span>
+                </div>
+                <div className="text-2xl font-bold text-[#183B8C]">{kpis.recAcordao}</div>
+                <span className="text-[9px] text-[#183B8C] font-medium">mantidos ou reconhecidos</span>
+              </div>
+            </div>
+
+            {/* Painéis Estratégicos */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="lg:col-span-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-bold text-[#183B8C] uppercase tracking-wider">Pedidos Sensíveis — Doença e Estabilidade</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="relative flex items-center justify-between w-full">
+                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 -z-10" />
+                    {[
+                      { label: "Mapeados", value: kpis.total, percent: "100%" },
+                      { label: "Inicial", value: kpis.doAtInicial, percent: Math.round(kpis.doAtInicial/kpis.total*100) + "%" },
+                      { label: "Laudo (Nexo)", value: kpis.nexoLaudo, percent: Math.round(kpis.nexoLaudo/kpis.total*100) + "%" },
+                      { label: "Sentença", value: kpis.recSentenca, percent: Math.round(kpis.recSentenca/kpis.total*100) + "%" },
+                      { label: "Acórdão", value: kpis.recAcordao, percent: Math.round(kpis.recAcordao/kpis.total*100) + "%" }
+                    ].map((step, i) => (
+                      <div key={i} className="flex flex-col items-center gap-2 bg-white px-2">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i === 0 ? 'bg-[#183B8C] text-white border-[#183B8C]' : 'bg-white text-[#183B8C] border-slate-200'}`}>
+                          {i + 1}
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">{step.label}</span>
+                          <span className="text-sm font-bold text-[#183B8C]">{step.value}</span>
+                          <span className="text-[10px] text-slate-400 font-medium">{step.percent}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-bold text-[#183B8C] uppercase tracking-wider">Obrigações Sensíveis</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-4">
+                  {rankingObrigacoes.map((item, i) => {
+                    const max = Math.max(...rankingObrigacoes.map(x => x.count))
+                    const percent = max > 0 ? (item.count / max * 100) : 0
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between text-[11px] font-bold">
+                          <span className="text-slate-600">{item.label}</span>
+                          <span className="text-[#183B8C]">{item.count}</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-[#183B8C] rounded-full transition-all duration-1000" 
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
