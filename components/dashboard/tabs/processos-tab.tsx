@@ -530,7 +530,7 @@ export function ProcessosTab({
                 )}
               </DialogContent>
             </Dialog>
-          </>
+          </div>
         )}
 
         {/* Tab 3: Mapeamento de Testemunhas */}
