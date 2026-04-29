@@ -77,6 +77,22 @@ export function ProcessosTab({
     return map
   }, [pedidosAcordao])
 
+  // Helper to check if a value is positive (true, "Sim", "Deferido", etc.)
+  const isPositiveValue = (val: any) => {
+    if (val === null || val === undefined || val === "") return false
+    if (val === true) return true
+    const s = String(val).toUpperCase()
+    return s === "SIM" || s === "DEFERIDO" || s === "RECONHECIDO" || s === "MANTIDO" || s === "TRUE"
+  }
+
+  // Helper to check if a value is negative (false, "Não", "Indeferido", etc.)
+  const isNegativeValue = (val: any) => {
+    if (val === null || val === undefined || val === "") return false
+    if (val === false) return true
+    const s = String(val).toUpperCase()
+    return s === "NÃO" || s === "INDEFERIDO" || s === "FALSO" || s === "FALSE"
+  }
+
   // Aggregate data for the matrix table
   const matrixData = useMemo(() => {
     return PEDIDO_KEYS.map((pedido) => {
@@ -85,18 +101,18 @@ export function ProcessosTab({
       let acordaoTrue = 0, acordaoFalse = 0
 
       pedidosInicial.forEach((row) => {
-        if (row[pedido.key] === true) inicialTrue++
-        else if (row[pedido.key] === false) inicialFalse++
+        if (isPositiveValue(row[pedido.key])) inicialTrue++
+        else if (isNegativeValue(row[pedido.key])) inicialFalse++
       })
 
       pedidosSentenca.forEach((row) => {
-        if (row[pedido.key] === true) sentencaTrue++
-        else if (row[pedido.key] === false) sentencaFalse++
+        if (isPositiveValue(row[pedido.key])) sentencaTrue++
+        else if (isNegativeValue(row[pedido.key])) sentencaFalse++
       })
 
       pedidosAcordao.forEach((row) => {
-        if (row[pedido.key] === true) acordaoTrue++
-        else if (row[pedido.key] === false) acordaoFalse++
+        if (isPositiveValue(row[pedido.key])) acordaoTrue++
+        else if (isNegativeValue(row[pedido.key])) acordaoFalse++
       })
 
       const inicialTotal = inicialTrue + inicialFalse
@@ -109,7 +125,7 @@ export function ProcessosTab({
         inicial: { deferido: inicialTrue, indeferido: inicialFalse, total: inicialTotal },
         sentenca: { deferido: sentencaTrue, indeferido: sentencaFalse, total: sentencaTotal },
         acordao: { deferido: acordaoTrue, indeferido: acordaoFalse, total: acordaoTotal },
-        totalPedidos: inicialTotal,
+        totalPedidos: inicialTotal || sentencaTotal || acordaoTotal, // Show if it appears in any phase
       }
     })
     .filter(item => item.totalPedidos > 0)
@@ -118,16 +134,20 @@ export function ProcessosTab({
 
   const kpis = useMemo(() => {
     const total = processos.length
-    const doAtInicial = pedidosInicial.filter(p => p.do_at === true).length
-    const estabilidade = pedidosInicial.filter(p => p.estabilidade === true).length
+    // KPI Doença agora usa a coluna do_at da tb_processos (processos)
+    const doAtInicial = processos.filter(p => isPositiveValue(p.do_at)).length
+    const estabilidade = pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length
     
-    const nexoLaudo = laudos.filter(l => 
-      (l.do_mental && !String(l.do_mental).toUpperCase().includes("AUSENTE") && !String(l.do_mental).toUpperCase().includes("NÃO")) || 
-      (l.do_medica_geral && !String(l.do_medica_geral).toUpperCase().includes("AUSENTE") && !String(l.do_medica_geral).toUpperCase().includes("NÃO"))
-    ).length
+    // KPI Nexo no laudo agora filtra especificamente por CAUSA ou CONCAUSA
+    const nexoLaudo = laudos.filter(l => {
+      const mental = String(l.do_mental || "").toUpperCase()
+      const medica = String(l.do_medica_geral || "").toUpperCase()
+      return mental.includes("CAUSA") || mental.includes("CONCAUSA") || 
+             medica.includes("CAUSA") || medica.includes("CONCAUSA")
+    }).length
     
-    const recSentenca = pedidosSentenca.filter(p => p.do_at === true).length
-    const recAcordao = pedidosAcordao.filter(p => p.do_at === true).length
+    const recSentenca = pedidosSentenca.filter(p => isPositiveValue(p.do_at)).length
+    const recAcordao = pedidosAcordao.filter(p => isPositiveValue(p.do_at)).length
     
     return {
       total,
@@ -140,14 +160,15 @@ export function ProcessosTab({
   }, [processos, pedidosInicial, pedidosSentenca, pedidosAcordao, laudos])
 
   const rankingObrigacoes = useMemo(() => {
+    // Obrigações sensíveis agora usam os dados da tb_pedidos_sentenca
     return [
-      { label: "Estabilidade", count: pedidosInicial.filter(p => p.estabilidade === true).length },
-      { label: "Plano de Saúde", count: pedidosInicial.filter(p => p.plano_saude === true).length },
-      { label: "Reintegração", count: pedidosInicial.filter(p => p.reintegracao === true).length },
-      { label: "PPP", count: pedidosInicial.filter(p => p.ppp === true).length },
-      { label: "Pensão", count: pedidosInicial.filter(p => p.pensao === true).length },
+      { label: "Estabilidade", count: pedidosSentenca.filter(p => isPositiveValue(p.estabilidade)).length },
+      { label: "Plano de Saúde", count: pedidosSentenca.filter(p => isPositiveValue(p.plano_saude)).length },
+      { label: "Reintegração", count: pedidosSentenca.filter(p => isPositiveValue(p.reintegracao)).length },
+      { label: "PPP", count: pedidosSentenca.filter(p => isPositiveValue(p.ppp)).length },
+      { label: "Pensão", count: pedidosSentenca.filter(p => isPositiveValue(p.pensao)).length },
     ].sort((a, b) => b.count - a.count)
-  }, [pedidosInicial])
+  }, [pedidosSentenca])
 
   // Per-process detail for the selected pedido
   const detailRows = useMemo(() => {

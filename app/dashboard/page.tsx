@@ -21,7 +21,7 @@ export default async function DashboardPage() {
       'valor_causa, valor_acordo, status, fase_processual, instancia, modalidade_rescisao, ' +
       'honorario_pericia, testemunha_reclamante, testemunha_reclamada, ' +
       'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico, ' +
-      'liminar, tipo_processo_apenso, numero_processo_apenso'
+      'liminar, tipo_processo_apenso, numero_processo_apenso, do_at'
     ),
     supabase.from('tb_pedidos_inicial').select(
       'id, numero_processo, do_at, reintegracao, periculosidade, insalubridade, ' +
