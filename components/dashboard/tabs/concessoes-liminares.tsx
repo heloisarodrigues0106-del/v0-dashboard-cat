@@ -82,7 +82,8 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
       // Unificação básica e caixa alta
       .map(p => {
          let v = p.toUpperCase();
-         if (v === "MANUTENCAO DO PLANO DE SAUDE") return "PLANO DE SAUDE";
+         if (v === "MANUTENCAO DO PLANO DE SAUDE" || v === "PLANO DE SAUDE") return "PLANO DE SAÚDE";
+         if (v === "REINTEGRACAO") return "REINTEGRAÇÃO";
          return v;
       })
       // Filtrar itens vazios ou ignorados após limpeza

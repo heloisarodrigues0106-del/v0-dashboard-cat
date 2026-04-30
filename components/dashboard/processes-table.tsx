@@ -42,8 +42,8 @@ const getStatusVariant = (status: string): "default" | "secondary" | "destructiv
 
 const getStatusColor = (status: string): string => {
   const s = String(status || "").toUpperCase()
-  if (s.includes("PROCEDENTE")) return "bg-[#F6D000] text-[#111111]"
-  if (s.includes("ACORDO")) return "bg-[#F6D000] text-[#111111]"
+  if (s.includes("PROCEDENTE")) return "bg-[#183B8C] text-white"
+  if (s.includes("ACORDO")) return "bg-[#183B8C] text-white"
   if (s === "ATIVO") return "bg-emerald-500 text-white"
   if (s === "SUSPENSO") return "bg-amber-500 text-white"
   return "bg-slate-200 text-slate-700"

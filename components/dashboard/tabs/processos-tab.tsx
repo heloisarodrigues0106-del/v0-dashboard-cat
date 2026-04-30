@@ -18,9 +18,9 @@ const PEDIDO_KEYS = [
   { 
     label: "Doença Ocupacional / Acidente de Trabalho", 
     inicialKey: "do_at", 
-    sentencaKey: "acidente_trabalho", 
-    acordaoKey: "acidente_trabalho",
-    key: "acidente_trabalho"
+    sentencaKey: "do_medica_geral", 
+    acordaoKey: "do_medica_geral",
+    key: "do_medica_geral"
   },
   { key: "estabilidade", label: "Estabilidade" },
   { key: "do_mental", label: "Doença Mental" },
@@ -155,15 +155,14 @@ export function ProcessosTab({
   // Helper to check if a value is positive (true, "Sim", "Deferido", etc.)
   const isPositiveValue = (val: any) => {
     if (val === null || val === undefined || val === "") return false
-    if (val === true) return true
+    if (val === true || val === 1 || val === "1") return true
     const s = String(val).toUpperCase()
     return s === "SIM" || s === "DEFERIDO" || s === "RECONHECIDO" || s === "MANTIDO" || s === "TRUE"
   }
 
-  // Helper to check if a value is negative (false, "Não", "Indeferido", etc.)
   const isNegativeValue = (val: any) => {
     if (val === null || val === undefined || val === "") return false
-    if (val === false) return true
+    if (val === false || val === 0 || val === "0") return true
     const s = String(val).toUpperCase()
     return s === "NÃO" || s === "INDEFERIDO" || s === "FALSO" || s === "FALSE"
   }
