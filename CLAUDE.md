@@ -27,8 +27,9 @@ Colunas boolean: `do_at`, `reintegracao`, `periculosidade`, `insalubridade`, `re
 
 ### tb_pedidos_sentenca e tb_pedidos_acordao
 PK: `id` (bigserial)  
-Colunas boolean: mesmas do inicial + `do_psiquica`, `do_medica_geral`, `incapacidade`, `acidente_trabalho`  
-Colunas text: `obrigacoes_fazer`, `outros`, `ergonomia`
+Colunas boolean: mesmas do inicial + `acidente_trabalho`  
+Colunas text: `do_psiquica` ("SEM NEXO","FALSE"), `do_medica_geral` ("CAUSA","CONCAUSA","SEM NEXO"), `incapacidade` ("INCAPAZ","CAPAZ","INCAPACIDADE PARCIAL PERMANENTE"), `obrigacoes_fazer`, `outros`, `ergonomia`  
+Obs: `do_psiquica`, `do_medica_geral` e `incapacidade` são text — NÃO boolean (corrigido em 2026-04-30)
 
 ### tb_laudo
 PK: `id` (bigserial)  

@@ -63,15 +63,15 @@ BOOL_COLS = {
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
         "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_adv",
-        "rescisao_indireta", "acidente_trabalho", "do_psiquica", "do_medica_geral",
-        "incapacidade", "estabilidade",
+        "rescisao_indireta", "acidente_trabalho", "estabilidade",
+        # do_psiquica, do_medica_geral, incapacidade são text ("CAUSA","CONCAUSA","SEM NEXO","INCAPAZ","CAPAZ")
     ],
     "tb_pedidos_acordao": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
         "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_adv",
-        "rescisao_indireta", "acidente_trabalho", "do_psiquica", "do_medica_geral",
-        "incapacidade", "estabilidade",
+        "rescisao_indireta", "acidente_trabalho", "estabilidade",
+        # do_psiquica, do_medica_geral, incapacidade são text ("CAUSA","CONCAUSA","SEM NEXO","INCAPAZ","CAPAZ")
     ],
     # tb_laudo: do_psiquica e do_medico_geral são text ("CAUSA","CONCAUSA","SEM NEXO")
     # apenas acidente_trabalho, periculosidade e insalubridade são boolean
@@ -136,9 +136,15 @@ def to_bool(v):
 
 def to_numeric(v):
     if v is None: return None
-    s = str(v).strip().replace(" ", "")
+    # Rejeita datetime que pandas cria ao ler células de data em colunas numéricas
+    if hasattr(v, "year") and hasattr(v, "month"): return None
+    s = str(v).strip().replace("\xa0", "").replace(" ", "")
     if s in ("", "nan", "none", "true", "false"): return None
     s = s.replace(",", ".")
+    # Formato com ponto de milhar + ponto decimal: ex "50.000.00" ou "12.665.14"
+    partes = s.split(".")
+    if len(partes) == 3:
+        s = partes[0] + partes[1] + "." + partes[2]
     try:
         return float(s)
     except ValueError:
@@ -183,7 +189,7 @@ def limpar_valor(v):
         if isinstance(val, float) and math.isnan(val): return None
         return val
     if hasattr(v, "isoformat"): return v.isoformat()
-    s = str(v).strip()
+    s = str(v).strip().replace("\xa0", "").strip()
     if s in ("", "nan", "NaN", "None", "none"): return None
     return s
 
