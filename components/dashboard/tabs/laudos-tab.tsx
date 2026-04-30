@@ -276,7 +276,13 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 }}
               />
             </PieChart>
-          </ResponsiveContain  return (
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
     <div className="space-y-4">
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
         <KpiCard title="Total de Laudos" value={stats.total} icon={<FileText className="h-5 w-5 text-slate-600" />} subtext="Perícias analisadas" percentage="100%" />
