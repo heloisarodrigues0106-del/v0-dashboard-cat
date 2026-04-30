@@ -177,7 +177,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
     return Object.entries(counts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
-  }, [baseLiminares, agrupamento, assuntoFilter, ufFilter]);ssuntoFilter, ufFilter]);
+  }, [baseLiminares, agrupamento, assuntoFilter, ufFilter]);
 
   // Calcular altura do container para gerar scroll apenas se houver muitos itens (> 10)
   const isScrollable = chartData.length > 10;
