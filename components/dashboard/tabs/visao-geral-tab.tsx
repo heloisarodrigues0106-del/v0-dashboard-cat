@@ -94,16 +94,15 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     };
 
     processos.forEach(p => {
-      valorTotal += (p.valor_causa || 0)
-
-      const statusVal = (p.status || p.status_processo || "").toUpperCase().trim()
       const instanciaVal = (p.instancia || "").toUpperCase().trim()
+      const statusVal = (p.status || p.status_processo || "").toUpperCase().trim()
       
       // Regra: Se a instância é 'ARQUIVADO', conta como arquivado. Caso contrário, é ATIVO.
       if (instanciaVal === 'ARQUIVADO') {
         processosArquivadosCount++
       } else {
         processosAtivosCount++
+        valorTotal += (p.valor_causa || 0)
       }
 
       if (p.advogado_reclamante) dictAdvogados[p.advogado_reclamante] = (dictAdvogados[p.advogado_reclamante] || 0) + 1
@@ -254,7 +253,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">VALOR TOTAL DA CAUSA</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">VALOR TOTAL DA CAUSA (ATIVOS)</CardTitle>
             <div className="bg-emerald-50 p-2 rounded-lg">
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>
