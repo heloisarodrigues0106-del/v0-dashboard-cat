@@ -41,14 +41,16 @@ const getStatusVariant = (status: string): "default" | "secondary" | "destructiv
   }
 }
 
-const getStatusColor = (status: any, statusProcesso?: any, instancia?: any): string => {
+const getStatusColor = (status: any, statusProcesso?: any, instancia?: any, fase?: any): string => {
   const s = String(status || statusProcesso || instancia || "").toUpperCase()
+  const f = String(fase || "").toUpperCase()
+  
   if (s.includes("PROCEDENTE")) return "bg-[#183B8C] text-white"
   if (s.includes("ACORDO")) return "bg-[#183B8C] text-white"
   if (s.includes("AGUARDANDO")) return "bg-[#183B8C] text-white"
   if (s === "ATIVO") return "bg-emerald-500 text-white"
   if (s === "SUSPENSO") return "bg-amber-500 text-white"
-  if (s.includes("ARQUIVADO")) return "bg-slate-400 text-white"
+  if (s.includes("ARQUIVADO") || f === "") return "bg-slate-400 text-white"
   return "bg-slate-200/50 text-slate-400 border-slate-100"
 }
 
@@ -209,11 +211,11 @@ export function ProcessesTable({
                       <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">{processo.nome_reclamante}</span>
                     </div>
                     <div className="w-full md:w-[30%] shrink-0">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.06em]">{formatLabel(processo.fase_processual)}</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.06em]">{formatLabel(processo.fase_processual) || "ARQUIVADO"}</span>
                     </div>
                     <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
-                      <Badge className={`${getStatusColor(processo.status, processo.status_processo, processo.instancia)} text-[10px] px-2.5 py-0.5 font-bold uppercase border-none rounded-full`}>
-                        {formatLabel(processo.status || processo.status_processo || processo.instancia || "—")}
+                      <Badge className={`${getStatusColor(processo.status, processo.status_processo, processo.instancia, processo.fase_processual)} text-[10px] px-2.5 py-0.5 font-bold uppercase border-none rounded-full`}>
+                        {formatLabel(processo.status || processo.status_processo || processo.instancia || (processo.fase_processual ? "" : "ARQUIVADO") || "—")}
                       </Badge>
                       <div className="p-1 rounded-md text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-all">
                         <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-[#183B8C]' : ''}`} />
@@ -276,7 +278,7 @@ export function ProcessesTable({
                           </div>
                           <div className="space-y-1">
                             <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Fase</span>
-                            <p className="font-bold text-slate-700 uppercase tracking-tight">{formatLabel(processo.fase_processual) || "—"}</p>
+                            <p className="font-bold text-slate-700 uppercase tracking-tight">{formatLabel(processo.fase_processual) || "ARQUIVADO"}</p>
                           </div>
                           <div className="space-y-1 text-center">
                             <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Psíquico</span>

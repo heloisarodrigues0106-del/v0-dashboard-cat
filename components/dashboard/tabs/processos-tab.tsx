@@ -241,12 +241,13 @@ export function ProcessosTab({
     }).filter(r => r.hasData)
   }, [selectedPedido, processos, pedidosInicialMap, pedidosSentencaMap, pedidosAcordaoMap])
 
-  const renderCell = (data: { deferido: number, indeferido: number, total: number, exists: boolean }, type: 'inicial' | 'decisao' = 'decisao') => {
-    if (!data.exists) {
+  const renderCell = (data?: { deferido: number, indeferido?: number, total: number, exists: boolean }, type: 'inicial' | 'decisao' = 'decisao') => {
+    if (!data || !data.exists) {
       return <span className="text-slate-300 text-xs">—</span>
     }
     
-    if (data.deferido === 0 && data.indeferido === 0) {
+    const ind = data.indeferido || 0
+    if (data.deferido === 0 && ind === 0 && type === 'decisao') {
       return <span className="text-slate-400 text-xs">—</span>
     }
     
