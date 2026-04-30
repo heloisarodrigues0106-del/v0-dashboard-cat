@@ -114,6 +114,29 @@ A política correta é: **toda coluna do Excel deve existir no banco**.
 
 ---
 
+## Sessão 2026-04-30 (complemento) — Análise completa Excel vs banco
+
+### Situação encontrada
+O banco já continha todas as colunas do Excel após análise via `information_schema`. Nenhuma migration adicional foi necessária. Apenas o `importar.py` e o schema canônico precisavam de ajuste.
+
+### Correções feitas no importar.py
+| Tabela | Coluna | Tipo | Problema |
+|---|---|---|---|
+| `tb_pedidos_inicial` | `estabilidade` | boolean | Faltava em `BOOL_COLS` |
+| `tb_valores` | `possivel_*_quarter_anterior` (4 colunas) | numeric | Faltava em `NUMERIC_COLS` |
+| `tb_valores` | `remoto_*_quarter_anterior` (4 colunas) | numeric | Faltava em `NUMERIC_COLS` |
+
+### Correções feitas no schema canônico (20260422_recreate_tables.sql)
+| Tabela | Coluna | Tipo |
+|---|---|---|
+| `tb_processo` | `assistente_tecnico` | text |
+| `tb_processo` | `assistente_medico` | text |
+| `tb_pedidos_inicial` | `estabilidade` | boolean |
+| `tb_valores` | `possivel_*_quarter_anterior` (4 colunas) | numeric |
+| `tb_valores` | `remoto_*_quarter_anterior` (4 colunas) | numeric |
+
+---
+
 ## Query de dados (`app/dashboard/page.tsx`)
 
 - Todas as queries usam colunas explícitas (não `select('*')`) exceto `tb_laudo`
