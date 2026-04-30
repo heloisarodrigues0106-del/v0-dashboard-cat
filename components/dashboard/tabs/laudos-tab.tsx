@@ -86,7 +86,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Não Psíquica": 0, "Médica Psíquica": 0, "Ergonômica": 0 }
     let nexos = { Concausa: 0, Causa: 0, "Incapacidade/Restrição": 0 }
     let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
-    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } 
+    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
@@ -95,15 +95,16 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     laudos.forEach(laudo => {
       const hasTecnica = hasValue(laudo.insalubridade) || hasValue(laudo.periculosidade);
-      const hasMedicaGeral = hasValue(laudo.do_medica_geral);
-      const hasMental = hasValue(laudo.do_mental);
+      const hasMedicaGeral = hasValue(laudo.do_medico_geral);
+      const hasMental = hasValue(laudo.do_psiquica);
       const hasErgonomia = hasValue(laudo.ergonomia);
 
       if (!hasTecnica && !hasMedicaGeral && !hasMental && !hasErgonomia) return;
 
       total++;
-
-      const medicaVal = String(laudo.do_medica_geral || "").trim().toUpperCase()
+      const medicaVal = String(laudo.do_medico_geral || "").trim().toUpperCase()
+      const mentalVal = String(laudo.do_psiquica || "").trim().toUpperCase()
+      const ergoVal = String(laudo.ergonomia || "").trim().toUpperCase()
       const incapacidadeVal = String(laudo.incapacidade || "").trim().toUpperCase()
       const acidenteVal = String(laudo.acidente_trabalho || "").trim().toUpperCase()
 
@@ -127,16 +128,16 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          return ["true", "causa", "concausa", "incapaz", "restrição", "incapacidadeparcial", "desfavoravel", "desfavorável", "perda", "negativo", "caracterizada"].some(pc => str.includes(pc));
       }
 
-      const isDesfavoravel = isBadForCompany(laudo.do_medica_geral) || isBadForCompany(laudo.incapacidade) || isBadForCompany(laudo.acidente_trabalho) || isBadForCompany(laudo.insalubridade) || isBadForCompany(laudo.periculosidade) || String(laudo.ergonomia).toUpperCase() === "NEGATIVO";
+      const isDesfavoravel = isBadForCompany(laudo.do_medico_geral) || isBadForCompany(laudo.do_psiquica) || isBadForCompany(laudo.incapacidade) || isBadForCompany(laudo.acidente_trabalho) || isBadForCompany(laudo.insalubridade) || isBadForCompany(laudo.periculosidade) || isBadForCompany(laudo.ergonomia);
 
       if (isDesfavoravel) {
          desfavoraveis++;
-         if (medicaVal === "CAUSA" || medicaVal === "CONCAUSA") composicaoDesfavoraveis["Causa / Concausa"]++;
+         if (medicaVal.includes("CAUSA") || medicaVal.includes("CONCAUSA")) composicaoDesfavoraveis["Causa / Concausa"]++;
          if (incapacidadeVal === "INCAPAZ") composicaoDesfavoraveis["Incapacidade"]++;
          if (acidenteVal === "TRUE" || laudo.acidente_trabalho === true) composicaoDesfavoraveis["Acidente de Trabalho"]++;
          if (String(laudo.insalubridade).toUpperCase() === "TRUE" || laudo.insalubridade === true) composicaoDesfavoraveis["Insalubridade"]++;
          if (String(laudo.periculosidade).toUpperCase() === "TRUE" || laudo.periculosidade === true) composicaoDesfavoraveis["Periculosidade"]++;
-         if (String(laudo.ergonomia).toUpperCase() === "NEGATIVO") composicaoDesfavoraveis["Ergonomia"]++;
+         if (isBadForCompany(laudo.ergonomia)) composicaoDesfavoraveis["Ergonomia"]++;
       } else {
          favoraveis++;
       }
@@ -146,19 +147,21 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       if (hasMental) tiposLaudo["Médica Psíquica"]++;
       if (hasErgonomia) tiposLaudo["Ergonômica"]++;
 
-      if (medicaVal === "CAUSA") medicaGeralStatus.Causa++;
-      else if (medicaVal === "CONCAUSA") medicaGeralStatus.Concausa++;
+      if (medicaVal.includes("CAUSA") && !medicaVal.includes("CONCAUSA")) medicaGeralStatus.Causa++;
+      else if (medicaVal.includes("CONCAUSA")) medicaGeralStatus.Concausa++;
       else medicaGeralStatus["Sem Nexo"]++;
 
-      const mentalStr = String(laudo.do_mental || "").toLowerCase();
-      if (mentalStr.includes("causa")) mentalStatus.Causa++;
-      else if (mentalStr.includes("concausa")) mentalStatus.Concausa++;
+      if (mentalVal.includes("CAUSA") && !mentalVal.includes("CONCAUSA")) mentalStatus.Causa++;
+      else if (mentalVal.includes("CONCAUSA")) mentalStatus.Concausa++;
       else mentalStatus["Sem Nexo"]++;
 
       if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
       if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
-      const ergoVal = String(laudo.ergonomia || "").toUpperCase();
+      if (ergoVal.includes("CAUSA") && !ergoVal.includes("CONCAUSA")) ergoStatus.Causa++;
+      else if (ergoVal.includes("CONCAUSA")) ergoStatus.Concausa++;
+      else ergoStatus["Sem Nexo"]++;
+      
       if (ergoVal === "POSITIVO") ergonomiaStatus.Positivo++; else if (ergoVal === "NEGATIVO") ergonomiaStatus.Negativo++;
 
       const processoRelacionado = processos.find(p => String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()) || {};
@@ -170,7 +173,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          if (!statsPerito[key]) statsPerito[key] = { favoraveis: 0, desfavoraveis: 0, classificacao: classif };
          if (isDesfav) statsPerito[key].desfavoraveis++; else statsPerito[key].favoraveis++;
       }
-      registrarPerito(processoRelacionado.perito_medico_psiquiatra, "Médico Psiquiatra", [laudo.do_mental]);
+      registrarPerito(processoRelacionado.perito_medico_psiquiatra, "Médico Psiquiatra", [laudo.do_psiquica]);
       registrarPerito(processoRelacionado.perito_medico_geral, "Médico", [laudo.do_medica_geral, laudo.incapacidade, laudo.acidente_trabalho]);
       registrarPerito(processoRelacionado.perito_ergonomico, "Ergonômico", [laudo.ergonomia]);
       registrarPerito(processoRelacionado.perito_tecnico, "Técnico", [laudo.insalubridade, laudo.periculosidade]);
@@ -182,13 +185,13 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          if (!obj[key]) obj[key] = { favoraveis: 0, desfavoraveis: 0 };
          if (isDesfav) obj[key].desfavoraveis++; else obj[key].favoraveis++;
       }
-      registrarAssistente(processoRelacionado.assistente_medico, statsAssistenteMedico, [laudo.do_medica_geral, laudo.incapacidade]);
+      registrarAssistente(processoRelacionado.assistente_medico, statsAssistenteMedico, [laudo.do_medico_geral, laudo.incapacidade]);
       registrarAssistente(processoRelacionado.assistente_tecnico, statsAssistenteTecnico, [laudo.insalubridade, laudo.periculosidade]);
     })
 
     return { 
       total, favoraveis, desfavoraveis, incapacidadeCount, acidenteTrabalhoCount, matrizNexoIncapacidade, composicaoDesfavoraveis,
-      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus,
+      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, ergoStatus,
       totalValidos: total
     }
   }, [laudos, processos]);
@@ -248,7 +251,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const mentalData = [{ name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
   const insalubridadeData = [{ name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
   const periculosidadeData = [{ name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
-  const ergonomiaData = [{ name: "Favorável", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel }, { name: "Desfavorável", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }].filter(d => d.value > 0);
+  const ergonomiaData = [
+    { name: "Causa", value: stats.ergoStatus.Causa, color: THEME.critico }, 
+    { name: "Concausa", value: stats.ergoStatus.Concausa, color: THEME.intermediario }, 
+    { name: "Sem Nexo", value: stats.ergoStatus["Sem Nexo"], color: THEME.neutro }
+  ].filter(d => d.value > 0);
 
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
     <Card className="border border-border shadow-sm bg-white overflow-hidden">

@@ -40,7 +40,10 @@ const LABEL_MAP: Record<string, string> = {
   "RECLAMACAO TRABALHISTA": "RECLAMAÇÃO TRABALHISTA",
   "EXECUCAO PROVISORIA": "EXECUÇÃO PROVISÓRIA",
   "ACAO RESCISORIA": "AÇÃO RESCISÓRIA",
-  "ENCERRADO": "ENCERRADO"
+  "ENCERRADO": "ENCERRADO",
+  "PROVAVEL": "PROVÁVEL",
+  "POSSIVEL": "POSSÍVEL",
+  "REMOTO": "REMOTO"
 }
 
 export function formatLabel(value: any): string {

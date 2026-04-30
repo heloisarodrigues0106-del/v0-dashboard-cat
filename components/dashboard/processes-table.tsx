@@ -41,13 +41,15 @@ const getStatusVariant = (status: string): "default" | "secondary" | "destructiv
   }
 }
 
-const getStatusColor = (status: string): string => {
-  const s = String(status || "").toUpperCase()
+const getStatusColor = (status: any, statusProcesso?: any, instancia?: any): string => {
+  const s = String(status || statusProcesso || instancia || "").toUpperCase()
   if (s.includes("PROCEDENTE")) return "bg-[#183B8C] text-white"
   if (s.includes("ACORDO")) return "bg-[#183B8C] text-white"
+  if (s.includes("AGUARDANDO")) return "bg-[#183B8C] text-white"
   if (s === "ATIVO") return "bg-emerald-500 text-white"
   if (s === "SUSPENSO") return "bg-amber-500 text-white"
-  return "bg-slate-200 text-slate-700"
+  if (s.includes("ARQUIVADO")) return "bg-slate-400 text-white"
+  return "bg-slate-200/50 text-slate-400 border-slate-100"
 }
 
 // Map database columns to display labels for the "Pedidos e Desfechos" table
@@ -210,8 +212,8 @@ export function ProcessesTable({
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.06em]">{formatLabel(processo.fase_processual)}</span>
                     </div>
                     <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
-                      <Badge className={`${getStatusColor(processo.status)} text-[10px] px-2.5 py-0.5 font-bold uppercase border-none rounded-full`}>
-                        {formatLabel(processo.status)}
+                      <Badge className={`${getStatusColor(processo.status, processo.status_processo, processo.instancia)} text-[10px] px-2.5 py-0.5 font-bold uppercase border-none rounded-full`}>
+                        {formatLabel(processo.status || processo.status_processo || processo.instancia || "—")}
                       </Badge>
                       <div className="p-1 rounded-md text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-all">
                         <ChevronDown className={`h-6 w-6 transition-transform duration-300 shrink-0 ${isExpanded ? 'rotate-180 text-[#183B8C]' : ''}`} />

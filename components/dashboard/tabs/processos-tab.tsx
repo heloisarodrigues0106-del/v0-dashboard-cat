@@ -15,8 +15,9 @@ import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
 import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale, FileText, Landmark, ShieldAlert, AlertTriangle, UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
 
 const PEDIDO_MAPPING = [
-  { id: "doenca", label: "Doença Ocupacional / Acidente de Trabalho", inicial: "do_at", sentenca: "do_medica_geral", acordao: "do_medica_geral" },
-  { id: "acidente", label: "Acidente de Trabalho", inicial: "acidente_trabalho", sentenca: "acidente_trabalho", acordao: "acidente_trabalho" },
+  { id: "doenca_mental", label: "Doença Psíquica", inicial: "do_at", sentenca: "do_mental", acordao: "do_mental" },
+  { id: "doenca_geral", label: "Doença Médica Não Psíquica", inicial: "do_at", sentenca: "do_medica_geral", acordao: "do_medica_geral" },
+  { id: "acidente", label: "Acidente de Trabalho", inicial: "do_at", sentenca: "acidente_trabalho", acordao: "acidente_trabalho" },
   { id: "materiais", label: "Danos Materiais", inicial: "danos_materiais", sentenca: "danos_materiais", acordao: "danos_materiais" },
   { id: "reintegracao", label: "Reintegração", inicial: "reintegracao", sentenca: "reintegracao", acordao: "reintegracao" },
   { id: "morais", label: "Danos Morais", inicial: "danos_morais", sentenca: "danos_morais", acordao: "danos_morais" },
@@ -161,7 +162,7 @@ export function ProcessosTab({
     ]
     
     if (positiveTerms.some(term => s === term || s.includes(term))) return true
-    if (pedidoId === "doenca" && s.includes("INCAPAZ")) return true
+    if ((pedidoId === "doenca" || pedidoId === "doenca_mental" || pedidoId === "doenca_geral" || pedidoId === "acidente") && (s.includes("INCAPAZ") || s.includes("CAUSA") || s.includes("SIM"))) return true
     
     return false
   }
@@ -172,67 +173,47 @@ export function ProcessosTab({
     if (val === false || val === 0 || val === "0") return true
     
     const s = String(val).toUpperCase().trim()
-    const negativeTerms = ["NÃO", "NAO", "INDEFERIDO", "IMPROCEDENTE", "SEM NEXO", "CAPAZ", "FALSE", "FALSO"]
+    const negativeTerms = [
+      "NÃO", "NAO", "INDEFERIDO", "IMPROCEDENTE", "SEM NEXO", "CAPAZ", 
+      "FALSE", "FALSO", "NEGADO", "DESPROVIDO", "MANTIDA A IMPROCEDENCIA", 
+      "MANTIDO O INDEFERIMENTO", "0", "-"
+    ]
     
     if (negativeTerms.some(term => s === term || s.includes(term))) return true
     
     return false
   }
 
-  // Aggregate data for the matrix table
   const matrixData = useMemo(() => {
-    console.log("--- DEBUG MATRIZ DE DEFERIMENTO ---");
-    
     return PEDIDO_MAPPING.map((config) => {
-      const checkPhase = (dataset: any[], key: string) => {
-        if (!dataset || dataset.length === 0) return { deferido: 0, indeferido: 0, total: 0, exists: false, nullCount: 0 };
-        
-        let pos = 0, neg = 0, nulls = 0, found = false;
-        
-        const hasColumn = dataset.some(row => row[key] !== undefined);
-        
-        if (hasColumn) {
-          found = true;
-          dataset.forEach(row => {
-            const val = row[key];
-            if (val === null || val === undefined || val === "") nulls++;
-            
-            if (isPositiveValue(val, config.id)) pos++;
-            else if (isNegativeValue(val)) neg++;
-          });
-        } else {
-          console.warn(`Coluna não encontrada: [${key}] na tabela correspondente`);
-        }
-        
-        return { deferido: pos, indeferido: neg, total: pos + neg, exists: found, nullCount: nulls };
-      };
+      const cohort = pedidosInicial.filter(p => isPositiveValue(p[config.inicial], config.id))
+      const totalIni = cohort.length
 
-      const resIni = checkPhase(pedidosInicial, config.inicial);
-      const resSen = checkPhase(pedidosSentenca, config.sentenca);
-      const resAco = checkPhase(pedidosAcordao, config.acordao);
+      if (totalIni === 0) return { key: config.id, name: config.label, totalPedidos: 0 }
 
-      // Debug Individual (Requisito 1)
-      console.log(`Pedido: ${config.label} | Colunas: [${config.inicial}, ${config.sentenca}, ${config.acordao}]`);
-      console.log(`-> Inicial: ${resIni.deferido} | Sentença(+): ${resSen.deferido} | Acórdão(+): ${resAco.deferido}`);
-      console.log(`-> Sentença Vazios: ${resSen.nullCount} | Acórdão Vazios: ${resAco.nullCount}`);
+      const deferidosSen = cohort.filter(p => {
+        const pSen = pedidosSentencaMap[String(p.numero_processo)]
+        return pSen && isPositiveValue(pSen[config.sentenca], config.id)
+      }).length
 
-      const totalGlobal = resIni.deferido + resSen.deferido + resAco.deferido + resIni.indeferido + resSen.indeferido + resAco.indeferido;
+      const deferidosAco = cohort.filter(p => {
+        const pAco = pedidosAcordaoMap[String(p.numero_processo)]
+        return pAco && isPositiveValue(pAco[config.acordao], config.id)
+      }).length
 
       return {
         key: config.id,
         name: config.label,
-        inicial: { deferido: resIni.deferido, indeferido: resIni.indeferido, total: resIni.total, exists: resIni.exists },
-        sentenca: { deferido: resSen.deferido, indeferido: resSen.indeferido, total: resSen.total, exists: resSen.exists },
-        acordao: { deferido: resAco.deferido, indeferido: resAco.indeferido, total: resAco.total, exists: resAco.exists },
-        totalPedidos: resIni.total || resSen.total || resAco.total || (resIni.exists || resSen.exists || resAco.exists ? 0.1 : 0),
+        inicial: { deferido: totalIni, total: totalIni, exists: true },
+        sentenca: { deferido: deferidosSen, total: totalIni, exists: true },
+        acordao: { deferido: deferidosAco, total: totalIni, exists: true },
+        totalPedidos: totalIni,
       }
     })
     .filter(item => item.totalPedidos > 0)
     .sort((a, b) => b.totalPedidos - a.totalPedidos);
-  }, [pedidosInicial, pedidosSentenca, pedidosAcordao]);
+  }, [pedidosInicial, pedidosSentencaMap, pedidosAcordaoMap]);
 
-
-  // Per-process detail for the selected pedido
   const detailRows = useMemo(() => {
     if (!selectedPedido) return []
     
@@ -439,34 +420,37 @@ export function ProcessosTab({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FunnelCard 
-                  title="Doença Ocupacional" 
-                  icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at, "doenca")).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
-                />
-                <FunnelCard 
-                  title="Acidente de Trabalho" 
-                  icon={<ShieldAlert className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.acidente_trabalho)).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.acidente_trabalho)).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.acidente_trabalho)).length}
-                />
-                <FunnelCard 
-                  title="Estabilidade" 
-                  icon={<ShieldCheck className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.estabilidade)).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.estabilidade)).length}
-                />
-                <FunnelCard 
-                  title="Reintegração" 
-                  icon={<Landmark className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.reintegracao)).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.reintegracao)).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.reintegracao)).length}
-                />
+                {PEDIDO_MAPPING.filter(m => ["doenca_mental", "doenca_geral", "acidente", "estabilidade", "reintegracao"].includes(m.id)).map(config => {
+                  const cohort = pedidosInicial.filter(p => isPositiveValue(p[config.inicial], config.id))
+                  const iniCount = cohort.length
+                  const senCount = cohort.filter(p => {
+                    const pSen = pedidosSentencaMap[String(p.numero_processo)]
+                    return pSen && isPositiveValue(pSen[config.sentenca], config.id)
+                  }).length
+                  const acoCount = cohort.filter(p => {
+                    const pAco = pedidosAcordaoMap[String(p.numero_processo)]
+                    return pAco && isPositiveValue(pAco[config.acordao], config.id)
+                  }).length
+
+                  const iconMap: Record<string, React.ReactNode> = {
+                    "doenca_mental": <HeartPulse className="h-5 w-5 text-[#183B8C]" />,
+                    "doenca_geral": <Activity className="h-5 w-5 text-[#183B8C]" />,
+                    "acidente": <ShieldAlert className="h-5 w-5 text-[#183B8C]" />,
+                    "estabilidade": <ShieldCheck className="h-5 w-5 text-[#183B8C]" />,
+                    "reintegracao": <Landmark className="h-5 w-5 text-[#183B8C]" />
+                  }
+
+                  return (
+                    <FunnelCard 
+                      key={config.id}
+                      title={config.label} 
+                      icon={iconMap[config.id] || <FileText className="h-5 w-5 text-[#183B8C]" />}
+                      initial={iniCount}
+                      sentenca={senCount}
+                      acordao={acoCount}
+                    />
+                  )
+                })}
               </div>
             </div>
 
