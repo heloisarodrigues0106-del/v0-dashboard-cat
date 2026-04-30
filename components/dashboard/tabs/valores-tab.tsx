@@ -205,26 +205,22 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                           <button
                             type="button"
                             onClick={() => setExpandedRow(isExpanded ? null : item.numero_processo)}
-                            className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-3 text-left cursor-pointer group"
+                            className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-4 text-left cursor-pointer group"
                           >
-                            <div className="w-full md:w-[30%] flex flex-col gap-0.5 shrink-0">
-                              <span className="font-bold text-slate-900 text-[13px] tracking-tight group-hover:text-[#183B8C] transition-colors">{item.numero_processo}</span>
-                              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Q. Anterior: {formatCurrency(item.totalAnterior)}</span>
-                            </div>
-                            
-                            <div className="w-full md:w-[25%] shrink-0">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] block mb-1">Q. Atual</span>
-                              <span className="text-[13px] font-bold text-slate-800">{formatCurrency(item.totalAtual)}</span>
-                            </div>
- 
-                            <div className="w-full md:w-[20%] shrink-0">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] block mb-1">Diferença</span>
-                              <span className={`text-[13px] font-bold ${isAumento ? 'text-destructive' : 'text-emerald-500'}`}>
-                                {isAumento ? '+' : ''}{formatCurrency(item.diferenca)}
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 flex-1">
+                              <div className="flex items-center gap-3">
+                                <span className="font-bold text-slate-900 text-[13px] tracking-tight group-hover:text-[#183B8C] transition-colors">{item.numero_processo}</span>
+                                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Q. ANTERIOR: {formatCurrency(item.totalAnterior)}</span>
+                              </div>
+                              
+                              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Q. ATUAL: {formatCurrency(item.totalAtual)}</span>
+                              
+                              <span className={`text-[11px] font-bold uppercase tracking-tight ${isAumento ? 'text-destructive' : 'text-emerald-600'}`}>
+                                DIFERENÇA: {isAumento ? '+' : ''}{formatCurrency(item.diferenca)}
                               </span>
                             </div>
  
-                            <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
+                            <div className="flex items-center gap-5 shrink-0 ml-auto">
                               <Badge variant="outline" className={`px-2.5 py-0.5 font-bold uppercase text-[10px] border-transparent shadow-none ${isAumento ? 'bg-destructive/10 text-destructive' : 'bg-emerald-500/10 text-emerald-600'}`}>
                                 {item.tipo}
                               </Badge>
@@ -237,16 +233,6 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                           {/* PAINEL EXPANDIDO — Layout Tabular Full-Width */}
                           {isExpanded && (
                             <div className="border-t border-slate-200 bg-white">
-                              {/* Cabeçalho estilo Reintegração */}
-                              <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-100 bg-slate-50">
-                                <div className="w-1 h-8 bg-[#183B8C] rounded-full shrink-0" />
-                                <div>
-                                  <h3 className="text-base font-bold text-slate-900 leading-tight">{item.numero_processo}</h3>
-                                  <p className="text-sm text-slate-500">
-                                    Abertura de Valores do Quarter
-                                  </p>
-                                </div>
-                              </div>
 
                               <div className="p-6">
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px] bg-white border border-slate-200 rounded-lg p-4 shadow-sm">

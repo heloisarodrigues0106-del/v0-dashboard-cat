@@ -37,15 +37,18 @@ export function FinancialAnalysis({ valoresRisco }: { valoresRisco: ValorRisco[]
   // Consolidação dos totais da carteira para os dois períodos
   const totals = valoresRisco.reduce((acc, item) => ({
     prevProvavel: acc.prevProvavel + (item.provavel_total_anterior || 0),
+    prevPossivel: acc.prevPossivel + (item.possivel_total_anterior || 0),
+    prevRemoto: acc.prevRemoto + (item.remoto_total_anterior || 0),
     currProvavel: acc.currProvavel + (item.provavel_total_atual || 0),
     currPossivel: acc.currPossivel + (item.possivel_total_atual || 0),
     currRemoto: acc.currRemoto + (item.remoto_total_atual || 0),
-    // Breakdown do Quarter Atual
+    // Breakdown do Quarter Atual (Provável)
     currPrincipal: acc.currPrincipal + (item.provavel_principal_quarter_atual || 0),
     currCorrecao: acc.currCorrecao + (item.provavel_correcao_quarter_atual || 0),
     currJuros: acc.currJuros + (item.provavel_juros_quarter_atual || 0),
   }), {
-    prevProvavel: 0, currProvavel: 0, currPossivel: 0, currRemoto: 0,
+    prevProvavel: 0, prevPossivel: 0, prevRemoto: 0,
+    currProvavel: 0, currPossivel: 0, currRemoto: 0,
     currPrincipal: 0, currCorrecao: 0, currJuros: 0
   })
 
@@ -53,8 +56,8 @@ export function FinancialAnalysis({ valoresRisco }: { valoresRisco: ValorRisco[]
     {
       periodo: "Quarter Anterior",
       Provável: totals.prevProvavel,
-      Possível: 0, // Não temos histórico anterior no banco para Possível
-      Remoto: 0    // Não temos histórico anterior no banco para Remoto
+      Possível: totals.prevPossivel,
+      Remoto: totals.prevRemoto
     },
     {
       periodo: "Quarter Atual",

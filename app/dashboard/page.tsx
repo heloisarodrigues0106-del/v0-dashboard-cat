@@ -48,9 +48,14 @@ export default async function DashboardPage() {
       'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
       'provavel_juros_quarter_anterior, provavel_total_anterior, provavel_principal_quarter_atual, ' +
       'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
+      'possivel_principal_quarter_anterior, possivel_correcao_quarter_anterior, ' +
+      'possivel_juros_quarter_anterior, possivel_total_anterior, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, ' +
-      'possivel_juros_quarter_atual, possivel_total_atual, remoto_principal_quarter_atual, ' +
-      'remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual, ' +
+      'possivel_juros_quarter_atual, possivel_total_atual, ' +
+      'remoto_principal_quarter_anterior, remoto_correcao_quarter_anterior, ' +
+      'remoto_juros_quarter_anterior, remoto_total_anterior, ' +
+      'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, ' +
+      'remoto_juros_quarter_atual, remoto_total_atual, ' +
       'justificativa_reavaliacao_quarter_anterior, justificativa_reavaliacao_quarter_atual'
     ),
   ])
