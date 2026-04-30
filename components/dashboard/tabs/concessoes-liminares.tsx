@@ -96,7 +96,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const baseLiminares = useMemo(() => {
     return processos.filter(p => {
       const text = String(p.liminar || "").toUpperCase();
-      const statusExtra = String(p.status_liminar || p.concessao_liminar || "").toUpperCase();
+      const statusExtra = String(p.status_liminar || p.concessao_liminar || p.decisao_liminar || "").toUpperCase();
 
       if (!text || text === "NULL" || text === "N/A" || text === "-" || text === "FALSE") return false;
 
