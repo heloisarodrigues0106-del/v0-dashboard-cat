@@ -188,7 +188,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     return { 
       total, favoraveis, desfavoraveis, incapacidadeCount, acidenteTrabalhoCount, matrizNexoIncapacidade, composicaoDesfavoraveis,
-      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus
+      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus,
+      totalValidos: total
     }
   }, [laudos, processos]);
 
@@ -236,6 +237,13 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     return Object.entries(source).map(([name, data]) => ({ name, Favorável: data.favoraveis, Desfavorável: data.desfavoraveis, Total: data.favoraveis + data.desfavoraveis })).sort((a, b) => b.Favorável - a.Favorável).slice(0, 15);
   }, [stats.statsAssistenteMedico, stats.statsAssistenteTecnico, assistenteFilter]);
 
+  const tiposData = useMemo(() => [
+    { name: "Técnica", value: stats.tiposLaudo["Técnica"], color: CATEGORICAL_COLORS.tecnica },
+    { name: "Médica Geral", value: stats.tiposLaudo["Médica Geral"], color: CATEGORICAL_COLORS.medicaGeral },
+    { name: "Médica Mental", value: stats.tiposLaudo["Médica Mental"], color: CATEGORICAL_COLORS.medicaMental },
+    { name: "Ergonômica", value: stats.tiposLaudo["Ergonômica"], color: CATEGORICAL_COLORS.ergonomica },
+  ].filter(d => d.value > 0), [stats.tiposLaudo]);
+
   const medicaGeralData = [{ name: "Causa", value: stats.medicaGeralStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
   const mentalData = [{ name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
   const insalubridadeData = [{ name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
@@ -256,7 +264,17 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 {dataArray.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
               </Pie>
               <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB" }} />
-              <Legend verticalAlign="bottom" align="center" iconType="circle" />
+              <Legend 
+                verticalAlign="bottom" 
+                align="center" 
+                iconType="circle" 
+                formatter={(value: string, entry: any) => {
+                   const item = dataArray.find(d => d.name === value);
+                   const total = dataArray.reduce((acc, curr) => acc + curr.value, 0);
+                   const pct = total > 0 ? ((item?.value || 0) / total * 100).toFixed(1) : 0;
+                   return <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-300 font-medium">{pct}%</span></span>
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -275,9 +293,12 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        {renderMiniPie(tiposData, "Natureza das Perícias", "Distribuição por especialidade técnica")}
         {renderMiniPie(medicaGeralData, "Doença Médica Geral", "Causa, Concausa e Sem Nexo")}
+        
         {renderMiniPie(mentalData, "Doença Mental", "Causa, Concausa e Sem Nexo")}
         {renderMiniPie(insalubridadeData, "Insalubridade", "Caracterizada e Não Caracterizada")}
+        
         {renderMiniPie(periculosidadeData, "Periculosidade", "Caracterizada e Não Caracterizada")}
         {renderMiniPie(ergonomiaData, "Ergonomia", "Riscos ergonômicos")}
       </div>
@@ -450,50 +471,57 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         </Card>
       </div>
 
-      <div className="space-y-6 pt-10 border-t border-slate-100">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-8 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
-            <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Honorários Prévios</div>
-            <div className="text-4xl font-black text-[#102A63]">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
+      <div className="space-y-4 pt-10 border-t border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Card className="p-5 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
+            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Honorários Prévios</div>
+            <div className="text-2xl font-black text-[#102A63] tracking-tight">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
           </Card>
-          <Card className="p-8 bg-[#183B8C] text-white flex flex-col items-center justify-center">
-            <div className="text-2xl font-black">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
-            <div className="text-[10px] font-black uppercase opacity-80 mt-1">Ticket Médio</div>
+          <Card className="p-5 bg-[#183B8C] text-white flex flex-col items-center justify-center">
+            <div className="text-xl font-black tracking-tight">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
+            <div className="text-[9px] font-black uppercase opacity-80 mt-0.5 tracking-widest">Ticket Médio</div>
           </Card>
-          <Card className="p-8 bg-[#102A63] text-white flex flex-col items-center justify-center">
-            <div className="text-3xl font-black">{honorariosData.lista.length}</div>
-            <div className="text-[10px] font-black uppercase opacity-80 mt-1">Volume de Processos</div>
+          <Card className="p-5 bg-[#102A63] text-white flex flex-col items-center justify-center">
+            <div className="text-2xl font-black tracking-tight">{honorariosData.lista.length}</div>
+            <div className="text-[9px] font-black uppercase opacity-80 mt-0.5 tracking-widest">Volume de Processos</div>
           </Card>
         </div>
 
         <Card className="border border-border bg-card shadow-sm overflow-hidden">
-          <CardHeader className="bg-slate-50/50 p-8 flex flex-row items-center justify-between">
-            <CardTitle className="text-xl font-black text-slate-800">Listagem de Honorários</CardTitle>
-            <Input className="w-full md:w-[400px] h-12 rounded-xl" placeholder="Buscar..." value={honorariosSearch} onChange={(e) => setHonorariosSearch(e.target.value)} />
+          <CardHeader className="bg-slate-50/50 p-5 flex flex-row items-center justify-between border-b border-slate-100">
+            <CardTitle className="text-lg font-black text-slate-800">Listagem de Honorários</CardTitle>
+            <Input 
+              className="w-full md:w-[320px] h-10 rounded-lg text-sm bg-white" 
+              placeholder="Buscar..." 
+              value={honorariosSearch} 
+              onChange={(e) => setHonorariosSearch(e.target.value)} 
+            />
           </CardHeader>
-          <CardContent className="p-8">
-            <div className="flex flex-col gap-4">
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3">
               {paginatedHonorarios.map((item, idx) => (
-                <div key={idx} className="bg-white border border-slate-200 rounded-3xl p-8 transition-all hover:shadow-xl">
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <div className="text-xl font-black text-[#102A63] mb-1">{item.numero}</div>
-                      <div className="text-base font-black text-slate-800 uppercase">{item.reclamante}</div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mt-1">
-                        <MapPin className="h-3.5 w-3.5" /> {item.vara} {item.comarca}
+                <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 transition-all hover:shadow-lg border-l-4 border-l-[#102A63]">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="space-y-0.5">
+                      <div className="text-base font-black text-[#102A63] tracking-tight">{item.numero}</div>
+                      <div className="text-sm font-black text-slate-700 uppercase leading-none">{item.reclamante}</div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                        <MapPin className="h-3 w-3" /> {item.vara} {item.comarca}
                       </div>
                     </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl text-right border border-slate-100">
-                      <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Valor Pago</div>
-                      <div className="text-lg font-black text-[#102A63]">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}</div>
+                    <div className="bg-slate-50/80 px-3 py-2 rounded-xl text-right border border-slate-100 shrink-0">
+                      <div className="text-[9px] font-black text-slate-400 uppercase mb-0.5">Valor Pago</div>
+                      <div className="text-base font-black text-[#102A63] tracking-tighter">
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
+                      </div>
                     </div>
                   </div>
-                  <div className="border-t border-slate-100 pt-6">
-                    <div className="text-[10px] font-black text-slate-400 uppercase mb-4">Peritos Nomeados</div>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="border-t border-slate-100 pt-3">
+                    <div className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Peritos Nomeados</div>
+                    <div className="flex flex-wrap gap-1.5">
                       {item.peritos.map((p: any, pIdx: number) => (
-                        <div key={pIdx} className="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 text-[11px] font-bold text-slate-500">
-                          <strong className="text-blue-700">{p.tipo}:</strong> {p.nome}
+                        <div key={pIdx} className="bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 text-[10px] font-bold text-slate-500 shadow-sm">
+                          <strong className="text-blue-700 mr-1">{p.tipo}:</strong> {p.nome}
                         </div>
                       ))}
                     </div>
@@ -501,10 +529,26 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 </div>
               ))}
             </div>
-            <div className="mt-8 flex justify-between items-center">
-              <Button variant="outline" onClick={() => setHonorariosPage(p => Math.max(1, p - 1))} disabled={honorariosPage === 1}>Anterior</Button>
-              <span className="text-xs font-bold text-slate-400">Página {honorariosPage} de {totalPages}</span>
-              <Button variant="outline" onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))} disabled={honorariosPage === totalPages}>Próximo</Button>
+            <div className="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="h-8 text-[10px] font-black uppercase rounded-lg"
+                onClick={() => setHonorariosPage(p => Math.max(1, p - 1))} 
+                disabled={honorariosPage === 1}
+              >
+                Anterior
+              </Button>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Página {honorariosPage} de {totalPages}</span>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="h-8 text-[10px] font-black uppercase rounded-lg"
+                onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))} 
+                disabled={honorariosPage === totalPages}
+              >
+                Próximo
+              </Button>
             </div>
           </CardContent>
         </Card>
