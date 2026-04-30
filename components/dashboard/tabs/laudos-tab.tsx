@@ -410,7 +410,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={peritosData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
@@ -456,7 +456,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={assistentesData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}

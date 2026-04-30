@@ -16,33 +16,30 @@ import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale
 
 const PEDIDO_KEYS = [
   { 
-    label: "Doença Médica Geral", 
-    key: "do_medica_geral" 
-  },
-  { 
-    label: "Acidente de Trabalho", 
+    label: "Doença Ocupacional / Acidente de Trabalho", 
     inicialKey: "do_at", 
     sentencaKey: "acidente_trabalho", 
     acordaoKey: "acidente_trabalho",
-    key: "acidente_trabalho" // fallback key
+    key: "acidente_trabalho"
   },
-  { key: "estabilidade", label: "Estabilidade" },
-  { key: "plano_saude", label: "Plano de Saúde" },
+  { key: "do_mental", label: "Doença Mental" },
+  { key: "do_ergonomica", label: "Doença Ergonômica" },
+  { key: "incapacidade", label: "Incapacidade" },
   { key: "reintegracao", label: "Reintegração" },
-  { key: "pensao", label: "Pensão" },
-  { key: "ppp", label: "PPP" },
+  { key: "periculosidade", label: "Periculosidade" },
+  { key: "insalubridade", label: "Insalubridade" },
+  { key: "rescisao_indireta", label: "Rescisão Indireta" },
   { key: "danos_morais", label: "Danos Morais" },
   { key: "danos_materiais", label: "Danos Materiais" },
-  { key: "insalubridade", label: "Insalubridade" },
-  { key: "periculosidade", label: "Periculosidade" },
   { key: "horas_extras", label: "Horas Extras" },
   { key: "intrajornada", label: "Intrajornada" },
   { key: "horas_itinere", label: "Horas in Itinere" },
   { key: "acumulo_funcao", label: "Acúmulo de Função" },
   { key: "equip_salarial", label: "Equiparação Salarial" },
   { key: "rec_vinculo", label: "Vínculo Empregatício" },
-  { key: "rescisao_indireta", label: "Rescisão Indireta" },
   { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
+  { key: "outros", label: "Outros" },
+  { key: "obrigacao", label: "Obrigação" },
 ]
 
 function BoolIcon({ value }: { value: boolean | null | undefined }) {
@@ -217,43 +214,6 @@ export function ProcessosTab({
     .sort((a, b) => b.totalPedidos - a.totalPedidos)
   }, [pedidosInicial, pedidosSentenca, pedidosAcordao])
 
-  const kpis = useMemo(() => {
-    const total = processos.length
-    // KPI Doença voltando a usar pedidosInicial pois a coluna não existe na tb_processo
-    const doAtInicial = pedidosInicial.filter(p => isPositiveValue(p.do_at)).length
-    const estabilidade = pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length
-    
-    // KPI Nexo no laudo agora filtra especificamente por CAUSA ou CONCAUSA
-    const nexoLaudo = laudos.filter(l => {
-      const mental = String(l.do_mental || "").toUpperCase()
-      const medica = String(l.do_medica_geral || "").toUpperCase()
-      return mental.includes("CAUSA") || mental.includes("CONCAUSA") || 
-             medica.includes("CAUSA") || medica.includes("CONCAUSA")
-    }).length
-    
-    const recSentenca = pedidosSentenca.filter(p => isPositiveValue(p.do_at)).length
-    const recAcordao = pedidosAcordao.filter(p => isPositiveValue(p.do_at)).length
-    
-    return {
-      total,
-      doAtInicial,
-      estabilidade,
-      nexoLaudo,
-      recSentenca,
-      recAcordao
-    }
-  }, [processos, pedidosInicial, pedidosSentenca, pedidosAcordao, laudos])
-
-  const rankingObrigacoes = useMemo(() => {
-    // Obrigações sensíveis agora usam os dados da tb_pedidos_sentenca
-    return [
-      { label: "Estabilidade", count: pedidosSentenca.filter(p => isPositiveValue(p.estabilidade)).length },
-      { label: "Plano de Saúde", count: pedidosSentenca.filter(p => isPositiveValue(p.plano_saude)).length },
-      { label: "Reintegração", count: pedidosSentenca.filter(p => isPositiveValue(p.reintegracao)).length },
-      { label: "PPP", count: pedidosSentenca.filter(p => isPositiveValue(p.ppp)).length },
-      { label: "Pensão", count: pedidosSentenca.filter(p => isPositiveValue(p.pensao)).length },
-    ].sort((a, b) => b.count - a.count)
-  }, [pedidosSentenca])
 
   // Per-process detail for the selected pedido
   const detailRows = useMemo(() => {
