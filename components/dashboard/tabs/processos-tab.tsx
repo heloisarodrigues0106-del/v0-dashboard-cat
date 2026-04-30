@@ -14,31 +14,24 @@ import { ProcessesTable } from "@/components/dashboard/processes-table"
 import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
 import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale, FileText, Landmark, ShieldAlert, AlertTriangle, UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
 
-const PEDIDO_KEYS = [
-  { 
-    label: "Doença Ocupacional / Acidente de Trabalho", 
-    inicialKey: "do_at", 
-    sentencaKey: "do_medica_geral", 
-    acordaoKey: "do_medica_geral",
-    key: "do_medica_geral"
-  },
-  { key: "estabilidade", label: "Estabilidade" },
-  { key: "do_mental", label: "Doença Mental" },
-  { key: "do_ergonomica", label: "Doença Ergonômica" },
-  { key: "reintegracao", label: "Reintegração" },
-  { key: "periculosidade", label: "Periculosidade" },
-  { key: "insalubridade", label: "Insalubridade" },
-  { key: "rescisao_indireta", label: "Rescisão Indireta" },
-  { key: "danos_morais", label: "Danos Morais" },
-  { key: "danos_materiais", label: "Danos Materiais" },
-  { key: "horas_extras", label: "Horas Extras" },
-  { key: "intrajornada", label: "Intrajornada" },
-  { key: "horas_itinere", label: "Horas in Itinere" },
-  { key: "acumulo_funcao", label: "Acúmulo de Função" },
-  { key: "equip_salarial", label: "Equiparação Salarial" },
-  { key: "rec_vinculo", label: "Vínculo Empregatício" },
-  { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
-]
+const PEDIDO_MAPPING = [
+  { id: "doenca", label: "Doença Ocupacional / Acidente de Trabalho", inicial: "do_at", sentenca: "do_medica_geral", acordao: "do_medica_geral" },
+  { id: "acidente", label: "Acidente de Trabalho", inicial: "acidente_trabalho", sentenca: "acidente_trabalho", acordao: "acidente_trabalho" },
+  { id: "materiais", label: "Danos Materiais", inicial: "danos_materiais", sentenca: "danos_materiais", acordao: "danos_materiais" },
+  { id: "reintegracao", label: "Reintegração", inicial: "reintegracao", sentenca: "reintegracao", acordao: "reintegracao" },
+  { id: "morais", label: "Danos Morais", inicial: "danos_morais", sentenca: "danos_morais", acordao: "danos_morais" },
+  { id: "honorarios", label: "Honorários Advocatícios", inicial: "honorarios_advocaticios", sentenca: "honorarios_advocaticios", acordao: "honorarios_advocaticios" },
+  { id: "estabilidade", label: "Estabilidade", inicial: "estabilidade", sentenca: "estabilidade", acordao: "estabilidade" },
+  { id: "periculosidade", label: "Periculosidade", inicial: "periculosidade", sentenca: "periculosidade", acordao: "periculosidade" },
+  { id: "insalubridade", label: "Insalubridade", inicial: "insalubridade", sentenca: "insalubridade", acordao: "insalubridade" },
+  { id: "rescisao", label: "Rescisão Indireta", inicial: "rescisao_indireta", sentenca: "rescisao_indireta", acordao: "rescisao_indireta" },
+  { id: "extras", label: "Horas Extras", inicial: "horas_extras", sentenca: "horas_extras", acordao: "horas_extras" },
+  { id: "intrajornada", label: "Intrajornada", inicial: "intrajornada", sentenca: "intrajornada", acordao: "intrajornada" },
+  { id: "itinere", label: "Horas in Itinere", inicial: "horas_itinere", sentenca: "horas_itinere", acordao: "horas_itinere" },
+  { id: "acumulo", label: "Acúmulo de Função", inicial: "acumulo_funcao", sentenca: "acumulo_funcao", acordao: "acumulo_funcao" },
+  { id: "equiparacao", label: "Equiparação Salarial", inicial: "equip_salarial", sentenca: "equip_salarial", acordao: "equip_salarial" },
+  { id: "vinculo", label: "Vínculo Empregatício", inicial: "rec_vinculo", sentenca: "rec_vinculo", acordao: "rec_vinculo" }
+];
 
 function BoolIcon({ value }: { value: boolean | null | undefined }) {
   if (value === true) return <Check className="h-4 w-4 text-emerald-500 mx-auto" strokeWidth={3} />
@@ -152,64 +145,93 @@ export function ProcessosTab({
     return map
   }, [pedidosAcordao])
 
-  // Helper to check if a value is positive (true, "Sim", "Deferido", etc.)
-  const isPositiveValue = (val: any) => {
+  // Helper to check if a value is positive (Requisito 4)
+  const isPositiveValue = (val: any, pedidoId?: string) => {
     if (val === null || val === undefined || val === "") return false
+    
+    // Lógica numérica
+    if (typeof val === 'number' && val > 0) return true
+    if (typeof val === 'string' && !isNaN(Number(val)) && Number(val) > 0) return true
+    
     if (val === true || val === 1 || val === "1") return true
-    const s = String(val).toUpperCase()
-    return s === "SIM" || s === "DEFERIDO" || s === "RECONHECIDO" || s === "MANTIDO" || s === "TRUE"
+    
+    const s = String(val).toUpperCase().trim()
+    const positiveTerms = [
+      "SIM", "DEFERIDO", "RECONHECIDO", "MANTIDO", "MANTIDA", 
+      "TRUE", "PROCEDENTE", "PARCIALMENTE PROCEDENTE", 
+      "CAUSA", "CONCAUSA"
+    ]
+    
+    if (positiveTerms.some(term => s === term || s.includes(term))) return true
+    if (pedidoId === "doenca" && s.includes("INCAPAZ")) return true
+    
+    return false
   }
 
+  // Helper to check if a value is negative (Requisito 4)
   const isNegativeValue = (val: any) => {
-    if (val === null || val === undefined || val === "") return false
+    if (val === null || val === undefined || val === "" || val === "-") return true
     if (val === false || val === 0 || val === "0") return true
-    const s = String(val).toUpperCase()
-    return s === "NÃO" || s === "INDEFERIDO" || s === "FALSO" || s === "FALSE"
+    
+    const s = String(val).toUpperCase().trim()
+    const negativeTerms = ["NÃO", "NAO", "INDEFERIDO", "IMPROCEDENTE", "SEM NEXO", "CAPAZ", "FALSE", "FALSO"]
+    
+    if (negativeTerms.some(term => s === term || s.includes(term))) return true
+    
+    return false
   }
 
   // Aggregate data for the matrix table
   const matrixData = useMemo(() => {
-    return PEDIDO_KEYS.map((pedido: any) => {
-      let inicialTrue = 0, inicialFalse = 0
-      let sentencaTrue = 0, sentencaFalse = 0
-      let acordaoTrue = 0, acordaoFalse = 0
+    console.log("--- DEBUG MATRIZ DE DEFERIMENTO ---");
+    
+    return PEDIDO_MAPPING.map((config) => {
+      const checkPhase = (dataset: any[], key: string) => {
+        if (!dataset || dataset.length === 0) return { deferido: 0, indeferido: 0, total: 0, exists: false, nullCount: 0 };
+        
+        let pos = 0, neg = 0, nulls = 0, found = false;
+        
+        const hasColumn = dataset.some(row => row[key] !== undefined);
+        
+        if (hasColumn) {
+          found = true;
+          dataset.forEach(row => {
+            const val = row[key];
+            if (val === null || val === undefined || val === "") nulls++;
+            
+            if (isPositiveValue(val, config.id)) pos++;
+            else if (isNegativeValue(val)) neg++;
+          });
+        } else {
+          console.warn(`Coluna não encontrada: [${key}] na tabela correspondente`);
+        }
+        
+        return { deferido: pos, indeferido: neg, total: pos + neg, exists: found, nullCount: nulls };
+      };
 
-      // Get specific keys for each phase or fallback to global key
-      const kIni = pedido.inicialKey || pedido.key
-      const kSen = pedido.sentencaKey || pedido.key
-      const kAco = pedido.acordaoKey || pedido.key
+      const resIni = checkPhase(pedidosInicial, config.inicial);
+      const resSen = checkPhase(pedidosSentenca, config.sentenca);
+      const resAco = checkPhase(pedidosAcordao, config.acordao);
 
-      pedidosInicial.forEach((row) => {
-        if (isPositiveValue(row[kIni])) inicialTrue++
-        else if (isNegativeValue(row[kIni])) inicialFalse++
-      })
+      // Debug Individual (Requisito 1)
+      console.log(`Pedido: ${config.label} | Colunas: [${config.inicial}, ${config.sentenca}, ${config.acordao}]`);
+      console.log(`-> Inicial: ${resIni.deferido} | Sentença(+): ${resSen.deferido} | Acórdão(+): ${resAco.deferido}`);
+      console.log(`-> Sentença Vazios: ${resSen.nullCount} | Acórdão Vazios: ${resAco.nullCount}`);
 
-      pedidosSentenca.forEach((row) => {
-        if (isPositiveValue(row[kSen])) sentencaTrue++
-        else if (isNegativeValue(row[kSen])) sentencaFalse++
-      })
-
-      pedidosAcordao.forEach((row) => {
-        if (isPositiveValue(row[kAco])) acordaoTrue++
-        else if (isNegativeValue(row[kAco])) acordaoFalse++
-      })
-
-      const inicialTotal = inicialTrue + inicialFalse
-      const sentencaTotal = sentencaTrue + sentencaFalse
-      const acordaoTotal = acordaoTrue + acordaoFalse
+      const totalGlobal = resIni.deferido + resSen.deferido + resAco.deferido + resIni.indeferido + resSen.indeferido + resAco.indeferido;
 
       return {
-        key: pedido.key,
-        name: pedido.label,
-        inicial: { deferido: inicialTrue, indeferido: inicialFalse, total: inicialTotal },
-        sentenca: { deferido: sentencaTrue, indeferido: sentencaFalse, total: sentencaTotal },
-        acordao: { deferido: acordaoTrue, indeferido: acordaoFalse, total: acordaoTotal },
-        totalPedidos: inicialTotal || sentencaTotal || acordaoTotal, // Show if it appears in any phase
+        key: config.id,
+        name: config.label,
+        inicial: { deferido: resIni.deferido, indeferido: resIni.indeferido, total: resIni.total, exists: resIni.exists },
+        sentenca: { deferido: resSen.deferido, indeferido: resSen.indeferido, total: resSen.total, exists: resSen.exists },
+        acordao: { deferido: resAco.deferido, indeferido: resAco.indeferido, total: resAco.total, exists: resAco.exists },
+        totalPedidos: resIni.total || resSen.total || resAco.total || (resIni.exists || resSen.exists || resAco.exists ? 0.1 : 0),
       }
     })
     .filter(item => item.totalPedidos > 0)
-    .sort((a, b) => b.totalPedidos - a.totalPedidos)
-  }, [pedidosInicial, pedidosSentenca, pedidosAcordao])
+    .sort((a, b) => b.totalPedidos - a.totalPedidos);
+  }, [pedidosInicial, pedidosSentenca, pedidosAcordao]);
 
 
   // Per-process detail for the selected pedido
@@ -240,9 +262,17 @@ export function ProcessosTab({
     }).filter(r => r.hasData)
   }, [selectedPedido, processos, pedidosInicialMap, pedidosSentencaMap, pedidosAcordaoMap])
 
-  const renderCell = (data: { deferido: number, indeferido: number, total: number }, type: 'inicial' | 'decisao' = 'decisao') => {
-    if (data.total === 0) {
+  const renderCell = (data: { deferido: number, indeferido: number, total: number, exists: boolean }, type: 'inicial' | 'decisao' = 'decisao') => {
+    if (!data.exists) {
       return <span className="text-slate-300 text-xs">—</span>
+    }
+    
+    if (data.deferido === 0 && data.indeferido === 0) {
+      return <span className="text-slate-400 text-xs">—</span>
+    }
+    
+    if (data.deferido === 0 && type === 'decisao') {
+       return <span className="text-slate-900 font-bold">0</span>
     }
     
     if (type === 'inicial') {
@@ -415,15 +445,15 @@ export function ProcessosTab({
                   title="Funil de Doença" 
                   subtitle="Pedidos de doença médica geral"
                   icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral)).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral)).length}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at, "doenca")).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
                 />
                 <FunnelCard 
                   title="Funil de Acidente de Trabalho" 
                   subtitle="Pedidos vinculados a acidentes típicos"
                   icon={<ShieldAlert className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                   acordao={pedidosAcordao.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                 />
