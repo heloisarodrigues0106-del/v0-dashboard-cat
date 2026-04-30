@@ -41,6 +41,76 @@ function BoolIcon({ value }: { value: boolean | null | undefined }) {
   return <span className="text-slate-300 text-xs block text-center">—</span>
 }
 
+function FunnelCard({ title, subtitle, icon, initial, sentenca, acordao }: { 
+  title: string, 
+  subtitle: string, 
+  icon: React.ReactNode, 
+  initial: number, 
+  sentenca: number, 
+  acordao: number 
+}) {
+  const convSent = initial > 0 ? (sentenca / initial * 100).toFixed(1) : "0.0"
+  const manutAco = sentenca > 0 ? (acordao / sentenca * 100).toFixed(1) : "0.0"
+  const retFinal = initial > 0 ? (acordao / initial * 100).toFixed(1) : "0.0"
+
+  const stages = [
+    { label: "Inicial", value: initial, percent: "100%", color: "bg-[#183B8C]" },
+    { label: "Sentença", value: sentenca, percent: initial > 0 ? Math.round(sentenca/initial*100) + "%" : "0%", color: "bg-[#4F6DB8]" },
+    { label: "Acórdão", value: acordao, percent: initial > 0 ? Math.round(acordao/initial*100) + "%" : "0%", color: "bg-[#94A3B8]" },
+  ]
+
+  return (
+    <Card className="border border-border bg-white shadow-sm hover:shadow-md transition-all duration-300">
+      <CardHeader className="pb-2 pt-4 px-5">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">{icon}</div>
+          <div>
+            <CardTitle className="text-[15px] font-bold text-[#111111] tracking-tight">{title}</CardTitle>
+            <p className="text-[11px] text-slate-500 font-medium">{subtitle}</p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="px-5 pb-5 pt-4">
+        <div className="flex flex-col gap-6">
+          {/* Visual Funnel Components */}
+          <div className="space-y-3">
+            {stages.map((s, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-16 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{s.label}</div>
+                <div className="flex-1 h-8 bg-slate-50 rounded-md overflow-hidden relative border border-slate-100/50">
+                  <div 
+                    className={`h-full ${s.color} transition-all duration-1000 ease-out flex items-center justify-end px-3`} 
+                    style={{ width: s.percent }}
+                  >
+                    <span className="text-[12px] font-black text-white">{s.value}</span>
+                  </div>
+                </div>
+                <div className="w-10 text-[11px] font-bold text-[#183B8C] text-right">{s.percent}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Indicators Grid */}
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Conversão I→S</span>
+              <span className="text-[13px] font-black text-emerald-600">{convSent}%</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Manutenção S→A</span>
+              <span className="text-[13px] font-black text-blue-600">{manutAco}%</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Retenção Final</span>
+              <span className="text-[13px] font-black text-[#183B8C]">{retFinal}%</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function ProcessosTab({ 
   processos, 
   pedidosInicial, 
@@ -260,166 +330,49 @@ export function ProcessosTab({
         {/* Tab 2: Análise de Pedidos */}
         {activeInternalTab === "analise" && (
           <div className="space-y-6">
-            {/* KPI Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#183B8C]/10" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-blue-50 rounded-full">
-                    <FileText className="h-4 w-4 text-[#183B8C]" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Processos Mapeados</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.total}</div>
-              </div>
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400/20" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-yellow-50 rounded-full">
-                    <HeartPulse className="h-4 w-4 text-yellow-600" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Doença na Inicial</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.doAtInicial}</div>
-              </div>
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#F6D000]/30" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-yellow-50 rounded-full">
-                    <ShieldCheck className="h-4 w-4 text-[#F6D000]" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Estabilidade</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.estabilidade}</div>
-              </div>
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-emerald-500/10" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-emerald-50 rounded-full">
-                    <Scale className="h-4 w-4 text-emerald-600" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Nexo no Laudo</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.nexoLaudo}</div>
-                <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-tight">casos com nexo técnico</span>
-              </div>
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#183B8C]/20" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-blue-50 rounded-full">
-                    <Scale className="h-4 w-4 text-[#183B8C]" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Sentença</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.recSentenca}</div>
-                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-tight">materialização jurídica</span>
-              </div>
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#F6D000]/40" />
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1.5 bg-yellow-50 rounded-full">
-                    <Scale className="h-4 w-4 text-[#183B8C]" />
-                  </div>
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Acórdão</span>
-                </div>
-                <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.recAcordao}</div>
-                <span className="text-[10px] text-[#183B8C] font-bold uppercase tracking-tight">mantidos ou reconhecidos</span>
-              </div>
-            </div>
-
-            {/* Painéis Estratégicos */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2">
-                <CardHeader className="pb-2 pt-4 px-5">
-                  <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Pedidos sensíveis — doença e estabilidade</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="relative flex items-center justify-between w-full">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 -z-10" />
-                    {[
-                      { label: "Mapeados", value: kpis.total, percent: "100%" },
-                      { label: "Inicial", value: kpis.doAtInicial, percent: Math.round(kpis.doAtInicial/kpis.total*100) + "%" },
-                      { label: "Laudo (Nexo)", value: kpis.nexoLaudo, percent: Math.round(kpis.nexoLaudo/kpis.total*100) + "%" },
-                      { label: "Sentença", value: kpis.recSentenca, percent: Math.round(kpis.recSentenca/kpis.total*100) + "%" },
-                      { label: "Acórdão", value: kpis.recAcordao, percent: Math.round(kpis.recAcordao/kpis.total*100) + "%" }
-                    ].map((step, i) => (
-                      <div key={i} className="flex flex-col items-center gap-2 bg-white px-2">
-                        <div className={`h-10 w-10 rounded-full flex items-center justify-center text-[12px] font-bold border-2 ${i === 0 ? 'bg-[#183B8C] text-white border-[#183B8C]' : 'bg-white text-[#183B8C] border-slate-200'}`}>
-                          {i + 1}
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">{step.label}</span>
-                          <span className="text-[14px] font-bold text-[#183B8C]">{step.value}</span>
-                          <span className="text-[10px] text-slate-400 font-bold">{step.percent}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2 pt-4 px-5">
-                  <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Obrigações sensíveis</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-4">
-                  {rankingObrigacoes.map((item, i) => {
-                    const max = Math.max(...rankingObrigacoes.map(x => x.count))
-                    const percent = max > 0 ? (item.count / max * 100) : 0
-                    return (
-                      <div key={i} className="space-y-1">
-                        <div className="flex justify-between text-[11px] font-bold">
-                          <span className="text-slate-600">{item.label}</span>
-                          <span className="text-[#183B8C]">{item.count}</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-[#183B8C] rounded-full transition-all duration-1000" 
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
+            {/* SEÇÃO 1 — MATRIZ DE DEFERIMENTO */}
+            <Card className="border border-border bg-card shadow-sm overflow-hidden">
               <CardHeader className="pt-4 px-5 pb-3">
-                <CardTitle className="text-[16px] font-bold text-[#111111] flex items-center gap-2 tracking-tight">
-                  Análise de pedidos — matriz de deferimento <Badge variant="secondary" className="font-bold bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8] text-[10px] uppercase tracking-[0.04em]">Inicial → Sentença → Acórdão</Badge>
-                </CardTitle>
-                <p className="text-[12px] text-slate-500 font-medium">
-                  Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
-                </p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                  <div>
+                    <CardTitle className="text-[18px] font-bold text-[#111111] flex items-center gap-3 tracking-tight">
+                      Análise de pedidos — matriz de deferimento
+                      <Badge variant="secondary" className="font-bold bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8] text-[10px] uppercase tracking-[0.06em] px-2.5 py-0.5">
+                        Inicial → Sentença → Acórdão
+                      </Badge>
+                    </CardTitle>
+                    <p className="text-[12px] text-slate-500 font-medium mt-1">
+                      Visualização do resultado de cada pedido ao longo das fases processuais. Clique em detalhes para ver o processo individual.
+                    </p>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto rounded-lg border border-border w-full shadow-sm" style={{ boxSizing: 'border-box' }}>
+              <CardContent className="px-5 pb-5">
+                <div className="overflow-x-auto rounded-lg border border-border w-full shadow-sm">
                   <table className="w-full text-[12px] table-auto border-collapse min-w-[800px]">
                     <thead>
-                      <tr className="bg-[#111111] text-white">
-                        <th className="text-left px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[200px] border-r border-slate-700">Pedido</th>
-                        <th className="text-center px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-slate-700 min-w-[120px]">
+                      <tr className="bg-[#183B8C] text-white">
+                        <th className="text-left px-5 py-4 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[200px] border-r border-white/10">Pedido</th>
+                        <th className="text-center px-4 py-4 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 min-w-[140px]">
                           <div className="flex flex-col items-center gap-0.5">
                             <span>Inicial</span>
-                            <span className="text-[10px] text-slate-400 font-bold">Pleiteado</span>
+                            <span className="text-[10px] text-blue-200/70 font-bold tracking-tight">Pleiteado</span>
                           </div>
                         </th>
-                        <th className="text-center px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-slate-700 min-w-[120px]">
+                        <th className="text-center px-4 py-4 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 min-w-[140px]">
                           <div className="flex flex-col items-center gap-0.5">
                             <span>Sentença</span>
-                            <span className="text-[10px] text-slate-400 font-bold">Deferido?</span>
+                            <span className="text-[10px] text-blue-200/70 font-bold tracking-tight">Deferido?</span>
                           </div>
                         </th>
-                        <th className="text-center px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-slate-700 min-w-[120px]">
+                        <th className="text-center px-4 py-4 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 min-w-[140px]">
                           <div className="flex flex-col items-center gap-0.5">
                             <span>Acórdão</span>
-                            <span className="text-[10px] text-slate-400 font-bold">Deferido?</span>
+                            <span className="text-[10px] text-blue-200/70 font-bold tracking-tight">Deferido / Mantido?</span>
                           </div>
                         </th>
-                        <th className="text-center px-3 py-3 font-bold text-[11px] uppercase tracking-[0.04em] w-[60px]">
-                          <span className="text-[10px] text-slate-400 font-bold">Detalhe</span>
+                        <th className="text-center px-3 py-4 font-bold text-[11px] uppercase tracking-[0.04em] w-[80px]">
+                          <span className="text-[10px] text-blue-200/70 font-bold">Detalhe</span>
                         </th>
                       </tr>
                     </thead>
@@ -427,27 +380,27 @@ export function ProcessosTab({
                       {matrixData.map((row, idx) => (
                         <tr 
                           key={idx} 
-                          className={`border-b border-border transition-colors hover:bg-blue-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                          className={`border-b border-border transition-colors hover:bg-blue-50/50 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40'}`}
                         >
-                          <td className="px-4 py-3 font-bold text-slate-800 border-r border-border text-[11px] uppercase tracking-tight">
-                            <div className="flex items-center gap-2">
-                              <span className="w-1.5 h-6 rounded-full bg-[#183B8C] shrink-0"></span>
+                          <td className="px-5 py-3.5 font-bold text-slate-800 border-r border-border text-[11px] uppercase tracking-tight">
+                            <div className="flex items-center gap-2.5">
+                              <span className="w-1.5 h-6 rounded-full bg-[#183B8C] shrink-0 opacity-80"></span>
                               {row.name}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center border-r border-border">
+                          <td className="px-4 py-3.5 text-center border-r border-border">
                             {renderCell(row.inicial)}
                           </td>
-                          <td className="px-4 py-3 text-center border-r border-border">
+                          <td className="px-4 py-3.5 text-center border-r border-border">
                             {renderCell(row.sentenca)}
                           </td>
-                          <td className="px-4 py-3 text-center border-r border-border">
+                          <td className="px-4 py-3.5 text-center border-r border-border">
                             {renderCell(row.acordao)}
                           </td>
-                          <td className="px-3 py-3 text-center">
+                          <td className="px-3 py-3.5 text-center">
                             <button
                               onClick={() => setSelectedPedido({ key: row.key, label: row.name })}
-                              className="p-1.5 rounded-md bg-blue-50 hover:bg-[#183B8C] text-slate-600 hover:text-white transition-all duration-200 hover:shadow-sm"
+                              className="p-2 rounded-lg bg-blue-50 hover:bg-[#183B8C] text-[#183B8C] hover:text-white transition-all duration-200 shadow-sm border border-blue-100/50"
                               title={`Ver detalhe de "${row.name}" por processo`}
                             >
                               <Search className="h-4 w-4" />
@@ -460,6 +413,49 @@ export function ProcessosTab({
                 </div>
               </CardContent>
             </Card>
+
+            {/* SEÇÃO 2 — EVOLUÇÃO DOS PEDIDOS ESTRATÉGICOS */}
+            <div className="space-y-4 pt-2">
+              <div className="px-1">
+                <h3 className="text-[18px] font-bold text-[#111111] tracking-tight">Evolução dos pedidos estratégicos</h3>
+                <p className="text-[12px] text-slate-500 font-medium">Acompanhamento da trajetória dos pedidos mais sensíveis ao longo das fases processuais.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FunnelCard 
+                  title="Funil de Doença" 
+                  subtitle="Pedidos de doença mental ou ergonômica"
+                  icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_mental) || isPositiveValue(p.do_ergonomica)).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_mental) || isPositiveValue(p.do_ergonomica)).length}
+                />
+                <FunnelCard 
+                  title="Funil de Acidente de Trabalho" 
+                  subtitle="Pedidos vinculados a acidentes típicos"
+                  icon={<ShieldAlert className="h-5 w-5 text-[#183B8C]" />}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.acidente_trabalho)).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.acidente_trabalho)).length}
+                />
+                <FunnelCard 
+                  title="Funil de Estabilidade" 
+                  subtitle="Garantia de emprego e indenizações substitutivas"
+                  icon={<ShieldCheck className="h-5 w-5 text-[#183B8C]" />}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.estabilidade)).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.estabilidade)).length}
+                />
+                <FunnelCard 
+                  title="Funil de Reintegração" 
+                  subtitle="Pedidos de retorno ao posto de trabalho"
+                  icon={<Landmark className="h-5 w-5 text-[#183B8C]" />}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.reintegracao)).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.reintegracao)).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.reintegracao)).length}
+                />
+              </div>
+            </div>
 
             {/* Per-Process Detail Dialog */}
             <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
@@ -479,14 +475,14 @@ export function ProcessosTab({
 
                 <ScrollArea className="max-h-[65vh]">
                   <div className="px-6 py-4">
-                    <div className="overflow-x-auto rounded-lg border border-border bg-white">
+                    <div className="overflow-x-auto rounded-lg border border-border bg-white shadow-sm">
                       <table className="w-full text-sm table-auto border-collapse">
                         <thead className="sticky top-0 z-10">
-                          <tr className="bg-[#111111] text-white">
-                            <th className="text-left px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[180px] border-r border-slate-700">Nº Processo</th>
-                            <th className="text-left px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[250px] border-r border-slate-700">Reclamante</th>
-                            <th className="text-center px-2 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-slate-700 w-[110px]">Inicial</th>
-                            <th className="text-center px-2 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-slate-700 w-[110px]">Sentença</th>
+                          <tr className="bg-[#183B8C] text-white">
+                            <th className="text-left px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[180px] border-r border-white/10">Nº Processo</th>
+                            <th className="text-left px-4 py-3 font-bold text-[11px] uppercase tracking-[0.04em] min-w-[250px] border-r border-white/10">Reclamante</th>
+                            <th className="text-center px-2 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 w-[110px]">Inicial</th>
+                            <th className="text-center px-2 py-3 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 w-[110px]">Sentença</th>
                             <th className="text-center px-2 py-3 font-bold text-[11px] uppercase tracking-[0.04em] w-[110px]">Acórdão</th>
                           </tr>
                         </thead>
@@ -494,7 +490,7 @@ export function ProcessosTab({
                           {detailRows.map((row, idx) => (
                             <tr 
                               key={idx} 
-                              className={`border-b border-border transition-colors hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-100/20'}`}
+                              className={`border-b border-border transition-colors hover:bg-blue-50/30 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}
                             >
                               <td className="px-4 py-2.5 font-mono text-[11px] font-bold text-slate-700 border-r border-border truncate">
                                 {row.numero}
@@ -502,53 +498,43 @@ export function ProcessosTab({
                               <td className="px-4 py-2.5 text-slate-700 text-[11px] font-bold uppercase tracking-tight truncate border-r border-border" title={row.reclamante}>
                                 {row.reclamante}
                               </td>
-                              <td className="px-4 py-2.5 border-r border-border">
+                              <td className="px-4 py-2.5 border-r border-border text-center">
                                 <BoolIcon value={row.inicial} />
                               </td>
-                              <td className="px-4 py-2.5 border-r border-border">
+                              <td className="px-4 py-2.5 border-r border-border text-center">
                                 <BoolIcon value={row.sentenca} />
                               </td>
-                              <td className="px-4 py-2.5">
+                              <td className="px-4 py-2.5 text-center">
                                 <BoolIcon value={row.acordao} />
                               </td>
                             </tr>
                           ))}
-                          {detailRows.length === 0 && (
-                            <tr>
-                              <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
-                                Nenhum processo encontrado para este pedido.
-                              </td>
-                            </tr>
-                          )}
                         </tbody>
                       </table>
                     </div>
                   </div>
                 </ScrollArea>
 
-                {/* Summary Footer */}
-                {detailRows.length > 0 && (
-                  <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-6 text-[11px]">
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                      <span className="text-slate-600 font-bold uppercase tracking-tight">
-                        Inicial: <strong className="text-emerald-600">{detailRows.filter(r => r.inicial === true).length}</strong>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                      <span className="text-slate-600 font-bold uppercase tracking-tight">
-                        Sentença: <strong className="text-emerald-600">{detailRows.filter(r => r.sentenca === true).length}</strong>
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
-                      <span className="text-slate-600 font-bold uppercase tracking-tight">
-                        Acórdão: <strong className="text-emerald-600">{detailRows.filter(r => r.acordao === true).length}</strong>
-                      </span>
-                    </div>
+                <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-wrap gap-6 text-[11px]">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                    <span className="text-slate-600 font-bold uppercase tracking-tight">
+                      Inicial: <strong className="text-emerald-600">{detailRows.filter(r => r.inicial === true).length}</strong>
+                    </span>
                   </div>
-                )}
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                    <span className="text-slate-600 font-bold uppercase tracking-tight">
+                      Sentença: <strong className="text-emerald-600">{detailRows.filter(r => r.sentenca === true).length}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} />
+                    <span className="text-slate-600 font-bold uppercase tracking-tight">
+                      Acórdão: <strong className="text-emerald-600">{detailRows.filter(r => r.acordao === true).length}</strong>
+                    </span>
+                  </div>
+                </div>
               </DialogContent>
             </Dialog>
           </div>
