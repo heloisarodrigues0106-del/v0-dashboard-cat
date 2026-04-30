@@ -679,7 +679,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <XAxis 
                   type="number" 
                   allowDecimals={false}
-                  domain={[0, 'dataMax + 1']}
+                  domain={[0, 'dataMax + 10']}
                   stroke={THEME.textSecondary} 
                   tick={{ fontSize: 11, fontWeight: 600 }}
                   axisLine={false}
@@ -711,22 +711,22 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
                   formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
                 />
-                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 0, 0, 0]} barSize={24}>
+                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 0, 0, 0]} barSize={24} minPointSize={10}>
                   <LabelList 
                     dataKey="Desfavorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900 }}
-                    formatter={(val: any) => val > 0 ? val : ""}
+                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }}
+                    formatter={(val: any) => val > 5 ? val : ""}
                   />
                 </Bar>
-                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 4, 4, 0]} barSize={24}>
+                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 4, 4, 0]} barSize={24} minPointSize={10}>
                   <LabelList 
                     dataKey="Favorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900 }} 
-                    formatter={(val: any) => val > 0 ? val : ""}
+                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }} 
+                    formatter={(val: any) => val > 5 ? val : ""}
                   />
                   <LabelList 
                     dataKey="Total" 
@@ -787,7 +787,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <XAxis 
                   type="number" 
                   allowDecimals={false}
-                  domain={[0, 'dataMax + 1']}
+                  domain={[0, 'dataMax + 10']}
                   stroke={THEME.textSecondary} 
                   tick={{ fontSize: 11, fontWeight: 600 }}
                   axisLine={false}
@@ -819,22 +819,22 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
                   formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
                 />
-                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 0, 0, 0]} barSize={24}>
+                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 0, 0, 0]} barSize={24} minPointSize={10}>
                   <LabelList 
                     dataKey="Favorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900 }}
-                    formatter={(val: any) => val > 0 ? val : ""}
+                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }}
+                    formatter={(val: any) => val > 5 ? val : ""}
                   />
                 </Bar>
-                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 4, 4, 0]} barSize={24}>
+                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 4, 4, 0]} barSize={24} minPointSize={10}>
                   <LabelList 
                     dataKey="Desfavorável" 
                     position="center" 
                     fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900 }} 
-                    formatter={(val: any) => val > 0 ? val : ""}
+                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }} 
+                    formatter={(val: any) => val > 5 ? val : ""}
                   />
                   <LabelList 
                     dataKey="Total" 
@@ -921,67 +921,60 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardContent className="p-0 px-8 pt-6">
             <div className="w-full overflow-x-auto pb-4">
               <div className="flex flex-col gap-4 min-w-[850px] pb-4">
-              {paginatedHonorarios.map((item, idx) => {
-                return (
-                 <div key={`hon-${idx}`} className="flex flex-col p-6 bg-white border border-slate-100 rounded-2xl transition-all hover:border-slate-200 hover:shadow-xl group">
-                    
-                    {/* Camada Superior: Dados Principais */}
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-5 pb-5 border-b border-dashed border-slate-100">
-                      <div className="flex flex-col gap-1.5">
-                        <div className="flex items-center gap-3">
-                          <span className="font-black text-[#102A63] text-base tracking-tight">{item.numero}</span>
-                          <div className="h-1 w-1 rounded-full bg-slate-300" />
-                          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{item.reclamante}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                           <MapPin className="h-3 w-3 text-slate-300" />
-                           <span className="text-[10px] font-black text-slate-400 uppercase tracking-[1px]">
-                             {item.vara ? `${item.vara} ` : ""}
-                             {item.comarca ? `${item.vara ? '• ' : ''}${item.comarca}` : "Vara não informada"}
-                           </span>
-                        </div>
+              {paginatedHonorarios.map((item, idx) => (
+                <div key={`hon-${idx}`} className="flex flex-col bg-white border border-slate-200 rounded-3xl transition-all hover:shadow-xl group overflow-hidden">
+                  
+                  {/* Cabeçalho: Identificação do Caso */}
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-4 p-8 bg-white">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col">
+                        <span className="text-xl font-black text-[#102A63] tracking-tight leading-none mb-1">{item.numero}</span>
+                        <span className="text-base font-black text-slate-800 uppercase tracking-tight leading-tight">{item.reclamante}</span>
                       </div>
-
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Valor Pago</span>
-                        <div className="text-2xl font-black text-[#102A63] tracking-tighter">
-                          {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
-                        </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                          {item.vara ? `${item.vara} ` : ""}
+                          {item.comarca ? `${item.vara ? '• ' : ''}${item.comarca}` : "Vara não informada"}
+                        </span>
                       </div>
                     </div>
-                    
-                    {/* Camada Inferior: Peritos (Com espaço total) */}
-                    <div className="flex flex-col gap-3">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[2px]">Peritos Nomeados</span>
-                      <div className="flex flex-wrap gap-3">
-                        {item.peritos.map((perito: any, pIdx: number) => {
-                          const pType = perito.tipo?.toUpperCase() || "N/A";
-                          let badgeStyles = "bg-slate-100 text-slate-600 border-slate-200";
-                          
-                          if (pType.includes("TÉCNICO")) badgeStyles = "bg-[#DCE6F8] text-[#183B8C] border-[#B8D1F3]";
-                          else if (pType.includes("MÉDICO")) badgeStyles = "bg-[#EEF2F7] text-[#4B5563] border-[#D1D5DB]";
-                          else if (pType.includes("ERGONÔMICO")) badgeStyles = "bg-[#D9F3EF] text-[#0F766E] border-[#A7F3D0]";
-                          else if (pType.includes("MENTAL") || pType.includes("PSIQ")) badgeStyles = "bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]";
 
-                          return (
-                            <div key={pIdx} className="flex items-center gap-3 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100 group-hover:bg-white group-hover:border-slate-200 transition-colors">
-                              <span className={cn("inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tight border", badgeStyles)}>
-                                {perito.tipo}
-                              </span>
-                              <span className="text-[13px] text-slate-700 font-black tracking-tight whitespace-normal break-words flex-1 min-w-[200px]">
-                                {perito.nome}
-                              </span>
-                            </div>
-                          )
-                        })}
-                        {item.peritos.length === 0 && (
-                          <span className="text-[11px] font-bold text-slate-300 italic">Nenhum perito listado</span>
-                        )}
+                    <div className="flex flex-col items-end shrink-0 md:bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-1 text-right">Valor Pago</span>
+                      <div className="text-lg font-black text-[#102A63] tracking-tighter">
+                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
                       </div>
                     </div>
-                 </div>
-                )
-              })}
+                  </div>
+                  
+                  {/* Divisória Suave */}
+                  <div className="px-8">
+                    <div className="h-px w-full bg-slate-100" />
+                  </div>
+
+                  {/* Rodapé: Peritos Nomeados (Visualização Completa) */}
+                  <div className="p-8 pt-6 bg-white">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] block mb-4">Corpo de Peritos Nomeados</span>
+                    <div className="flex flex-wrap gap-2">
+                      {item.peritos.map((perito: any, pIdx: number) => (
+                        <div 
+                          key={`perito-${pIdx}`}
+                          className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl transition-colors hover:bg-blue-50 hover:border-blue-100"
+                        >
+                          <div className="h-2 w-2 rounded-full bg-blue-500" />
+                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                            <strong className="text-blue-700 mr-1">{perito.tipo}:</strong> {perito.nome}
+                          </span>
+                        </div>
+                      ))}
+                      {item.peritos.length === 0 && (
+                        <span className="text-[11px] font-bold text-slate-300 italic">Nenhum perito listado</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
           {honorariosData.lista.length === 0 && (
              <div className="p-8 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
                Nenhum honorário pericial registrado.
