@@ -15,7 +15,17 @@ import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
 import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale, FileText, Landmark, ShieldAlert, AlertTriangle, UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
 
 const PEDIDO_KEYS = [
-  { key: "do_at", label: "Doença/Acidente" },
+  { 
+    label: "Doença Médica Geral", 
+    key: "do_medica_geral" 
+  },
+  { 
+    label: "Acidente de Trabalho", 
+    inicialKey: "do_at", 
+    sentencaKey: "acidente_trabalho", 
+    acordaoKey: "acidente_trabalho",
+    key: "acidente_trabalho" // fallback key
+  },
   { key: "estabilidade", label: "Estabilidade" },
   { key: "plano_saude", label: "Plano de Saúde" },
   { key: "reintegracao", label: "Reintegração" },
@@ -165,24 +175,29 @@ export function ProcessosTab({
 
   // Aggregate data for the matrix table
   const matrixData = useMemo(() => {
-    return PEDIDO_KEYS.map((pedido) => {
+    return PEDIDO_KEYS.map((pedido: any) => {
       let inicialTrue = 0, inicialFalse = 0
       let sentencaTrue = 0, sentencaFalse = 0
       let acordaoTrue = 0, acordaoFalse = 0
 
+      // Get specific keys for each phase or fallback to global key
+      const kIni = pedido.inicialKey || pedido.key
+      const kSen = pedido.sentencaKey || pedido.key
+      const kAco = pedido.acordaoKey || pedido.key
+
       pedidosInicial.forEach((row) => {
-        if (isPositiveValue(row[pedido.key])) inicialTrue++
-        else if (isNegativeValue(row[pedido.key])) inicialFalse++
+        if (isPositiveValue(row[kIni])) inicialTrue++
+        else if (isNegativeValue(row[kIni])) inicialFalse++
       })
 
       pedidosSentenca.forEach((row) => {
-        if (isPositiveValue(row[pedido.key])) sentencaTrue++
-        else if (isNegativeValue(row[pedido.key])) sentencaFalse++
+        if (isPositiveValue(row[kSen])) sentencaTrue++
+        else if (isNegativeValue(row[kSen])) sentencaFalse++
       })
 
       pedidosAcordao.forEach((row) => {
-        if (isPositiveValue(row[pedido.key])) acordaoTrue++
-        else if (isNegativeValue(row[pedido.key])) acordaoFalse++
+        if (isPositiveValue(row[kAco])) acordaoTrue++
+        else if (isNegativeValue(row[kAco])) acordaoFalse++
       })
 
       const inicialTotal = inicialTrue + inicialFalse
@@ -424,11 +439,11 @@ export function ProcessosTab({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FunnelCard 
                   title="Funil de Doença" 
-                  subtitle="Pedidos de doença mental ou ergonômica"
+                  subtitle="Pedidos de doença médica geral"
                   icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
-                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_mental) || isPositiveValue(p.do_ergonomica)).length}
-                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_mental) || isPositiveValue(p.do_ergonomica)).length}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_medica_geral)).length}
+                  sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral)).length}
+                  acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral)).length}
                 />
                 <FunnelCard 
                   title="Funil de Acidente de Trabalho" 

@@ -8,6 +8,37 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { UserSearch, Link as LinkIcon, ExternalLink, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
+const normalizeWitnesses = (text: any): string[] => {
+  if (!text || typeof text !== 'string') return []
+  
+  const val = text.trim().toUpperCase()
+  const junk = ["NULL", "N/A", "NA", "-", "—"]
+  if (!val || junk.includes(val)) return []
+
+  // Delimitadores: ". " (ponto seguido de espaço), ";", "\n", "/", "|"
+  // Nota: Evitamos vírgula como separador principal para não quebrar nomes compostos ou observações
+  const delimiters = /\. |;|\n|\/|\|/g
+  
+  const names = text
+    .split(delimiters)
+    .map(name => {
+      let cleaned = name.trim().toUpperCase()
+      // Remove espaços duplicados
+      cleaned = cleaned.replace(/\s+/g, ' ')
+      // Remove pontos finais no fim do nome
+      cleaned = cleaned.replace(/\.+$/, '')
+      return cleaned
+    })
+    .filter(name => {
+      if (!name || name.length < 2) return false
+      if (junk.includes(name)) return false
+      return true
+    })
+
+  // Remove duplicados dentro do mesmo campo/processo
+  return Array.from(new Set(names))
+}
+
 export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [abaTestemunha, setAbaTestemunha] = useState<"reclamante" | "reclamada">("reclamante")
@@ -22,17 +53,16 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
       const procNum = p.numero_processo || "S/N"
       detailsMap[procNum] = p
       
-      // Captura Testemunhas (pode haver mais de uma se separada por vírgula, mas assumimos string inteira ou array)
-      const test = abaTestemunha === "reclamante" ? p.testemunha_reclamante : p.testemunha_reclamada
-      if (test && typeof test === "string" && test.trim() !== "") {
-        const nomesTestemunhas = test.split(",").map(t => t.trim().toUpperCase()).filter(Boolean)
-        nomesTestemunhas.forEach(nome => {
-          if (!testemunhasMap[nome]) testemunhasMap[nome] = []
-          testemunhasMap[nome].push(procNum)
-        })
-      }
+      // Captura Testemunhas normalizadas
+      const rawText = abaTestemunha === "reclamante" ? p.testemunha_reclamante : p.testemunha_reclamada
+      const nomesTestemunhas = normalizeWitnesses(rawText)
+      
+      nomesTestemunhas.forEach(nome => {
+        if (!testemunhasMap[nome]) testemunhasMap[nome] = []
+        testemunhasMap[nome].push(procNum)
+      })
 
-      // Captura Reclamante
+      // Captura Reclamante (normalizado para cruzamento)
       const recl = p.nome_reclamante
       if (recl && typeof recl === "string" && recl.trim() !== "") {
         const nomeReclamante = recl.trim().toUpperCase()
