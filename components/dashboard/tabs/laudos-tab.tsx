@@ -50,8 +50,10 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   
   const stats = useMemo(() => {
     const hasValue = (val: any) => {
+      if (val === false || val === 0) return true;
       const str = String(val).trim().toLowerCase();
-      return str !== "" && str !== "null" && str !== "undefined" && str !== "nan" && str !== "false";
+      if (str === "false" || str === "falso" || str === "0") return true;
+      return str !== "" && str !== "null" && str !== "undefined" && str !== "nan";
     }
 
     let total = 0, favoraveis = 0, desfavoraveis = 0, incapacidadeCount = 0, acidenteTrabalhoCount = 0
@@ -96,14 +98,14 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       const hasTecnica = hasValue(laudo.insalubridade) || hasValue(laudo.periculosidade);
       const hasMedicaGeral = hasValue(laudo.do_medico_geral);
       const hasMental = hasValue(laudo.do_psiquica);
-      const hasErgonomia = hasValue(laudo.ergonomia);
+      const hasErgonomia = hasValue(laudo.resultado_ergonomico);
 
       if (!hasTecnica && !hasMedicaGeral && !hasMental && !hasErgonomia) return;
 
       total++;
       const medicaVal = String(laudo.do_medico_geral || "").trim().toUpperCase()
       const mentalVal = String(laudo.do_psiquica || "").trim().toUpperCase()
-      const ergoVal = String(laudo.ergonomia || "").trim().toUpperCase()
+      const ergoVal = String(laudo.resultado_ergonomico || "").trim().toUpperCase()
       const incapacidadeVal = String(laudo.incapacidade || "").trim().toUpperCase()
       const acidenteVal = String(laudo.acidente_trabalho || "").trim().toUpperCase()
 
@@ -127,7 +129,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          return ["true", "causa", "concausa", "incapaz", "restrição", "incapacidadeparcial", "desfavoravel", "desfavorável", "perda", "negativo", "caracterizada"].some(pc => str.includes(pc));
       }
 
-      const isDesfavoravel = isBadForCompany(laudo.do_medico_geral) || isBadForCompany(laudo.do_psiquica) || isBadForCompany(laudo.incapacidade) || isBadForCompany(laudo.acidente_trabalho) || isBadForCompany(laudo.insalubridade) || isBadForCompany(laudo.periculosidade) || isBadForCompany(laudo.ergonomia);
+      const isDesfavoravel = isBadForCompany(laudo.do_medico_geral) || isBadForCompany(laudo.do_psiquica) || isBadForCompany(laudo.incapacidade) || isBadForCompany(laudo.acidente_trabalho) || isBadForCompany(laudo.insalubridade) || isBadForCompany(laudo.periculosidade) || isBadForCompany(laudo.resultado_ergonomico);
 
       if (isDesfavoravel) {
          desfavoraveis++;
@@ -136,7 +138,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          if (acidenteVal === "TRUE" || laudo.acidente_trabalho === true) composicaoDesfavoraveis["Acidente de Trabalho"]++;
          if (String(laudo.insalubridade).toUpperCase() === "TRUE" || laudo.insalubridade === true) composicaoDesfavoraveis["Insalubridade"]++;
          if (String(laudo.periculosidade).toUpperCase() === "TRUE" || laudo.periculosidade === true) composicaoDesfavoraveis["Periculosidade"]++;
-         if (isBadForCompany(laudo.ergonomia)) composicaoDesfavoraveis["Ergonomia"]++;
+         if (isBadForCompany(laudo.resultado_ergonomico)) composicaoDesfavoraveis["Ergonomia"]++;
       } else {
          favoraveis++;
       }
@@ -157,8 +159,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
       if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
-      if (ergoVal.includes("POSITIVO") || ergoVal.includes("FAVORAVEL")) ergonomiaStatus.Positivo++; 
-      else if (ergoVal.includes("NEGATIVO") || ergoVal.includes("DESFAVORAVEL")) ergonomiaStatus.Negativo++;
+      const isErgoFavoravel = ergoVal.includes("POSITIVO") || ergoVal.includes("FAVORAVEL") || ergoVal.includes("FAVORÁVEL") || ergoVal === "S" || ergoVal === "SIM" || ergoVal === "TRUE" || ergoVal === "1";
+      const isErgoDesfavoravel = ergoVal.includes("NEGATIVO") || ergoVal.includes("DESFAVORAVEL") || ergoVal.includes("DESFAVORÁVEL") || ergoVal === "N" || ergoVal === "NAO" || ergoVal === "NÃO" || ergoVal === "FALSE" || ergoVal === "0" || ergoVal === "COM RISCO";
+      
+      if (isErgoFavoravel) ergonomiaStatus.Positivo++; 
+      else if (isErgoDesfavoravel) ergonomiaStatus.Negativo++;
 
       const processoRelacionado = processos.find(p => String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()) || {};
       
@@ -171,7 +176,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       }
       registrarPerito(processoRelacionado.perito_medico_psiquiatra, "Médico Psiquiatra", [laudo.do_psiquica]);
       registrarPerito(processoRelacionado.perito_medico_geral, "Médico", [laudo.do_medica_geral, laudo.incapacidade, laudo.acidente_trabalho]);
-      registrarPerito(processoRelacionado.perito_ergonomico, "Ergonômico", [laudo.ergonomia]);
+      registrarPerito(processoRelacionado.perito_ergonomico, "Ergonômico", [laudo.resultado_ergonomico]);
       registrarPerito(processoRelacionado.perito_tecnico, "Técnico", [laudo.insalubridade, laudo.periculosidade]);
 
       const registrarAssistente = (nome: any, obj: any, campos: any[]) => {
