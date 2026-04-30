@@ -68,11 +68,23 @@ export interface ValorRisco {
   provavel_juros_quarter_atual?: number | null;
   provavel_total_atual?: number | null;
   
+  // Quarter Anterior - Possível
+  possivel_principal_quarter_anterior?: number | null;
+  possivel_correcao_quarter_anterior?: number | null;
+  possivel_juros_quarter_anterior?: number | null;
+  possivel_total_anterior?: number | null;
+  
   // Quarter Atual - Possível
   possivel_principal_quarter_atual?: number | null;
   possivel_correcao_quarter_atual?: number | null;
   possivel_juros_quarter_atual?: number | null;
   possivel_total_atual?: number | null;
+  
+  // Quarter Anterior - Remoto
+  remoto_principal_quarter_anterior?: number | null;
+  remoto_correcao_quarter_anterior?: number | null;
+  remoto_juros_quarter_anterior?: number | null;
+  remoto_total_anterior?: number | null;
   
   // Quarter Atual - Remoto
   remoto_principal_quarter_atual?: number | null;
