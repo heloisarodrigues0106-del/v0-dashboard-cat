@@ -17,10 +17,11 @@ const normalizeWitnesses = (text: any): string[] => {
 
   // Delimitadores: ". " (ponto seguido de espaço), ";", "\n", "/", "|"
   // Nota: Evitamos vírgula como separador principal para não quebrar nomes compostos ou observações
-  const delimiters = /\. |;|\n|\/|\|/g
+  // Delimitadores principais: ";", "\n", "/", "|"
+  // O ponto será tratado via lógica especial abaixo para evitar quebra de sobrenomes
   
   const names = text
-    .split(delimiters)
+    .split(/;|\n|\/|\||\. /g)
     .map(name => {
       let cleaned = name.trim().toUpperCase()
       // Remove espaços duplicados
@@ -35,8 +36,24 @@ const normalizeWitnesses = (text: any): string[] => {
       return true
     })
 
+  // Lógica de Re-agregação: Se um fragmento tiver apenas uma palavra, 
+  // provavelmente é um sobrenome que foi separado por um ponto (ex: SANTOS. CORDEIRO)
+  const aggregatedNames: string[] = []
+  
+  names.forEach(name => {
+    const wordCount = name.split(' ').filter(w => w.length > 0).length
+    
+    // Se o nome atual tiver apenas 1 palavra e já houver um nome na lista, junta ao anterior
+    if (wordCount === 1 && aggregatedNames.length > 0) {
+      const lastIdx = aggregatedNames.length - 1
+      aggregatedNames[lastIdx] = `${aggregatedNames[lastIdx]} ${name}`
+    } else {
+      aggregatedNames.push(name)
+    }
+  })
+
   // Remove duplicados dentro do mesmo campo/processo
-  return Array.from(new Set(names))
+  return Array.from(new Set(aggregatedNames))
 }
 
 export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) {

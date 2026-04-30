@@ -56,8 +56,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     let total = 0, favoraveis = 0, desfavoraveis = 0, incapacidadeCount = 0, acidenteTrabalhoCount = 0
     let motivos: Record<string, number> = { 
-      "Doença Mental": 0, 
-      "Doença Geral": 0, 
+      "Doença Psíquica": 0, 
+      "Doença Não Psíquica": 0, 
       "Insalubridade": 0, 
       "Periculosidade": 0,
       "Ergonomia": 0,
@@ -83,7 +83,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
        "Ergonomia": 0
     }
 
-    let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Geral": 0, "Médica Mental": 0, "Ergonômica": 0 }
+    let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Não Psíquica": 0, "Médica Psíquica": 0, "Ergonômica": 0 }
     let nexos = { Concausa: 0, Causa: 0, "Incapacidade/Restrição": 0 }
     let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } 
@@ -142,8 +142,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       }
 
       if (hasTecnica) tiposLaudo["Técnica"]++;
-      if (hasMedicaGeral) tiposLaudo["Médica Geral"]++;
-      if (hasMental) tiposLaudo["Médica Mental"]++;
+      if (hasMedicaGeral) tiposLaudo["Médica Não Psíquica"]++;
+      if (hasMental) tiposLaudo["Médica Psíquica"]++;
       if (hasErgonomia) tiposLaudo["Ergonômica"]++;
 
       if (medicaVal === "CAUSA") medicaGeralStatus.Causa++;
@@ -239,8 +239,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
   const tiposData = useMemo(() => [
     { name: "Técnica", value: stats.tiposLaudo["Técnica"], color: CATEGORICAL_COLORS.tecnica },
-    { name: "Médica Geral", value: stats.tiposLaudo["Médica Geral"], color: CATEGORICAL_COLORS.medicaGeral },
-    { name: "Médica Mental", value: stats.tiposLaudo["Médica Mental"], color: CATEGORICAL_COLORS.medicaMental },
+    { name: "Médica Não Psíquica", value: stats.tiposLaudo["Médica Não Psíquica"], color: CATEGORICAL_COLORS.medicaGeral },
+    { name: "Médica Psíquica", value: stats.tiposLaudo["Médica Psíquica"], color: CATEGORICAL_COLORS.medicaMental },
     { name: "Ergonômica", value: stats.tiposLaudo["Ergonômica"], color: CATEGORICAL_COLORS.ergonomica },
   ].filter(d => d.value > 0), [stats.tiposLaudo]);
 
@@ -295,9 +295,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
       <div className="grid gap-4 lg:grid-cols-2">
         {renderMiniPie(tiposData, "Natureza das Perícias", "Distribuição por especialidade técnica")}
-        {renderMiniPie(medicaGeralData, "Doença Médica Geral", "Causa, Concausa e Sem Nexo")}
+        {renderMiniPie(medicaGeralData, "Doença Médica Não Psíquica", "Causa, Concausa e Sem Nexo")}
         
-        {renderMiniPie(mentalData, "Doença Mental", "Causa, Concausa e Sem Nexo")}
+        {renderMiniPie(mentalData, "Doença Psíquica", "Causa, Concausa e Sem Nexo")}
         {renderMiniPie(ergonomiaData, "Ergonomia", "Riscos ergonômicos")}
 
         {renderMiniPie(insalubridadeData, "Insalubridade", "Caracterizada e Não Caracterizada")}
@@ -307,7 +307,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Matriz médica geral x incapacidade</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Matriz médica não psíquica x incapacidade</CardTitle>
             <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em]">Cruzamento entre nexo médico e capacidade laboral</p>
           </CardHeader>
           <CardContent className="px-5 pb-5">
@@ -315,7 +315,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="p-2 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Médico Geral</th>
+                    <th className="p-2 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Médico Não Psíquico</th>
                     <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Capaz</th>
                     <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Incapaz</th>
                     <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Total</th>
