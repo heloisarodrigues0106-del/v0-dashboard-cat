@@ -72,7 +72,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
 
     // 2. Delimitadores: ponto seguido de espaço, ponto e vírgula, quebra de linha, barra, pipe
     // Usamos regex para capturar as diferentes formas de separação
-    const regex = /\.\s|;|\n|\/|\|/g;
+    const regex = /\.\s*|;|\n|\/|\|/g;
     const partes = texto.split(regex);
     
     const subjects = partes
@@ -95,20 +95,23 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   // Extrair base de liminares (Regras de Negócio 4)
   const baseLiminares = useMemo(() => {
     return processos.filter(p => {
-      const statusText = String(p.status_liminar || p.concessao_liminar || p.decisao_liminar || p.status_concessao || "").toUpperCase();
-      const liminarText = String(p.liminar || "").toUpperCase();
+      const text = String(p.liminar || "").toUpperCase();
+      const statusExtra = String(p.status_liminar || p.concessao_liminar || "").toUpperCase();
 
-      // Status permitidos: Concedida ou Parcialmente Concedida
-      const isConcedida = 
-        statusText === "CONCEDIDA" || 
-        statusText === "PARCIALMENTE CONCEDIDA" ||
-        statusText.includes("CONCEDIDA") || // Abranger variações
-        (liminarText.includes("CONCEDIDA") && !statusText);
-      
-      // Bloquear explicitamente indeferidas ou nulas
-      const isIndeferida = statusText.includes("INDEFERIDA") || statusText.includes("NEGADA") || statusText.includes("REJEITADA");
-      
-      return isConcedida && !isIndeferida && p.liminar;
+      if (!text || text === "NULL" || text === "N/A" || text === "-" || text === "FALSE") return false;
+
+      // Se for explicitamente negada no texto ou no status extra, removemos
+      const isNegada = 
+        text.includes("INDEFERIDA") || 
+        text.includes("NEGADA") || 
+        text.includes("REJEITADA") ||
+        statusExtra.includes("INDEFERIDA") ||
+        statusExtra.includes("NEGADA") ||
+        statusExtra.includes("REJEITADA");
+
+      if (isNegada) return false;
+
+      return true;
     });
   }, [processos]);
 

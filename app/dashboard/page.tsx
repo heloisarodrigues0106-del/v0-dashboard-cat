@@ -22,7 +22,7 @@ export default async function DashboardPage() {
       'honorario_pericia, testemunha_reclamante, testemunha_reclamada, ' +
       'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico, ' +
       'assistente_medico, assistente_tecnico, ' +
-      'liminar, tipo_processo_apenso, numero_processo_apenso'
+      'liminar, status_liminar, concessao_liminar, decisao_liminar, status_concessao, tipo_processo_apenso, numero_processo_apenso'
     ),
     supabase.from('tb_pedidos_inicial').select(
       'id, numero_processo, do_at, reintegracao, periculosidade, insalubridade, ' +
