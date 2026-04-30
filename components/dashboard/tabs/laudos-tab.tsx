@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
-import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight, TrendingUp, Users, MapPin } from "lucide-react"
+import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight, TrendingUp, Users, MapPin, User, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const THEME = {
@@ -54,26 +54,37 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       return str !== "" && str !== "null" && str !== "undefined" && str !== "nan" && str !== "false";
     }
 
-    let total = 0
-    let favoraveis = 0
-    let desfavoraveis = 0
-    let motivos = {
-      Insalubridade: 0,
-      Periculosidade: 0,
-      "Doença Ergonômica": 0,
-      "Doença Mental": 0,
+    let total = 0, favoraveis = 0, desfavoraveis = 0, incapacidadeCount = 0, acidenteTrabalhoCount = 0
+    let motivos: Record<string, number> = { 
+      "Doença Mental": 0, 
+      "Doença Geral": 0, 
+      "Insalubridade": 0, 
+      "Periculosidade": 0,
+      "Ergonomia": 0,
       "Outros": 0
     }
     let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number, classificacao: string }> = {}
     let statsAssistenteMedico: Record<string, { favoraveis: number, desfavoraveis: number }> = {}
     let statsAssistenteTecnico: Record<string, { favoraveis: number, desfavoraveis: number }> = {}
-    let tiposLaudo: Record<string, number> = { 
-      "Técnica": 0, 
-      "Médica Geral": 0, 
-      "Médica Mental": 0, 
-      "Ergonômica": 0 
+    
+    let matrizNexoIncapacidade: Record<string, Record<string, number>> = {
+       "CAUSA": { "CAPAZ": 0, "INCAPAZ": 0, "TOTAL": 0 },
+       "CONCAUSA": { "CAPAZ": 0, "INCAPAZ": 0, "TOTAL": 0 },
+       "SEM NEXO": { "CAPAZ": 0, "INCAPAZ": 0, "TOTAL": 0 },
+       "TOTAL": { "CAPAZ": 0, "INCAPAZ": 0, "TOTAL": 0 }
     }
-    let nexos = { Causa: 0, Concausa: 0, "Incapacidade/Restrição": 0 }
+
+    let composicaoDesfavoraveis = {
+       "Causa / Concausa": 0,
+       "Incapacidade": 0,
+       "Acidente de Trabalho": 0,
+       "Insalubridade": 0,
+       "Periculosidade": 0,
+       "Ergonomia": 0
+    }
+
+    let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Geral": 0, "Médica Mental": 0, "Ergonômica": 0 }
+    let nexos = { Concausa: 0, Causa: 0, "Incapacidade/Restrição": 0 }
     let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 } 
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
@@ -88,109 +99,27 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       const hasMental = hasValue(laudo.do_mental);
       const hasErgonomia = hasValue(laudo.ergonomia);
 
-      const hasAnyMarking = hasTecnica || hasMedicaGeral || hasMental || hasErgonomia;
-      if (!hasAnyMarking) return;
+      if (!hasTecnica && !hasMedicaGeral && !hasMental && !hasErgonomia) return;
 
       total++;
 
-      // Checar se há risco/desfavorabilidade nas colunas críticas
-      const valores = [
-        laudo.doenca,
-        laudo.acidente_trabalho,
-        laudo.periculosidade,
-        laudo.insalubridade,
-        laudo.doenca_ergonomica,
-        laudo.doenca_mental,
-        laudo.resultado,
-        laudo.motivo_perda
-      ].map(v => String(v).toLowerCase().trim())
+      const medicaVal = String(laudo.do_medica_geral || "").trim().toUpperCase()
+      const incapacidadeVal = String(laudo.incapacidade || "").trim().toUpperCase()
+      const acidenteVal = String(laudo.acidente_trabalho || "").trim().toUpperCase()
 
-      const palavrasCriticas = ["true", "causa", "concausa", "incapaz", "incapacidadeparcial", "desfavoravel", "desfavorável", "perda"]
-      
-      const isDesfavoravel = 
-        laudo.desfavoravel === true || 
-        valores.some(v => palavrasCriticas.some(pc => v.includes(pc)))
+      if (incapacidadeVal === "INCAPAZ") incapacidadeCount++;
+      if (acidenteVal === "TRUE" || laudo.acidente_trabalho === true) acidenteTrabalhoCount++;
 
-      if (isDesfavoravel) {
-        desfavoraveis++
-        
-        // Mapear motivos
-        const motivoStr = (laudo.motivo_perda || laudo.tipo_pericia || "").toLowerCase()
-        if (motivoStr.includes("insalubridade") || laudo.insalubridade === "Desfavorável") motivos.Insalubridade++
-        else if (motivoStr.includes("periculosidade") || laudo.periculosidade === "Desfavorável") motivos.Periculosidade++
-        else if (motivoStr.includes("ergonômica") || motivoStr.includes("ergonomica") || laudo.doenca_ergonomica) motivos["Doença Ergonômica"]++
-        else if (motivoStr.includes("mental") || laudo.doenca_mental) motivos["Doença Mental"]++
-        else motivos.Outros++
-      } else {
-        favoraveis++
+      // Matriz Nexo x Incapacidade
+      const nexoRow = ["CAUSA", "CONCAUSA"].includes(medicaVal) ? medicaVal : "SEM NEXO"
+      const incapacidadeCol = incapacidadeVal === "INCAPAZ" ? "INCAPAZ" : (incapacidadeVal === "CAPAZ" ? "CAPAZ" : null)
+      if (incapacidadeCol) {
+         matrizNexoIncapacidade[nexoRow][incapacidadeCol]++;
+         matrizNexoIncapacidade[nexoRow]["TOTAL"]++;
+         matrizNexoIncapacidade["TOTAL"][incapacidadeCol]++;
+         matrizNexoIncapacidade["TOTAL"]["TOTAL"]++;
       }
 
-      if (hasTecnica) tiposLaudo["Técnica"]++;
-      if (hasMedicaGeral) tiposLaudo["Médica Geral"]++;
-      if (hasMental) tiposLaudo["Médica Mental"]++;
-      if (hasErgonomia) tiposLaudo["Ergonômica"]++;
-
-      const mentalStr = String(laudo.do_mental || laudo.doenca_mental || "").trim().toLowerCase();
-
-      // Nexo e Capacidade
-      const joinedValores = valores.join(" ")
-      if (joinedValores.includes("concausa")) {
-        nexos.Concausa++
-      } else if (joinedValores.includes("causa")) {
-        nexos.Causa++
-      }
-
-      if (joinedValores.includes("incapaz") || joinedValores.includes("incapacidade") || joinedValores.includes("restrição") || joinedValores.includes("capacidade")) {
-        nexos["Incapacidade/Restrição"]++
-      }
-
-      // Gráfico Específico para do_medica_geral 
-      // Substitui o antigo de Doença Ergonômica conforme pedido
-      const medicaVal = String(laudo.do_medica_geral || "").toLowerCase().trim()
-      if (medicaVal.includes("concausa")) {
-        medicaGeralStatus.Concausa++
-      } else if (medicaVal.includes("causa")) {
-        medicaGeralStatus.Causa++
-      } else {
-        medicaGeralStatus["Sem Nexo"]++
-      }
-
-      // Gráfico Específico para do_mental
-      if (mentalStr.includes("concausa")) {
-        mentalStatus.Concausa++
-      } else if (mentalStr.includes("causa") || laudo.do_mental === true || String(laudo.do_mental).toLowerCase() === "true") {
-        mentalStatus.Causa++
-      } else {
-        mentalStatus["Sem Nexo"]++
-      }
-
-      // Gráficos Específicos para Insalubridade e Periculosidade
-      if (laudo.insalubridade === true || String(laudo.insalubridade).toLowerCase() === "true") {
-        insalubridadeStatus.Caracterizada++
-      } else {
-        insalubridadeStatus["Não Caracterizada"]++
-      }
-
-      if (laudo.periculosidade === true || String(laudo.periculosidade).toLowerCase() === "true") {
-        periculosidadeStatus.Caracterizada++
-      } else {
-        periculosidadeStatus["Não Caracterizada"]++
-      }
-
-      // Gráfico Específico para Ergonomia (Riscos nas atividades)
-      const ergonomiaVal = String(laudo.ergonomia || "").toUpperCase()
-      if (ergonomiaVal === "POSITIVO") {
-        ergonomiaStatus.Positivo++
-      } else if (ergonomiaVal === "NEGATIVO") {
-        ergonomiaStatus.Negativo++
-      }
-
-      // Nova Correlação de Peritos solicitada
-      const processoRelacionado = processos.find(p => 
-        String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()
-      ) || {};
-
-      // Além de identificar 'bad words', lidamos com caso o campo seja true
       const isBadForCompany = (val: any) => {
          if (val === true || val === "true") return true;
          if (!hasValue(val)) return false;
@@ -198,819 +127,384 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          return ["true", "causa", "concausa", "incapaz", "restrição", "incapacidadeparcial", "desfavoravel", "desfavorável", "perda", "negativo", "caracterizada"].some(pc => str.includes(pc));
       }
 
-      const registrarEstatisticaPerito = (nomePerito: any, classificacao: string, camposAvaliados: any[]) => {
-         if (!nomePerito || hasValue(nomePerito) === false) return;
-         
-         const camposValidos = camposAvaliados.filter(f => hasValue(f) || f === true || f === false);
-         if (camposValidos.length === 0) return; // Nenhuma avaliação dessa área neste laudo
+      const isDesfavoravel = isBadForCompany(laudo.do_medica_geral) || isBadForCompany(laudo.incapacidade) || isBadForCompany(laudo.acidente_trabalho) || isBadForCompany(laudo.insalubridade) || isBadForCompany(laudo.periculosidade) || String(laudo.ergonomia).toUpperCase() === "NEGATIVO";
 
-         const isDesfav = camposValidos.some(f => isBadForCompany(f));
-         const key = String(nomePerito).trim();
-
-         if (!statsPerito[key]) {
-            statsPerito[key] = { favoraveis: 0, desfavoraveis: 0, classificacao };
-         }
-         
-         if (isDesfav) statsPerito[key].desfavoraveis++;
-         else statsPerito[key].favoraveis++;
+      if (isDesfavoravel) {
+         desfavoraveis++;
+         if (medicaVal === "CAUSA" || medicaVal === "CONCAUSA") composicaoDesfavoraveis["Causa / Concausa"]++;
+         if (incapacidadeVal === "INCAPAZ") composicaoDesfavoraveis["Incapacidade"]++;
+         if (acidenteVal === "TRUE" || laudo.acidente_trabalho === true) composicaoDesfavoraveis["Acidente de Trabalho"]++;
+         if (String(laudo.insalubridade).toUpperCase() === "TRUE" || laudo.insalubridade === true) composicaoDesfavoraveis["Insalubridade"]++;
+         if (String(laudo.periculosidade).toUpperCase() === "TRUE" || laudo.periculosidade === true) composicaoDesfavoraveis["Periculosidade"]++;
+         if (String(laudo.ergonomia).toUpperCase() === "NEGATIVO") composicaoDesfavoraveis["Ergonomia"]++;
+      } else {
+         favoraveis++;
       }
 
-      // 1. Psiquiatra
-      registrarEstatisticaPerito(
-         processoRelacionado.perito_medico_psiquiatra, 
-         "Médico Psiquiatra", 
-         [laudo.do_mental, laudo.doenca_mental]
-      );
+      if (hasTecnica) tiposLaudo["Técnica"]++;
+      if (hasMedicaGeral) tiposLaudo["Médica Geral"]++;
+      if (hasMental) tiposLaudo["Médica Mental"]++;
+      if (hasErgonomia) tiposLaudo["Ergonômica"]++;
 
-      // 2. Médico Geral
-      registrarEstatisticaPerito(
-         processoRelacionado.perito_medico_geral, 
-         "Médico", 
-         [laudo.do_medica_geral, laudo.doenca, laudo.acidente_trabalho, laudo.incapacidade]
-      );
+      if (medicaVal === "CAUSA") medicaGeralStatus.Causa++;
+      else if (medicaVal === "CONCAUSA") medicaGeralStatus.Concausa++;
+      else medicaGeralStatus["Sem Nexo"]++;
 
-      // 3. Ergonômico
-      registrarEstatisticaPerito(
-         processoRelacionado.perito_ergonomico, 
-         "Ergonômico", 
-         [laudo.ergonomia, laudo.do_ergonomica, laudo.doenca_ergonomica]
-      );
+      const mentalStr = String(laudo.do_mental || "").toLowerCase();
+      if (mentalStr.includes("causa")) mentalStatus.Causa++;
+      else if (mentalStr.includes("concausa")) mentalStatus.Concausa++;
+      else mentalStatus["Sem Nexo"]++;
 
-      // 4. Técnico
-      registrarEstatisticaPerito(
-         processoRelacionado.perito_tecnico, 
-         "Técnico", 
-         [laudo.insalubridade, laudo.periculosidade]
-      );
-
-      // Nova Estatística para Assistentes
-      const registrarEstatisticaAssistente = (nomeAssistente: any, statsObj: Record<string, { favoraveis: number, desfavoraveis: number }>, camposAvaliados: any[]) => {
-         if (!nomeAssistente || hasValue(nomeAssistente) === false) return;
-         
-         const camposValidos = camposAvaliados.filter(f => hasValue(f) || f === true || f === false);
-         if (camposValidos.length === 0) return;
-
-         const isDesfav = camposValidos.some(f => isBadForCompany(f));
-         const key = String(nomeAssistente).trim();
-
-         if (!statsObj[key]) {
-            statsObj[key] = { favoraveis: 0, desfavoraveis: 0 };
-         }
-         
-         if (isDesfav) statsObj[key].desfavoraveis++;
-         else statsObj[key].favoraveis++;
-      }
-
-      registrarEstatisticaAssistente(
-         processoRelacionado.assistente_medico,
-         statsAssistenteMedico,
-         [laudo.do_mental, laudo.doenca_mental, laudo.do_medica_geral, laudo.doenca, laudo.acidente_trabalho, laudo.incapacidade, laudo.ergonomia, laudo.do_ergonomica, laudo.doenca_ergonomica]
-      );
-
-      registrarEstatisticaAssistente(
-         processoRelacionado.assistente_tecnico,
-         statsAssistenteTecnico,
-         [laudo.insalubridade, laudo.periculosidade]
-      );
-    })
-
-    // Agregação de Graus de Insalubridade de tb_laudo.grau_insalubridade
-    laudos.forEach(laudo => {
-      const grauRaw = laudo.grau_insalubridade || ""
-      const grau = String(grauRaw).trim().toUpperCase().replace(',', '.')
+      if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
+      if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
-      if (grau === "0.1" || grau.includes("10") || grau.includes("MÍNIMO")) {
-          grausInsalubridade["Mínimo (10%)"]++
-      } else if (grau === "0.2" || grau.includes("20") || grau.includes("MÉDIO")) {
-          grausInsalubridade["Médio (20%)"]++
-      } else if (grau === "0.4" || grau.includes("40") || grau.includes("MÁXIMO")) {
-          grausInsalubridade["Máximo (40%)"]++
+      const ergoVal = String(laudo.ergonomia || "").toUpperCase();
+      if (ergoVal === "POSITIVO") ergonomiaStatus.Positivo++; else if (ergoVal === "NEGATIVO") ergonomiaStatus.Negativo++;
+
+      const processoRelacionado = processos.find(p => String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()) || {};
+      
+      const registrarPerito = (nome: any, classif: string, campos: any[]) => {
+         if (!nome || hasValue(nome) === false) return;
+         const isDesfav = campos.some(f => isBadForCompany(f));
+         const key = String(nome).trim();
+         if (!statsPerito[key]) statsPerito[key] = { favoraveis: 0, desfavoraveis: 0, classificacao: classif };
+         if (isDesfav) statsPerito[key].desfavoraveis++; else statsPerito[key].favoraveis++;
       }
+      registrarPerito(processoRelacionado.perito_medico_psiquiatra, "Médico Psiquiatra", [laudo.do_mental]);
+      registrarPerito(processoRelacionado.perito_medico_geral, "Médico", [laudo.do_medica_geral, laudo.incapacidade, laudo.acidente_trabalho]);
+      registrarPerito(processoRelacionado.perito_ergonomico, "Ergonômico", [laudo.ergonomia]);
+      registrarPerito(processoRelacionado.perito_tecnico, "Técnico", [laudo.insalubridade, laudo.periculosidade]);
+
+      const registrarAssistente = (nome: any, obj: any, campos: any[]) => {
+         if (!nome || hasValue(nome) === false) return;
+         const isDesfav = campos.some(f => isBadForCompany(f));
+         const key = String(nome).trim();
+         if (!obj[key]) obj[key] = { favoraveis: 0, desfavoraveis: 0 };
+         if (isDesfav) obj[key].desfavoraveis++; else obj[key].favoraveis++;
+      }
+      registrarAssistente(processoRelacionado.assistente_medico, statsAssistenteMedico, [laudo.do_medica_geral, laudo.incapacidade]);
+      registrarAssistente(processoRelacionado.assistente_tecnico, statsAssistenteTecnico, [laudo.insalubridade, laudo.periculosidade]);
     })
 
     return { 
-      total, favoraveis, desfavoraveis, motivos, statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, nexos, 
-      medicaGeralStatus, ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade
+      total, favoraveis, desfavoraveis, incapacidadeCount, acidenteTrabalhoCount, matrizNexoIncapacidade, composicaoDesfavoraveis,
+      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus
     }
-  }, [laudos, processos, peritoClassificacaoMap])
+  }, [laudos, processos]);
+
+  const KpiCard = ({ title, value, icon, subtext, percentage, color = "text-slate-800" }: any) => (
+    <Card className="border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-4">
+        <div className="bg-slate-100 p-2 rounded-lg">{icon}</div>
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{percentage}</span>
+      </div>
+      <div className={`text-3xl font-black ${color} tracking-tighter`}>{value}</div>
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight mt-1 leading-none">{title}</div>
+      <p className="text-[10px] text-slate-400 mt-2 font-medium">{subtext}</p>
+    </Card>
+  )
 
   const honorariosData = useMemo(() => {
     let totalHonorarios = 0;
     const lista: any[] = [];
-    const lowerSearch = honorariosSearch.toLowerCase();
-
     processos.forEach(p => {
       const valor = Number(p.honorario_pericia) || 0;
       if (valor > 0) {
-        const num = p.numero_processo || "S/N";
-        const rec = p.nome_reclamante || "Não informado";
-        
-        if (lowerSearch && 
-            !num.toLowerCase().includes(lowerSearch) && 
-            !rec.toLowerCase().includes(lowerSearch) &&
-            !(p.funcao_reclamante || "").toLowerCase().includes(lowerSearch)
-        ) {
-            return;
-        }
-
         totalHonorarios += valor;
-        
-        let peritosEncontrados = [];
-        
-        if (p.perito_tecnico) {
-            peritosEncontrados.push({ nome: p.perito_tecnico, tipo: "Técnico" });
-        }
-        if (p.perito_ergonomico) {
-            peritosEncontrados.push({ nome: p.perito_ergonomico, tipo: "Ergonômico" });
-        }
-        if (p.perito_medico_geral) {
-            peritosEncontrados.push({ nome: p.perito_medico_geral, tipo: "Médico" });
-        }
-        if (p.perito_medico_psiquiatra) {
-            peritosEncontrados.push({ nome: p.perito_medico_psiquiatra, tipo: "Médico Psiquiatra" });
-        }
-
-        lista.push({
-          numero: num,
-          reclamante: rec,
-          vara: p.vara,
-          comarca: p.comarca,
-          valor: valor,
-          peritos: peritosEncontrados.length > 0 ? peritosEncontrados : [{ nome: "Não informado", tipo: "N/A" }]
-        });
+        const peritos = [];
+        if (p.perito_tecnico) peritos.push({ nome: p.perito_tecnico, tipo: "Técnico" });
+        if (p.perito_medico_geral) peritos.push({ nome: p.perito_medico_geral, tipo: "Médico" });
+        if (p.perito_ergonomico) peritos.push({ nome: p.perito_ergonomico, tipo: "Ergonômico" });
+        if (p.perito_medico_psiquiatra) peritos.push({ nome: p.perito_medico_psiquiatra, tipo: "Médico Psiquiatra" });
+        lista.push({ numero: p.numero_processo, reclamante: p.nome_reclamante, vara: p.vara, comarca: p.comarca, valor, peritos });
       }
     });
+    return { totalHonorarios, ticketMedio: lista.length > 0 ? totalHonorarios / lista.length : 0, lista };
+  }, [processos]);
 
-    lista.sort((a, b) => b.valor - a.valor);
-    
-    return { 
-      totalHonorarios, 
-      qtdProcessos: lista.length, 
-      ticketMedio: lista.length > 0 ? (totalHonorarios / lista.length) : 0, 
-      lista 
-    };
-  }, [processos, honorariosSearch]);
-
-  const itemsPerPage = 5;
-  const paginatedHonorarios = honorariosData.lista.slice((honorariosPage - 1) * itemsPerPage, honorariosPage * itemsPerPage);
-  const totalPages = Math.ceil(honorariosData.lista.length / itemsPerPage);
-  const startIndex = (honorariosPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const paginatedHonorarios = honorariosData.lista.slice((honorariosPage - 1) * 5, honorariosPage * 5);
+  const totalPages = Math.ceil(honorariosData.lista.length / 5);
 
   const peritosData = useMemo(() => {
-    let rawData = Object.entries(stats.statsPerito)
-      .map(([name, data]) => ({ 
-        name, 
-        classificacao: data.classificacao,
-        Favorável: data.favoraveis, 
-        Desfavorável: data.desfavoraveis, 
-        Total: data.favoraveis + data.desfavoraveis 
-      }));
-
-    if (peritoFilter !== "Todos") {
-        rawData = rawData.filter(d => d.classificacao === peritoFilter);
-    }
-
-    rawData = rawData.sort((a, b) => b.Desfavorável - a.Desfavorável) // Prioridade: Maior volume de desfavoráveis no topo
-    
-    return rawData.slice(0, 15)
-  }, [stats.statsPerito, peritoFilter])
+    let raw = Object.entries(stats.statsPerito).map(([name, data]) => ({ name, classificacao: data.classificacao, Favorável: data.favoraveis, Desfavorável: data.desfavoraveis, Total: data.favoraveis + data.desfavoraveis }));
+    if (peritoFilter !== "Todos") raw = raw.filter(d => d.classificacao === peritoFilter);
+    return raw.sort((a, b) => b.Desfavorável - a.Desfavorável).slice(0, 15);
+  }, [stats.statsPerito, peritoFilter]);
 
   const assistentesData = useMemo(() => {
     const source = assistenteFilter === "Médico" ? stats.statsAssistenteMedico : stats.statsAssistenteTecnico;
-    
-    let rawData = Object.entries(source)
-      .map(([name, data]) => ({ 
-        name, 
-        Favorável: data.favoraveis, 
-        Desfavorável: data.desfavoraveis, 
-        Total: data.favoraveis + data.desfavoraveis 
-      }));
+    return Object.entries(source).map(([name, data]) => ({ name, Favorável: data.favoraveis, Desfavorável: data.desfavoraveis, Total: data.favoraveis + data.desfavoraveis })).sort((a, b) => b.Favorável - a.Favorável).slice(0, 15);
+  }, [stats.statsAssistenteMedico, stats.statsAssistenteTecnico, assistenteFilter]);
 
-    rawData = rawData.sort((a, b) => b.Favorável - a.Favorável) // Prioridade: Maior volume de favoráveis no topo
-    
-    return rawData.slice(0, 15)
-  }, [stats.statsAssistenteMedico, stats.statsAssistenteTecnico, assistenteFilter])
+  const medicaGeralData = [{ name: "Causa", value: stats.medicaGeralStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
+  const mentalData = [{ name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
+  const insalubridadeData = [{ name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
+  const periculosidadeData = [{ name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
+  const ergonomiaData = [{ name: "Favorável", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel }, { name: "Desfavorável", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }].filter(d => d.value > 0);
 
-  const tiposData = [
-    { name: "Técnica", value: stats.tiposLaudo["Técnica"], color: CATEGORICAL_COLORS.tecnica },
-    { name: "Médica Geral", value: stats.tiposLaudo["Médica Geral"], color: CATEGORICAL_COLORS.medicaGeral },
-    { name: "Médica Mental", value: stats.tiposLaudo["Médica Mental"], color: CATEGORICAL_COLORS.medicaMental },
-    { name: "Ergonômica", value: stats.tiposLaudo["Ergonômica"], color: CATEGORICAL_COLORS.ergonomica },
-  ].filter(d => d.value > 0)
-
-  const nexosData = Object.entries(stats.nexos)
-    .map(([name, Quantidade]) => ({ name, Quantidade, percent: stats.total > 0 ? ((Quantidade / stats.total) * 100).toFixed(1) : 0 }))
-
-  const pieData = [
-    { name: "Favoráveis", value: stats.favoraveis, color: THEME.favoravel }, 
-    { name: "Desfavoráveis", value: stats.desfavoraveis, color: THEME.critico }, 
-  ]
-
-  const motivosData = Object.entries(stats.motivos)
-    .filter(([_, value]) => value > 0)
-    .map(([name, value]) => ({ name, Quantidade: value }))
-    .sort((a, b) => b.Quantidade - a.Quantidade)
-
-  const medicaGeralData = [
-    { name: "Causa", value: stats.medicaGeralStatus.Causa, color: THEME.critico },
-    { name: "Concausa", value: stats.medicaGeralStatus.Concausa, color: THEME.intermediario },
-    { name: "Sem Nexo", value: stats.medicaGeralStatus["Sem Nexo"], color: THEME.neutro }
-  ].filter(d => d.value > 0)
-
-  const mentalData = [
-    { name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico },
-    { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario },
-    { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }
-  ].filter(d => d.value > 0)
-
-  const insalubridadeData = [
-    { name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico },
-    { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }
-  ].filter(d => d.value > 0)
-
-  const periculosidadeData = [
-    { name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico },
-    { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }
-  ].filter(d => d.value > 0)
-
-  const ergonomiaData = [
-    { name: "Favorável (S/ Risco)", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel },
-    { name: "Desfavorável (C/ Risco)", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }
-  ].filter(d => d.value > 0)
-
-  const grausInsalubridadeData = [
-    { name: "Mínimo", value: stats.grausInsalubridade["Mínimo (10%)"], color: "#94A3B8" },
-    { name: "Médio", value: stats.grausInsalubridade["Médio (20%)"], color: THEME.intermediario },
-    { name: "Máximo", value: stats.grausInsalubridade["Máximo (40%)"], color: THEME.critico }
-  ].filter(d => d.value > 0)
-
-  // Subcomponent wrapper render logic for inner repetitive pies
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
-    <Card className="border-border shadow-sm bg-white overflow-hidden">
+    <Card className="border border-border shadow-sm bg-white overflow-hidden">
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-bold text-slate-800">{title}</CardTitle>
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">{subtitle}</p>
       </CardHeader>
       <CardContent>
-          {dataArray.length > 0 && stats.total > 0 ? (
-            <div className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={dataArray}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={85}
-                    paddingAngle={6}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {dataArray.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
-                    itemStyle={{ fontSize: '12px', fontWeight: 600 }}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    align="center" 
-                    iconType="circle" 
-                    iconSize={8}
-                    formatter={(value) => <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{value}</span>}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="flex h-[220px] items-center justify-center text-[11px] font-bold text-slate-300 uppercase">Sem amostragem</div>
-          )}
+        <div className="h-[220px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={dataArray} cx="50%" cy="50%" innerRadius={65} outerRadius={85} paddingAngle={6} dataKey="value" stroke="none">
+                {dataArray.map((entry: any, index: number) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+              </Pie>
+              <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB" }} />
+              <Legend verticalAlign="bottom" align="center" iconType="circle" />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
-  )
+  );
 
   return (
     <div className="space-y-6">
-      
-      {/* KPI Cards */}
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total de Laudos</CardTitle>
-            <div className="bg-slate-100 p-2 rounded-lg">
-              <FileText className="h-4 w-4 text-slate-600" />
-            </div>
+        <KpiCard title="Total de Laudos" value={stats.total} icon={<FileText className="h-5 w-5 text-slate-600" />} subtext="Perícias analisadas" percentage="100%" />
+        <KpiCard title="Favoráveis" value={stats.favoraveis} icon={<CheckCircle2 className="h-5 w-5 text-teal-600" />} subtext="Taxa de êxito" percentage={`${stats.total > 0 ? ((stats.favoraveis / stats.total) * 100).toFixed(1) : 0}%`} color="text-teal-600" />
+        <KpiCard title="Desfavoráveis" value={stats.desfavoraveis} icon={<AlertCircle className="h-5 w-5 text-red-600" />} subtext="Taxa de risco" percentage={`${stats.total > 0 ? ((stats.desfavoraveis / stats.total) * 100).toFixed(1) : 0}%`} color="text-red-600" />
+        <KpiCard title="Incapacidade Reconhecida" value={stats.incapacidadeCount} icon={<User className="h-5 w-5 text-blue-600" />} subtext="processos com incapacidade" percentage={`${stats.total > 0 ? ((stats.incapacidadeCount / stats.total) * 100).toFixed(1) : 0}%`} />
+        <KpiCard title="Acidente de Trabalho" value={stats.acidenteTrabalhoCount} icon={<AlertTriangle className="h-5 w-5 text-amber-500" />} subtext="reconhecidos" percentage={`${stats.total > 0 ? ((stats.acidenteTrabalhoCount / stats.total) * 100).toFixed(1) : 0}%`} color="text-amber-500" />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {renderMiniPie(medicaGeralData, "Doença Médica Geral", "Causa, Concausa e Sem Nexo")}
+        {renderMiniPie(mentalData, "Doença Mental", "Causa, Concausa e Sem Nexo")}
+        {renderMiniPie(insalubridadeData, "Insalubridade", "Caracterizada e Não Caracterizada")}
+        {renderMiniPie(periculosidadeData, "Periculosidade", "Caracterizada e Não Caracterizada")}
+        {renderMiniPie(ergonomiaData, "Ergonomia", "Riscos ergonômicos")}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+        <Card className="border border-border bg-card shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-black text-slate-800 uppercase tracking-tight">Matriz Médica Geral x Incapacidade</CardTitle>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cruzamento entre nexo médico geral e capacidade laboral</p>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-black text-slate-800">{stats.total}</div>
-            <p className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-tight">Perícias analisadas</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Favoráveis</CardTitle>
-            <div className="bg-teal-50 p-2 rounded-lg">
-              <CheckCircle2 className="h-4 w-4 text-teal-600" />
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="p-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Médico Geral</th>
+                    <th className="p-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Capaz</th>
+                    <th className="p-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Incapaz</th>
+                    <th className="p-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {["CAUSA", "CONCAUSA", "SEM NEXO", "TOTAL"].map((row) => (
+                    <tr key={row} className={row === "TOTAL" ? "bg-slate-50/50 font-black" : ""}>
+                      <td className="p-4 text-xs font-black text-slate-600 border-b border-slate-100 uppercase tracking-tight">{row}</td>
+                      {["CAPAZ", "INCAPAZ", "TOTAL"].map((col) => {
+                        const val = stats.matrizNexoIncapacidade[row][col];
+                        const intensity = Math.min(0.8, (val / (stats.matrizNexoIncapacidade["TOTAL"]["TOTAL"] || 1)) * 3);
+                        const isTotal = row === "TOTAL" || col === "TOTAL";
+                        return (
+                          <td 
+                            key={col} 
+                            className={cn(
+                              "p-4 text-center text-xs font-black border-b border-slate-100 transition-colors",
+                              isTotal ? "text-slate-500" : "text-[#102A63]"
+                            )}
+                            style={{ 
+                              backgroundColor: isTotal ? "transparent" : `rgba(16, 42, 99, ${intensity * 0.12})` 
+                            }}
+                          >
+                            {val}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-teal-600">{stats.favoraveis}</div>
-            <p className="text-[11px] font-bold text-teal-600/60 mt-1 uppercase tracking-tight">
-              {stats.total > 0 ? ((stats.favoraveis / stats.total) * 100).toFixed(1) : 0}% de êxito
-            </p>
           </CardContent>
         </Card>
 
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Desfavoráveis</CardTitle>
-            <div className="bg-red-50 p-2 rounded-lg">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-            </div>
+        <Card className="border border-border bg-card shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl font-black text-slate-800 uppercase tracking-tight">Composição dos Laudos Desfavoráveis</CardTitle>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Fatores de risco nos {stats.desfavoraveis} laudos críticos</p>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-red-600">{stats.desfavoraveis}</div>
-            <p className="text-[11px] font-bold text-red-600/60 mt-1 uppercase tracking-tight">
-              {stats.total > 0 ? ((stats.desfavoraveis / stats.total) * 100).toFixed(1) : 0}% de risco
-            </p>
+          <CardContent className="pt-4">
+             <div className="space-y-6">
+                {Object.entries(stats.composicaoDesfavoraveis).map(([label, count]) => {
+                   const pct = stats.desfavoraveis > 0 ? (count / stats.desfavoraveis) * 100 : 0;
+                   return (
+                      <div key={label} className="space-y-2">
+                         <div className="flex justify-between items-end">
+                            <span className="text-xs font-black text-slate-600">{label}</span>
+                            <span className="text-xs font-black text-slate-800">{count} <span className="text-slate-400 ml-1 font-bold">({pct.toFixed(1)}%)</span></span>
+                         </div>
+                         <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-600" style={{ width: `${pct}%` }} />
+                         </div>
+                      </div>
+                   )
+                })}
+             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Tipologia e Nexos */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-border shadow-sm bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-black text-slate-800 tracking-tight">Natureza da Perícia</CardTitle>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Distribuição por especialidade técnica</p>
-          </CardHeader>
-          <CardContent>
-             {tiposData.length > 0 ? (
-               <div className="h-[280px]">
-                 <ResponsiveContainer width="100%" height="100%">
-                   <PieChart>
-                     <Pie
-                       data={tiposData}
-                       cx="50%"
-                       cy="50%"
-                       innerRadius={70}
-                       outerRadius={95}
-                       paddingAngle={5}
-                       dataKey="value"
-                       stroke="none"
-                     >
-                       {tiposData.map((entry, index) => (
-                         <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
-                       ))}
-                     </Pie>
-                     <Tooltip 
-                        contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }} 
-                        itemStyle={{ fontSize: '13px', fontWeight: 600 }}
-                     />
-                     <Legend 
-                        verticalAlign="bottom" 
-                        align="center" 
-                        iconType="circle" 
-                        iconSize={10}
-                        formatter={(value) => <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest px-2">{value}</span>}
-                     />
-                   </PieChart>
-                 </ResponsiveContainer>
-               </div>
-             ) : (
-                <div className="flex h-[280px] items-center justify-center text-[11px] font-black text-slate-300 uppercase tracking-widest">Sem dados de tipologia</div>
-             )}
-          </CardContent>
-        </Card>
-
-        {/* Distribuição Favorável vs Desfavorável */}
-        <Card className="border-border shadow-sm bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-black text-slate-800 tracking-tight">Taxa de Êxito em Perícias</CardTitle>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Equilíbrio entre êxito e risco jurídico</p>
-          </CardHeader>
-          <CardContent className="overflow-x-auto">
-            {stats.total > 0 ? (
-               <div className="h-[280px] min-w-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={70}
-                      outerRadius={95}
-                      paddingAngle={5}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} className="hover:opacity-80 transition-opacity duration-300" />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                       contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)" }}
-                       itemStyle={{ fontSize: '13px', fontWeight: 600 }}
-                    />
-                    <Legend 
-                       verticalAlign="bottom" 
-                       align="center" 
-                       iconType="circle" 
-                       iconSize={10}
-                       formatter={(value) => <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest px-2">{value}</span>}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Card className="border border-border bg-card shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <CardTitle className="text-xl font-black text-slate-900 tracking-tight">Ranking de Peritos</CardTitle>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Amostragem por volume de desfavorabilidade</p>
               </div>
-            ) : (
-                <div className="flex h-[280px] items-center justify-center text-[11px] font-black text-slate-300 uppercase tracking-widest">Sem amostragem suficiente</div>
-            )}
+              <div className="flex flex-wrap gap-1">
+                 {["Todos", "Médico", "Técnico", "Ergonômico"].map(f => (
+                   <button
+                      key={f}
+                      onClick={() => setPeritoFilter(f)}
+                      className={cn(
+                        "px-3 py-1 text-[10px] font-black uppercase rounded-full border transition-all",
+                        peritoFilter === f ? "bg-slate-800 text-white border-slate-800 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                      )}
+                   >
+                      {f}
+                   </button>
+                 ))}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[450px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={peritosData} layout="vertical" margin={{ right: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b" }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
+                    itemStyle={{ fontSize: '12px', fontWeight: 700 }}
+                  />
+                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={18} minPointSize={5}>
+                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                  </Bar>
+                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={18} minPointSize={5}>
+                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-border bg-card shadow-sm">
+          <CardHeader className="pb-6">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <CardTitle className="text-xl font-black text-slate-900 tracking-tight">Performance de Assistentes</CardTitle>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Ranking por volume de resultados positivos</p>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                 {["Médico", "Técnico"].map(f => (
+                   <button
+                      key={f}
+                      onClick={() => setAssistenteFilter(f)}
+                      className={cn(
+                        "px-4 py-1.5 text-[10px] font-black uppercase rounded-full border transition-all",
+                        assistenteFilter === f ? "bg-teal-600 text-white border-teal-600 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                      )}
+                   >
+                      {f}
+                   </button>
+                 ))}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[450px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={assistentesData} layout="vertical" margin={{ right: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b" }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
+                    itemStyle={{ fontSize: '12px', fontWeight: 700 }}
+                  />
+                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={18} minPointSize={5}>
+                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                  </Bar>
+                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={18} minPointSize={5}>
+                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {renderMiniPie(medicaGeralData, "Resultados de Doença Médica Geral", "Distribuição de Causa, Concausa e Sem Nexo")}
-        {renderMiniPie(mentalData, "Resultados de Doença Mental", "Distribuição de Causa, Concausa e Sem Nexo")}
-        {renderMiniPie(insalubridadeData, "Resultados de Insalubridade", "Distribuição de Caracterizada e Não Caracterizada")}
-        {renderMiniPie(grausInsalubridadeData, "Graus de Insalubridade", "Distribuição por intensidade aferida")}
-        {renderMiniPie(periculosidadeData, "Resultados de Periculosidade", "Distribuição de Caracterizada e Não Caracterizada")}
-        {renderMiniPie(ergonomiaData, "Resultados de Ergonomia", "Riscos ergonômicos reconhecidos nas atividades")}
-      </div>
-
-      {/* Gráfico de Peritos (Favorável vs Desfavorável) */}
-      <Card className="border border-border bg-card shadow-sm">
-        <CardHeader className="pb-6">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <CardTitle className="text-xl font-bold text-slate-900">Ranking e Perfil Técnico de Peritos</CardTitle>
-              <p className="text-sm text-slate-500 font-medium">Posicionamento detalhado dos peritos com maior volume de pareceres desfavoráveis.</p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-               {["Todos", "Médico Psiquiatra", "Médico", "Ergonômico", "Técnico"].map(f => (
-                 <button
-                    key={f}
-                    onClick={() => setPeritoFilter(f)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-colors border ${peritoFilter === f ? 'bg-slate-800 text-white border-slate-800 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
-                 >
-                    {f}
-                 </button>
-               ))}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[650px] w-full pt-4 overflow-x-auto">
-            <div className="h-full min-w-[700px]">
-            {peritosData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart  
-                data={peritosData} 
-                layout="vertical" 
-                margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
-                barGap={0}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke={THEME.border} opacity={0.4} />
-                <XAxis 
-                  type="number" 
-                  allowDecimals={false}
-                  domain={[0, 'dataMax + 10']}
-                  stroke={THEME.textSecondary} 
-                  tick={{ fontSize: 11, fontWeight: 600 }}
-                  axisLine={false}
-                />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  width={180} 
-                  stroke={THEME.textPrimary} 
-                  tick={{ fontSize: 12, fontWeight: 700, fill: THEME.textPrimary }} 
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip 
-                  cursor={{ fill: THEME.slateLight, opacity: 0.5 }}
-                  contentStyle={{ 
-                    borderRadius: "12px", 
-                    border: "1px solid #E5E7EB", 
-                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)",
-                    padding: "12px"
-                  }}
-                  itemStyle={{ fontSize: '13px', fontWeight: 600 }}
-                />
-                <Legend 
-                  verticalAlign="top" 
-                  align="center"
-                  iconType="circle"
-                  iconSize={10}
-                  wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
-                  formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
-                />
-                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 0, 0, 0]} barSize={24} minPointSize={10}>
-                  <LabelList 
-                    dataKey="Desfavorável" 
-                    position="center" 
-                    fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }}
-                    formatter={(val: any) => val > 5 ? val : ""}
-                  />
-                </Bar>
-                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 4, 4, 0]} barSize={24} minPointSize={10}>
-                  <LabelList 
-                    dataKey="Favorável" 
-                    position="center" 
-                    fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }} 
-                    formatter={(val: any) => val > 5 ? val : ""}
-                  />
-                  <LabelList 
-                    dataKey="Total" 
-                    position="right" 
-                    offset={15}
-                    fill={THEME.textSecondary} 
-                    style={{ fontSize: '11px', fontWeight: 800 }}
-                    formatter={(val: any) => `Total: ${val}`}
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
-                 <span className="font-semibold text-lg text-slate-500">Nenhum perito encontrado.</span>
-                 <span className="text-sm">Tente selecionar outra classificação ou ajustar os filtros globais.</span>
-               </div>
-            )}
-          </div>
-        </div>
-      </CardContent>
-      </Card>
-
-      {/* Gráfico de Assistentes (Espelhado dos Peritos, mas focado em Favorável) */}
-      <Card className="border border-border bg-card shadow-sm">
-        <CardHeader className="pb-6">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <CardTitle className="text-xl font-black text-slate-900 tracking-tight">Performance de Assistentes Técnicos e Médicos</CardTitle>
-              <p className="text-sm text-slate-500 font-medium">Ranking dos assistentes com maior volume de resultados positivos (Favoráveis).</p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-               {["Médico", "Técnico"].map(f => (
-                 <button
-                    key={f}
-                    onClick={() => setAssistenteFilter(f)}
-                    className={`px-6 py-2 text-xs font-black rounded-full transition-all border ${assistenteFilter === f ? 'bg-teal-600 text-white border-teal-600 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
-                 >
-                    {f}
-                 </button>
-               ))}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[650px] w-full pt-4 overflow-x-auto">
-            <div className="h-full min-w-[700px]">
-            {assistentesData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart  
-                data={assistentesData} 
-                layout="vertical" 
-                margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
-                barGap={0}
-              >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke={THEME.border} opacity={0.4} />
-                <XAxis 
-                  type="number" 
-                  allowDecimals={false}
-                  domain={[0, 'dataMax + 10']}
-                  stroke={THEME.textSecondary} 
-                  tick={{ fontSize: 11, fontWeight: 600 }}
-                  axisLine={false}
-                />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  width={180} 
-                  stroke={THEME.textPrimary} 
-                  tick={{ fontSize: 12, fontWeight: 700, fill: THEME.textPrimary }} 
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip 
-                  cursor={{ fill: THEME.tealLight, opacity: 0.3 }}
-                  contentStyle={{ 
-                    borderRadius: "12px", 
-                    border: "1px solid #E5E7EB", 
-                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)",
-                    padding: "12px"
-                  }}
-                  itemStyle={{ fontSize: '13px', fontWeight: 600 }}
-                />
-                <Legend 
-                  verticalAlign="top" 
-                  align="center"
-                  iconType="circle"
-                  iconSize={10}
-                  wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
-                  formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
-                />
-                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 0, 0, 0]} barSize={24} minPointSize={10}>
-                  <LabelList 
-                    dataKey="Favorável" 
-                    position="center" 
-                    fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }}
-                    formatter={(val: any) => val > 5 ? val : ""}
-                  />
-                </Bar>
-                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 4, 4, 0]} barSize={24} minPointSize={10}>
-                  <LabelList 
-                    dataKey="Desfavorável" 
-                    position="center" 
-                    fill="#fff" 
-                    style={{ fontSize: '10px', fontWeight: 900, pointerEvents: 'none' }} 
-                    formatter={(val: any) => val > 5 ? val : ""}
-                  />
-                  <LabelList 
-                    dataKey="Total" 
-                    position="right" 
-                    offset={15}
-                    fill={THEME.textSecondary} 
-                    style={{ fontSize: '11px', fontWeight: 800 }}
-                    formatter={(val: any) => `Total: ${val}`}
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
-                 <span className="font-semibold text-lg text-slate-500">Nenhum assistente encontrado.</span>
-                 <span className="text-sm">Tente selecionar outro tipo ou ajustar os filtros globais.</span>
-               </div>
-            )}
-          </div>
-        </div>
-      </CardContent>
-      </Card>
-
-      {/* Controle de Honorários Prévios */}
-      <div className="space-y-6 pt-10 mt-10 border-t border-slate-100">
-        
-        {/* Novas Métricas de Destaque (Sem Tarja Azul) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Valor Principal - Destaque em Branco */}
-          <Card className="md:col-span-6 bg-white border-slate-200 shadow-sm overflow-hidden flex flex-col justify-center p-8">
-            <div className="text-sm font-black text-slate-400 uppercase tracking-[2px] mb-2">
-              Investimento Consolidado em Honorários Prévios
-            </div>
-            <div className="text-4xl md:text-5xl font-black tracking-tighter text-[#102A63]">
-              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}
-            </div>
+      <div className="space-y-6 pt-10 border-t border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="p-8 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
+            <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Honorários Prévios</div>
+            <div className="text-4xl font-black text-[#102A63]">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
           </Card>
-
-          {/* Ticket Médio - Azul */}
-          <Card className="md:col-span-3 bg-[#183B8C] border-none shadow-lg overflow-hidden flex flex-col items-center justify-center p-6 text-white transition-transform hover:scale-[1.02] duration-300">
-            <div className="p-2 bg-white/10 rounded-lg mb-3">
-              <TrendingUp className="h-5 w-5 text-blue-100" />
-            </div>
-            <div className="text-[22px] font-black tracking-tight">
-              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}
-            </div>
-            <div className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80">Ticket Médio</div>
+          <Card className="p-8 bg-[#183B8C] text-white flex flex-col items-center justify-center">
+            <div className="text-2xl font-black">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
+            <div className="text-[10px] font-black uppercase opacity-80 mt-1">Ticket Médio</div>
           </Card>
-
-          {/* Volume - Azul Profundo */}
-          <Card className="md:col-span-3 bg-[#102A63] border-none shadow-lg overflow-hidden flex flex-col items-center justify-center p-6 text-white transition-transform hover:scale-[1.02] duration-300">
-            <div className="p-2 bg-white/10 rounded-lg mb-3">
-              <Users className="h-5 w-5 text-blue-100" />
-            </div>
-            <div className="text-[28px] font-black tracking-tight">{honorariosData.qtdProcessos}</div>
-            <div className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-80">Volume de Processos</div>
+          <Card className="p-8 bg-[#102A63] text-white flex flex-col items-center justify-center">
+            <div className="text-3xl font-black">{honorariosData.lista.length}</div>
+            <div className="text-[10px] font-black uppercase opacity-80 mt-1">Volume de Processos</div>
           </Card>
         </div>
 
-        {/* Lista com Paginação, Header e Busca */}
-        <Card className="border border-border bg-card shadow-sm mt-4 overflow-hidden">
-          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 bg-slate-50/50 border-b border-slate-100 px-8 py-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-black text-slate-800 flex items-center gap-2">
-                Listagem Detalhada [REFRESHED]
-              </CardTitle>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Relatório de honorários pagos por processo e reclamante</p>
-            </div>
-            
-            <div className="relative w-full md:w-[400px]">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input 
-                placeholder="Buscar por nº processo, reclamante ou perito..." 
-                className="pl-11 bg-white border-slate-200 focus:border-[#183B8C] focus:ring-4 focus:ring-blue-50 transition-all text-sm h-12 rounded-xl"
-                value={honorariosSearch}
-                onChange={(e) => {
-                   setHonorariosSearch(e.target.value)
-                   setHonorariosPage(1)
-                }}
-              />
-            </div>
+        <Card className="border border-border bg-card shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 p-8 flex flex-row items-center justify-between">
+            <CardTitle className="text-xl font-black text-slate-800">Listagem de Honorários</CardTitle>
+            <Input className="w-full md:w-[400px] h-12 rounded-xl" placeholder="Buscar..." value={honorariosSearch} onChange={(e) => setHonorariosSearch(e.target.value)} />
           </CardHeader>
-
-          <CardContent className="p-0 px-8 pt-6">
-            <div className="w-full overflow-x-auto pb-4">
-              <div className="flex flex-col gap-4 min-w-[850px] pb-4">
+          <CardContent className="p-8">
+            <div className="flex flex-col gap-4">
               {paginatedHonorarios.map((item, idx) => (
-                <div key={`hon-${idx}`} className="flex flex-col bg-white border border-slate-200 rounded-3xl transition-all hover:shadow-xl group overflow-hidden">
-                  
-                  {/* Cabeçalho: Identificação do Caso */}
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-4 p-8 bg-white">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col">
-                        <span className="text-xl font-black text-[#102A63] tracking-tight leading-none mb-1">{item.numero}</span>
-                        <span className="text-base font-black text-slate-800 uppercase tracking-tight leading-tight">{item.reclamante}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                          {item.vara ? `${item.vara} ` : ""}
-                          {item.comarca ? `${item.vara ? '• ' : ''}${item.comarca}` : "Vara não informada"}
-                        </span>
+                <div key={idx} className="bg-white border border-slate-200 rounded-3xl p-8 transition-all hover:shadow-xl">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <div className="text-xl font-black text-[#102A63] mb-1">{item.numero}</div>
+                      <div className="text-base font-black text-slate-800 uppercase">{item.reclamante}</div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mt-1">
+                        <MapPin className="h-3.5 w-3.5" /> {item.vara} {item.comarca}
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-end shrink-0 md:bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-1 text-right">Valor Pago</span>
-                      <div className="text-lg font-black text-[#102A63] tracking-tighter">
-                        {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
-                      </div>
+                    <div className="bg-slate-50 p-4 rounded-2xl text-right border border-slate-100">
+                      <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Valor Pago</div>
+                      <div className="text-lg font-black text-[#102A63]">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}</div>
                     </div>
                   </div>
-                  
-                  {/* Divisória Suave */}
-                  <div className="px-8">
-                    <div className="h-px w-full bg-slate-100" />
-                  </div>
-
-                  {/* Rodapé: Peritos Nomeados (Visualização Completa) */}
-                  <div className="p-8 pt-6 bg-white">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] block mb-4">Corpo de Peritos Nomeados</span>
+                  <div className="border-t border-slate-100 pt-6">
+                    <div className="text-[10px] font-black text-slate-400 uppercase mb-4">Peritos Nomeados</div>
                     <div className="flex flex-wrap gap-2">
-                      {item.peritos.map((perito: any, pIdx: number) => (
-                        <div 
-                          key={`perito-${pIdx}`}
-                          className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl transition-colors hover:bg-blue-50 hover:border-blue-100"
-                        >
-                          <div className="h-2 w-2 rounded-full bg-blue-500" />
-                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
-                            <strong className="text-blue-700 mr-1">{perito.tipo}:</strong> {perito.nome}
-                          </span>
+                      {item.peritos.map((p: any, pIdx: number) => (
+                        <div key={pIdx} className="bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 text-[11px] font-bold text-slate-500">
+                          <strong className="text-blue-700">{p.tipo}:</strong> {p.nome}
                         </div>
                       ))}
-                      {item.peritos.length === 0 && (
-                        <span className="text-[11px] font-bold text-slate-300 italic">Nenhum perito listado</span>
-                      )}
                     </div>
                   </div>
                 </div>
               ))}
-          {honorariosData.lista.length === 0 && (
-             <div className="p-8 bg-white border border-slate-200 rounded-md text-sm text-slate-500 text-center">
-               Nenhum honorário pericial registrado.
-             </div>
-          )}
-        </div>
-      </div>
-
-          {/* Pagination */}
-          <div className="mt-6 flex items-center justify-between pb-8">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Mostrando {honorariosData.lista.length > 0 ? startIndex + 1 : 0} - {Math.min(endIndex, honorariosData.lista.length)} de {honorariosData.lista.length}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest text-slate-500 disabled:opacity-30"
-                onClick={() => setHonorariosPage(p => Math.max(1, p - 1))}
-                disabled={honorariosPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
-              </Button>
-              <div className="bg-white px-4 h-9 flex items-center justify-center rounded-xl border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                Página {honorariosPage} / {totalPages || 1}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest text-slate-500 disabled:opacity-30"
-                onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))}
-                disabled={honorariosPage >= totalPages}
-              >
-                Próximo <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
             </div>
+            <div className="mt-8 flex justify-between items-center">
+              <Button variant="outline" onClick={() => setHonorariosPage(p => Math.max(1, p - 1))} disabled={honorariosPage === 1}>Anterior</Button>
+              <span className="text-xs font-bold text-slate-400">Página {honorariosPage} de {totalPages}</span>
+              <Button variant="outline" onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))} disabled={honorariosPage === totalPages}>Próximo</Button>
             </div>
           </CardContent>
         </Card>
