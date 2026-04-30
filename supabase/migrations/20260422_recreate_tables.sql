@@ -59,7 +59,7 @@ CREATE TABLE public.tb_pedidos_inicial (
   acumulo_funcao           boolean,
   equip_salarial           boolean,
   rec_vinculo              boolean,
-  honorarios_advocaticios  boolean,
+  honorarios_adv           boolean,
   estabilidade             boolean,
   outros                   text
 );
@@ -69,8 +69,8 @@ DROP TABLE IF EXISTS public.tb_pedidos_sentenca;
 CREATE TABLE public.tb_pedidos_sentenca (
   id                       bigserial PRIMARY KEY,
   numero_processo          text,
-  do_mental                boolean,
-  do_ergonomica            boolean,
+  do_psiquica              boolean,
+  do_medica_geral          boolean,
   incapacidade             boolean,
   acidente_trabalho        boolean,
   periculosidade           boolean,
@@ -85,10 +85,10 @@ CREATE TABLE public.tb_pedidos_sentenca (
   acumulo_funcao           boolean,
   equip_salarial           boolean,
   rec_vinculo              boolean,
-  honorarios_advocaticios  boolean,
+  honorarios_adv           boolean,
   estabilidade             boolean,
   ergonomia                text,
-  obrigacao                text,
+  obrigacoes_fazer         text,
   outros                   text
 );
 
@@ -97,8 +97,8 @@ DROP TABLE IF EXISTS public.tb_pedidos_acordao;
 CREATE TABLE public.tb_pedidos_acordao (
   id                       bigserial PRIMARY KEY,
   numero_processo          text,
-  do_mental                boolean,
-  do_ergonomica            boolean,
+  do_psiquica              boolean,
+  do_medica_geral          boolean,
   incapacidade             boolean,
   acidente_trabalho        boolean,
   periculosidade           boolean,
@@ -113,31 +113,31 @@ CREATE TABLE public.tb_pedidos_acordao (
   acumulo_funcao           boolean,
   equip_salarial           boolean,
   rec_vinculo              boolean,
-  honorarios_advocaticios  boolean,
+  honorarios_adv           boolean,
   estabilidade             boolean,
   ergonomia                text,
-  obrigacao                text,
+  obrigacoes_fazer         text,
   outros                   text
 );
 
 -- ─── tb_laudo ─────────────────────────────────────────────────────────────────
--- do_mental e do_medica_geral são texto no Excel: "CAUSA", "CONCAUSA", "SEM NEXO"
+-- do_psiquica e do_medico_geral são texto no Excel: "CAUSA", "CONCAUSA", "SEM NEXO"
 DROP TABLE IF EXISTS public.tb_laudo;
 CREATE TABLE public.tb_laudo (
-  id                  bigserial PRIMARY KEY,
-  numero_processo     text,
-  do_mental           text,
-  grau_mental         numeric,
-  do_medica_geral     text,
-  grau_medico_geral   numeric,
-  ergonomia           text,
-  incapacidade        text,
-  acidente_trabalho   boolean,
-  periculosidade      boolean,
-  insalubridade       boolean,
-  grau_insalubridade  numeric,
-  resultado_medico    text,
-  resultado_tecnico   text
+  id                    bigserial PRIMARY KEY,
+  numero_processo       text,
+  do_psiquica           text,
+  grau_psiquica         numeric,
+  do_medico_geral       text,
+  grau_medico           numeric,
+  resultado_ergonomico  text,
+  incapacidade          text,
+  acidente_trabalho     boolean,
+  periculosidade        boolean,
+  insalubridade         boolean,
+  grau_insalubridade    numeric,
+  resultado_medico      text,
+  resultado_tecnico     text
 );
 
 -- ─── tb_valores ───────────────────────────────────────────────────────────────

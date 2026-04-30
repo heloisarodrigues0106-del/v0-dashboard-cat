@@ -57,23 +57,23 @@ BOOL_COLS = {
         "do_at", "reintegracao", "periculosidade", "insalubridade",
         "rescisao_indireta", "danos_morais", "danos_materiais", "horas_extras",
         "intrajornada", "horas_itinere", "acumulo_funcao", "equip_salarial",
-        "rec_vinculo", "honorarios_advocaticios", "estabilidade",
+        "rec_vinculo", "honorarios_adv", "estabilidade",
     ],
     "tb_pedidos_sentenca": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
-        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
-        "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
+        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_adv",
+        "rescisao_indireta", "acidente_trabalho", "do_psiquica", "do_medica_geral",
         "incapacidade", "estabilidade",
     ],
     "tb_pedidos_acordao": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
-        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
-        "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
+        "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_adv",
+        "rescisao_indireta", "acidente_trabalho", "do_psiquica", "do_medica_geral",
         "incapacidade", "estabilidade",
     ],
-    # tb_laudo: do_mental e do_medica_geral são text ("CAUSA","CONCAUSA","SEM NEXO")
+    # tb_laudo: do_psiquica e do_medico_geral são text ("CAUSA","CONCAUSA","SEM NEXO")
     # apenas acidente_trabalho, periculosidade e insalubridade são boolean
     "tb_laudo": [
         "acidente_trabalho", "periculosidade", "insalubridade",
@@ -83,7 +83,7 @@ BOOL_COLS = {
 
 NUMERIC_COLS = {
     "tb_processo": ["valor_causa", "valor_acordo", "honorario_pericia"],
-    "tb_laudo": ["grau_mental", "grau_medico_geral", "grau_insalubridade"],
+    "tb_laudo": ["grau_psiquica", "grau_medico", "grau_insalubridade"],
     "tb_valores": [
         "deposito_recursal", "custas_processuais", "deposito_judicial",
         "provavel_principal_quarter_anterior", "provavel_correcao_quarter_anterior",
@@ -113,56 +113,12 @@ DATE_COLS = {
 # ─── Mapeamento de arquivos ───────────────────────────────────────────────────
 
 TABELAS = {
-    "tb_processo.xlsx": {
-        "tabela": "tb_processo",
-        "renomear": {
-            "numero_ processo_apenso": "numero_processo_apenso",
-            "testemunha reclamante": "testemunha_reclamante",
-        },
-    },
-    "tb_pedidos_inicial.xlsx": {
-        "tabela": "tb_pedidos_inicial",
-        "renomear": {
-            "periculosidade ": "periculosidade",
-            "honorarios_adv": "honorarios_advocaticios",
-        },
-    },
-    "tb_pedidos_sentenca.xlsx": {
-        "tabela": "tb_pedidos_sentenca",
-        "renomear": {
-            "periculosidade ": "periculosidade",
-            "do_psiquica":     "do_mental",
-            "do_medica_geral": "do_ergonomica",
-            "obrigacoes_fazer": "obrigacao",
-            "honorarios_adv":  "honorarios_advocaticios",
-        },
-    },
-    "tb_pedidos_acordao.xlsx": {
-        "tabela": "tb_pedidos_acordao",
-        "renomear": {
-            "periculosidade ": "periculosidade",
-            "do_psiquica":     "do_mental",
-            "do_medica_geral": "do_ergonomica",
-            "obrigacoes_fazer": "obrigacao",
-            "honorarios_adv":  "honorarios_advocaticios",
-        },
-    },
-    "tb_laudo.xlsx": {
-        "tabela": "tb_laudo",
-        "renomear": {
-            "do_psiquica":          "do_mental",
-            "grau_psiquica":        "grau_mental",
-            "do_medico_geral":      "do_medica_geral",
-            "grau_medico":          "grau_medico_geral",
-            "resultado_ergonomico": "ergonomia",
-        },
-    },
-    "tb_valores.xlsx": {
-        "tabela": "tb_valores",
-        "renomear": {
-            "deposito_judicial ": "deposito_judicial",
-        },
-    },
+    "tb_processo.xlsx":       {"tabela": "tb_processo"},
+    "tb_pedidos_inicial.xlsx": {"tabela": "tb_pedidos_inicial"},
+    "tb_pedidos_sentenca.xlsx": {"tabela": "tb_pedidos_sentenca"},
+    "tb_pedidos_acordao.xlsx": {"tabela": "tb_pedidos_acordao"},
+    "tb_laudo.xlsx":           {"tabela": "tb_laudo"},
+    "tb_valores.xlsx":         {"tabela": "tb_valores"},
 }
 
 # ─── Conversores ─────────────────────────────────────────────────────────────

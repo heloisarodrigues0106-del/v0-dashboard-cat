@@ -53,20 +53,7 @@ Todas as colunas de valor são `numeric`; `apolice` é `boolean`
 4. Remover a coluna da lista `ignorar` (ou não adicioná-la)
 
 ### Mapeamento de nomes Excel → banco (renomear)
-| Excel | Banco | Tabela |
-|---|---|---|
-| `honorarios_adv` | `honorarios_advocaticios` | pedidos_inicial, sentenca, acordao |
-| `do_psiquica` | `do_mental` | sentenca, acordao, laudo |
-| `do_medica_geral` | `do_ergonomica` | sentenca, acordao |
-| `do_medico_geral` | `do_medica_geral` | laudo |
-| `grau_psiquica` | `grau_mental` | laudo |
-| `grau_medico` | `grau_medico_geral` | laudo |
-| `obrigacoes_fazer` | `obrigacao` | sentenca, acordao |
-| `resultado_ergonomico` | `ergonomia` | laudo |
-| `periculosidade ` (espaço) | `periculosidade` | pedidos_inicial, sentenca, acordao |
-| `numero_ processo_apenso` (espaço) | `numero_processo_apenso` | processo |
-| `testemunha reclamante` (espaço) | `testemunha_reclamante` | processo |
-| `deposito_judicial ` (espaço) | `deposito_judicial` | valores |
+Não existe mais. Em 2026-04-30 o Supabase foi renomeado para usar os mesmos nomes do Excel (fonte da verdade). Espaços nos nomes do Excel foram substituídos por `_`. O `importar.py` não tem mais lógica de `renomear`.
 
 ### Conversores de tipo
 - **to_bool**: aceita `true/t/yes/sim/1/x` → True; `false/f/no/nao/0/flase/falser` → False; demais → None
