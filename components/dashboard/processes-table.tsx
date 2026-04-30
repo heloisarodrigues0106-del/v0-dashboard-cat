@@ -167,7 +167,7 @@ export function ProcessesTable({
     <section className="py-0">
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
-          <CardTitle className="text-xl font-bold text-card-foreground">
+          <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight">
             Detalhamento dos Processos
           </CardTitle>
           <div className="relative w-full md:w-80">
@@ -202,11 +202,11 @@ export function ProcessesTable({
                     className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-3 text-left cursor-pointer group"
                   >
                     <div className="w-full md:w-[35%] flex flex-col gap-0.5 shrink-0">
-                      <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-[#183B8C] transition-colors">{processo.numero_processo}</span>
-                      <span className="text-[11px] font-bold text-slate-500 uppercase">{processo.nome_reclamante}</span>
+                      <span className="font-bold text-slate-900 text-[13px] tracking-tight group-hover:text-[#183B8C] transition-colors">{processo.numero_processo}</span>
+                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">{processo.nome_reclamante}</span>
                     </div>
                     <div className="w-full md:w-[30%] shrink-0">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{processo.fase_processual}</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.06em]">{processo.fase_processual}</span>
                     </div>
                     <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
                       <Badge className={`${getStatusColor(processo.status)} text-[10px] px-2.5 py-0.5 font-bold uppercase border-none rounded-full`}>
@@ -224,36 +224,36 @@ export function ProcessesTable({
                       
                       {/* 1. Resumo Processual */}
                       <div className="space-y-4">
-                        <h4 className="text-sm font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-wide">
+                        <h4 className="text-[14px] font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-[0.04em]">
                           <Activity className="h-4 w-4" /> Resumo Processual
                         </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-xs">
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-[11px]">
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Empresa</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Empresa</span>
                             <p className="font-bold text-slate-700">{processo.reclamada || "—"}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Unidade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Unidade</span>
                             <p className="font-bold text-slate-700">{processo.centro_custo || "—"}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Terceirizada</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Terceirizada</span>
                             <p className="font-bold text-slate-700">{processo.empresa_terceirizada || "—"}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Ajuizamento</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Ajuizamento</span>
                             <p className="font-bold text-slate-700">{formatDate(processo.data_ajuizamento)}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Admissão</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Admissão</span>
                             <p className="font-bold text-slate-700">{formatDate(processo.data_admissao_reclamante)}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Demissão</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Demissão</span>
                             <p className="font-bold text-slate-700">{formatDate(processo.data_demissao_reclamante || processo.data_demissao_reclamantte)}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Mod. Dispensa</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Mod. Dispensa</span>
                             <p className="font-bold text-slate-700">{processo.modalidade_rescisao || "—"}</p>
                           </div>
                         </div>
@@ -263,59 +263,59 @@ export function ProcessesTable({
 
                       {/* 2. Marcadores Técnicos / Processuais */}
                       <div className="space-y-4">
-                        <h4 className="text-sm font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-wide">
+                        <h4 className="text-[14px] font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-[0.04em]">
                           <LinkIcon className="h-4 w-4" /> Resumo Técnico-Pericial
                         </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12 gap-y-6 gap-x-2 text-xs">
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12 gap-y-6 gap-x-2 text-[11px]">
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Localidade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Localidade</span>
                             <p className="font-bold text-slate-700">{processo.vara ? `${processo.vara} - ` : ""}{processo.comarca || "—"} {processo.uf ? `(${processo.uf})` : ""}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Fase</span>
-                            <p className="font-bold text-slate-700 uppercase">{processo.fase_processual || "—"}</p>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Fase</span>
+                            <p className="font-bold text-slate-700 uppercase tracking-tight">{processo.fase_processual || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Nexo Mental</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Mental</span>
                             <p className="font-bold text-slate-700">{laudo.do_mental || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Nexo Méd. Geral</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Méd. Geral</span>
                             <p className="font-bold text-slate-700">{laudo.do_medica_geral || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Ergonomia</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Ergonomia</span>
                             <p className="font-bold text-slate-700">{laudo.ergonomia || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Incapacidade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Incapacidade</span>
                             <p className={`font-bold ${String(laudo.incapacidade || "").toUpperCase().includes("INCAPAZ") ? "text-red-500" : "text-slate-700"}`}>
                               {laudo.incapacidade || "—"}
                             </p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Acid. Trab.</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Acid. Trab.</span>
                             <div className="flex justify-center">{laudo.acidente_trabalho ? <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} /> : <X className="h-4 w-4 text-red-500" strokeWidth={3} />}</div>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Reintegração</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Reintegração</span>
                             <div className="flex justify-center">{pIni.reintegracao ? <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} /> : <X className="h-4 w-4 text-red-500" strokeWidth={3} />}</div>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Estabilidade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Estabilidade</span>
                             <div className="flex justify-center">{String(processo.status_reclamante || "").includes("ESTABILIDADE") ? <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} /> : <span className="text-slate-300">—</span>}</div>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Periculosidade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Periculosidade</span>
                             <div className="flex justify-center">{pIni.periculosidade ? <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} /> : <X className="h-4 w-4 text-red-500" strokeWidth={3} />}</div>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Insalubridade</span>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Insalubridade</span>
                             <div className="flex justify-center">{pIni.insalubridade ? <Check className="h-4 w-4 text-emerald-500" strokeWidth={3} /> : <X className="h-4 w-4 text-red-500" strokeWidth={3} />}</div>
                           </div>
                           <div className="space-y-1 text-right">
-                            <span className="text-slate-400 font-bold uppercase tracking-tighter">Valor da Causa</span>
-                            <p className="font-black text-emerald-600 text-sm">
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Valor da Causa</span>
+                            <p className="font-bold text-emerald-600 text-[13px]">
                               {processo.valor_causa ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(processo.valor_causa) : "—"}
                             </p>
                           </div>
@@ -332,7 +332,7 @@ export function ProcessesTable({
                         <div className="overflow-x-auto rounded-lg border border-slate-100">
                           <table className="w-full text-[11px]">
                             <thead>
-                              <tr className="bg-slate-50/80 text-slate-500 uppercase font-bold tracking-tight">
+                              <tr className="bg-slate-50/80 text-slate-500 uppercase font-bold tracking-[0.04em]">
                                 <th className="text-left px-4 py-2 border-r border-slate-100">Pedido</th>
                                 <th className="text-center px-4 py-2 border-r border-slate-100">Inicial</th>
                                 <th className="text-center px-4 py-2 border-r border-slate-100">Sentença</th>
@@ -402,7 +402,7 @@ export function ProcessesTable({
 
           {/* Pagination */}
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-slate-100 pt-6">
-            <p className="text-xs md:text-sm font-medium text-slate-500 tracking-tight">
+            <p className="text-[11px] font-bold text-slate-500 tracking-[0.04em] uppercase">
               {filteredProcessos.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredProcessos.length)} de <span className="text-slate-900 font-bold">{filteredProcessos.length}</span>
             </p>
             <div className="flex items-center gap-2">

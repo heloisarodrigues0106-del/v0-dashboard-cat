@@ -194,14 +194,14 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   }, [laudos, processos]);
 
   const KpiCard = ({ title, value, icon, subtext, percentage, color = "text-slate-800" }: any) => (
-    <Card className="border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
+    <Card className="border border-border shadow-sm p-5 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3">
         <div className="bg-slate-100 p-2 rounded-lg">{icon}</div>
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{percentage}</span>
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{percentage}</span>
       </div>
-      <div className={`text-3xl font-black ${color} tracking-tighter`}>{value}</div>
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight mt-1 leading-none">{title}</div>
-      <p className="text-[10px] text-slate-400 mt-2 font-medium">{subtext}</p>
+      <div className={`text-[32px] font-bold ${color} tracking-tight leading-none`}>{value}</div>
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em] mt-1.5 leading-tight">{title}</div>
+      <p className="text-[11px] text-slate-400 mt-2 font-medium">{subtext}</p>
     </Card>
   )
 
@@ -252,11 +252,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
     <Card className="border border-border shadow-sm bg-white overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base font-bold text-slate-800">{title}</CardTitle>
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">{subtitle}</p>
+      <CardHeader className="pb-2 pt-4 px-5">
+        <CardTitle className="text-[16px] font-bold text-slate-800 leading-tight">{title}</CardTitle>
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{subtitle}</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-5">
         <div className="h-[220px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -272,7 +272,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                    const item = dataArray.find(d => d.name === value);
                    const total = dataArray.reduce((acc, curr) => acc + curr.value, 0);
                    const pct = total > 0 ? ((item?.value || 0) / total * 100).toFixed(1) : 0;
-                   return <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-300 font-medium">{pct}%</span></span>
+                   return <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-400 font-bold">{pct}%</span></span>
                 }}
               />
             </PieChart>
@@ -306,24 +306,24 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-lg font-black text-slate-800 uppercase tracking-tight">Matriz Médica Geral x Incapacidade</CardTitle>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cruzamento entre nexo médico e capacidade laboral</p>
+            <CardTitle className="text-[16px] font-bold text-slate-800 uppercase tracking-tight">Matriz Médica Geral x Incapacidade</CardTitle>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Cruzamento entre nexo médico e capacidade laboral</p>
           </CardHeader>
           <CardContent className="px-5 pb-5">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="p-2 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Médico Geral</th>
-                    <th className="p-2 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Capaz</th>
-                    <th className="p-2 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Incapaz</th>
-                    <th className="p-2 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Total</th>
+                    <th className="p-2 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Médico Geral</th>
+                    <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Capaz</th>
+                    <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Incapaz</th>
+                    <th className="p-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] border-b border-slate-100">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {["CAUSA", "CONCAUSA", "SEM NEXO", "TOTAL"].map((row) => (
-                    <tr key={row} className={row === "TOTAL" ? "bg-slate-50/50 font-black" : ""}>
-                      <td className="p-3 text-[11px] font-black text-slate-600 border-b border-slate-100 uppercase tracking-tight">{row}</td>
+                    <tr key={row} className={row === "TOTAL" ? "bg-slate-50/50 font-bold" : ""}>
+                      <td className="p-3 text-[11px] font-bold text-slate-600 border-b border-slate-100 uppercase tracking-tight">{row}</td>
                       {["CAPAZ", "INCAPAZ", "TOTAL"].map((col) => {
                         const val = stats.matrizNexoIncapacidade[row][col];
                         const intensity = Math.min(0.8, (val / (stats.matrizNexoIncapacidade["TOTAL"]["TOTAL"] || 1)) * 3);
@@ -332,8 +332,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                           <td 
                             key={col} 
                             className={cn(
-                              "p-3 text-center text-[11px] font-black border-b border-slate-100 transition-colors",
-                              isTotal ? "text-slate-500" : "text-[#102A63]"
+                              "p-3 text-center text-[11px] font-bold border-b border-slate-100 transition-colors",
+                              isTotal ? "text-slate-500 font-bold" : "text-[#102A63] font-bold"
                             )}
                             style={{ 
                               backgroundColor: isTotal ? "transparent" : `rgba(16, 42, 99, ${intensity * 0.12})` 
@@ -353,8 +353,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-lg font-black text-slate-800 uppercase tracking-tight">Composição dos Laudos Desfavoráveis</CardTitle>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fatores de risco identificados nos laudos desfavoráveis</p>
+            <CardTitle className="text-[16px] font-bold text-slate-800 uppercase tracking-tight">Composição dos Laudos Desfavoráveis</CardTitle>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Fatores de risco identificados nos laudos desfavoráveis</p>
           </CardHeader>
           <CardContent className="px-5 pb-5 pt-2">
              <div className="space-y-4">
@@ -363,8 +363,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                    return (
                       <div key={label} className="space-y-1.5">
                          <div className="flex justify-between items-end">
-                            <span className="text-[11px] font-black text-slate-600 tracking-tight">{label}</span>
-                            <span className="text-[11px] font-black text-slate-800">{count} <span className="text-slate-400 ml-1 font-bold">({pct.toFixed(1)}%)</span></span>
+                            <span className="text-[11px] font-bold text-slate-600 tracking-tight">{label}</span>
+                            <span className="text-[11px] font-bold text-slate-800">{count} <span className="text-slate-400 ml-1 font-medium">({pct.toFixed(1)}%)</span></span>
                          </div>
                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                             <div className="h-full bg-blue-600" style={{ width: `${pct}%` }} />
@@ -372,7 +372,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                       </div>
                    )
                 })}
-                <div className="pt-2 text-[9px] font-bold text-slate-400 italic">
+                <div className="pt-2 text-[11px] font-bold text-slate-400 italic uppercase tracking-tight">
                   * Um mesmo laudo pode conter mais de um fator de risco.
                 </div>
              </div>
@@ -385,8 +385,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader className="pb-4 pt-4 px-5">
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <CardTitle className="text-lg font-black text-slate-900 tracking-tight">Ranking de Peritos</CardTitle>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Amostragem por desfavorabilidade</p>
+                <CardTitle className="text-[16px] font-bold text-slate-900 tracking-tight uppercase">Ranking de Peritos</CardTitle>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Amostragem por desfavorabilidade</p>
               </div>
               <div className="flex flex-wrap gap-1">
                  {["Todos", "Médico", "Técnico", "Ergonômico"].map(f => (
@@ -394,7 +394,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                       key={f}
                       onClick={() => setPeritoFilter(f)}
                       className={cn(
-                        "px-2.5 py-0.5 text-[9px] font-black uppercase rounded-full border transition-all",
+                        "px-2.5 py-0.5 text-[11px] font-bold uppercase rounded-full border transition-all",
                         peritoFilter === f ? "bg-slate-800 text-white border-slate-800 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
                       )}
                    >
@@ -410,16 +410,16 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={peritosData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
-                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px" }}
+                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
                   />
                   <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={16} minPointSize={5}>
-                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                   <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={16} minPointSize={5}>
-                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -431,8 +431,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader className="pb-4 pt-4 px-5">
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <CardTitle className="text-lg font-black text-slate-900 tracking-tight">Performance de Assistentes</CardTitle>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Ranking por resultados positivos</p>
+                <CardTitle className="text-[16px] font-bold text-slate-900 tracking-tight uppercase">Performance de Assistentes</CardTitle>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Ranking por resultados positivos</p>
               </div>
               <div className="flex flex-wrap gap-1">
                  {["Médico", "Técnico"].map(f => (
@@ -440,7 +440,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                       key={f}
                       onClick={() => setAssistenteFilter(f)}
                       className={cn(
-                        "px-3 py-1 text-[9px] font-black uppercase rounded-full border transition-all",
+                        "px-3 py-1 text-[11px] font-bold uppercase rounded-full border transition-all",
                         assistenteFilter === f ? "bg-teal-600 text-white border-teal-600 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
                       )}
                    >
@@ -456,45 +456,43 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={assistentesData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
-                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px" }}
+                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
                   />
                   <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={16} minPointSize={5}>
-                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                    <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                   <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={16} minPointSize={5}>
-                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '9px', fontWeight: 900 }} formatter={(v: any) => v > 2 ? v : ""} />
+                    <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
-        </Card>
-      </div>
-
-      <div className="space-y-4 pt-6 border-t border-slate-100">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Card className="p-4 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Honorários Prévios</div>
-            <div className="text-xl font-black text-[#102A63] tracking-tight">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Card className="p-5 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">Total Honorários Prévios</div>
+            <div className="text-[32px] font-bold text-[#102A63] tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
           </Card>
-          <Card className="p-4 bg-[#183B8C] text-white flex flex-col items-center justify-center">
-            <div className="text-lg font-black tracking-tight">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
-            <div className="text-[8px] font-black uppercase opacity-80 mt-0.5 tracking-widest">Ticket Médio</div>
+          <Card className="p-5 bg-[#183B8C] text-white flex flex-col items-center justify-center">
+            <div className="text-[32px] font-bold tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
+            <div className="text-[11px] font-bold uppercase opacity-80 mt-2 tracking-[0.04em]">Ticket Médio</div>
           </Card>
-          <Card className="p-4 bg-[#102A63] text-white flex flex-col items-center justify-center">
-            <div className="text-xl font-black tracking-tight">{honorariosData.lista.length}</div>
-            <div className="text-[8px] font-black uppercase opacity-80 mt-0.5 tracking-widest">Volume de Processos</div>
+          <Card className="p-5 bg-[#102A63] text-white flex flex-col items-center justify-center">
+            <div className="text-[32px] font-bold tracking-tight leading-none">{honorariosData.lista.length}</div>
+            <div className="text-[11px] font-bold uppercase opacity-80 mt-2 tracking-[0.04em]">Volume de Processos</div>
+          </Card>
+        </div>
           </Card>
         </div>
 
         <Card className="border border-border bg-card shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 p-4 flex flex-row items-center justify-between border-b border-slate-100">
-            <CardTitle className="text-base font-black text-slate-800">Listagem de Honorários</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-slate-800">Listagem de Honorários</CardTitle>
             <Input 
-              className="w-full md:w-[280px] h-9 rounded-lg text-xs bg-white" 
+              className="w-full md:w-[280px] h-9 rounded-lg text-[12px] bg-white font-normal" 
               placeholder="Buscar..." 
               value={honorariosSearch} 
               onChange={(e) => setHonorariosSearch(e.target.value)} 
@@ -506,24 +504,24 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4 transition-all hover:shadow-md border-l-4 border-l-[#102A63]">
                   <div className="flex justify-between items-start mb-2">
                     <div className="space-y-0.5">
-                      <div className="text-sm font-black text-[#102A63] tracking-tight">{item.numero}</div>
-                      <div className="text-xs font-black text-slate-700 uppercase leading-none">{item.reclamante}</div>
-                      <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400">
+                      <div className="text-[15px] font-bold text-[#102A63] tracking-tight">{item.numero}</div>
+                      <div className="text-[13px] font-bold text-slate-700 uppercase leading-none">{item.reclamante}</div>
+                      <div className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
                         <MapPin className="h-2.5 w-2.5" /> {item.vara} {item.comarca}
                       </div>
                     </div>
                     <div className="bg-slate-50/80 px-2.5 py-1.5 rounded-lg text-right border border-slate-100 shrink-0">
-                      <div className="text-[8px] font-black text-slate-400 uppercase mb-0.5">Valor Pago</div>
-                      <div className="text-sm font-black text-[#102A63] tracking-tighter">
+                      <div className="text-[11px] font-bold text-slate-400 uppercase mb-0.5 tracking-[0.04em]">Valor Pago</div>
+                      <div className="text-[20px] font-bold text-[#102A63] tracking-tight">
                         {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.valor)}
                       </div>
                     </div>
                   </div>
                   <div className="border-t border-slate-100 pt-2.5">
-                    <div className="text-[8px] font-black text-slate-400 uppercase mb-2 tracking-widest">Peritos Nomeados</div>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="text-[11px] font-bold text-slate-400 uppercase mb-2 tracking-[0.04em]">Peritos Nomeados</div>
+                    <div className="flex flex-wrap gap-1.5">
                       {item.peritos.map((p: any, pIdx: number) => (
-                        <div key={pIdx} className="bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100 text-[9px] font-bold text-slate-500 shadow-sm">
+                        <div key={pIdx} className="bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100 text-[11px] font-bold text-slate-500 shadow-sm">
                           <strong className="text-blue-700 mr-1">{p.tipo}:</strong> {p.nome}
                         </div>
                       ))}
@@ -536,17 +534,17 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
               <Button 
                 variant="outline" 
                 size="sm"
-                className="h-7 text-[9px] font-black uppercase rounded-lg"
+                className="h-8 text-[11px] font-bold uppercase rounded-lg px-4"
                 onClick={() => setHonorariosPage(p => Math.max(1, p - 1))} 
                 disabled={honorariosPage === 1}
               >
                 Anterior
               </Button>
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Página {honorariosPage} de {totalPages}</span>
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Página {honorariosPage} de {totalPages}</span>
               <Button 
                 variant="outline" 
                 size="sm"
-                className="h-7 text-[9px] font-black uppercase rounded-lg"
+                className="h-8 text-[11px] font-bold uppercase rounded-lg px-4"
                 onClick={() => setHonorariosPage(p => Math.min(totalPages, p + 1))} 
                 disabled={honorariosPage >= totalPages}
               >

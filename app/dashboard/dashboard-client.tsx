@@ -308,8 +308,11 @@ export default function DashboardClient({
 
         {/* Content based on active nav item */}
         <div className="pb-8">
-          
-          {/* 1. Visão Geral (Antigo Dashboard com Cards) */}
+          <div className="px-4 md:px-8 pt-4">
+             <h1 className="text-[24px] font-bold text-[#102A63] leading-tight font-sans">
+                {getBreadcrumb()}
+             </h1>
+          </div>
           {activeNavItem === "dashboard" && (
             <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
               <VisaoGeralTab processos={filteredProcessos} pedidos={filteredPedidosInicial} />

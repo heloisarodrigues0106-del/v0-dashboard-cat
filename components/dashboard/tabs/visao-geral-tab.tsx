@@ -182,50 +182,50 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       {/* 1. KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Total de Processos</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total de Processos</CardTitle>
             <div className="bg-slate-100 p-2 rounded-lg">
               <FileText className="h-4 w-4 text-slate-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-slate-800">{kpis.totalProcessos}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{kpis.totalProcessos}</div>
           </CardContent>
         </Card>
 
         <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Processos Ativos</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Processos Ativos</CardTitle>
             <div className="bg-blue-50 p-2 rounded-lg">
               <Activity className="h-4 w-4 text-[#183B8C]" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-[#183B8C]">{kpis.processosAtivos}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.processosAtivos}</div>
           </CardContent>
         </Card>
 
         <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Processos Arquivados</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Processos Arquivados</CardTitle>
             <div className="bg-slate-50 p-2 rounded-lg">
               <Archive className="h-4 w-4 text-slate-500" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-slate-500">{kpis.processosArquivados}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-slate-500 tracking-tight leading-none">{kpis.processosArquivados}</div>
           </CardContent>
         </Card>
         
         <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">Valor em Risco (Causa)</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor em Risco (Causa)</CardTitle>
             <div className="bg-emerald-50 p-2 rounded-lg">
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black text-emerald-600 tracking-tighter">{formatCurrency(kpis.valorCausa)}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-emerald-600 tracking-tight leading-none">{formatCurrency(kpis.valorCausa)}</div>
           </CardContent>
         </Card>
       </div>
@@ -233,8 +233,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-6 md:grid-cols-3">
         {/* 2a. Top 5 Localidades Ranking */}
         <Card className="flex flex-col border-border shadow-sm md:col-span-1">
-          <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-800">
+          <CardHeader className="border-b bg-slate-50/50 pt-4 px-5 pb-3">
+            <CardTitle className="text-[16px] font-bold flex items-center gap-2 text-slate-800">
               <MapPin className="h-4 w-4 text-[#183B8C]" />
               Concentração de Ajuizamentos
             </CardTitle>
@@ -282,8 +282,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
          {/* 2b. Mapa do Brasil (Heatmap por UF) */}
         <Card className="relative overflow-hidden border-border shadow-sm md:col-span-2">
-          <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-slate-800 font-bold">Mapa de Calor: Processos por UF</CardTitle>
+          <CardHeader className="border-b bg-slate-50/50 pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Mapa de Calor: Processos por UF</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center h-[550px] relative p-0 bg-white">
             
@@ -385,10 +385,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         {/* 3. Fases Processuais (Gráfico Barras Horizontal) */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between text-slate-800 font-bold">
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="flex items-center justify-between text-[#102A63] text-[16px] font-bold uppercase tracking-tight">
               Processos Ativos por Fase 
-              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Total</Badge>
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Total</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -422,8 +422,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         {/* 4. Distribuição por Tipo de Ação */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 font-bold">Distribuição por Tipo de Ação</CardTitle>
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Distribuição por Tipo de Ação</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
@@ -448,8 +448,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         {/* Instâncias (Gráfico de Pizza) */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 font-bold">Volumetria por instância</CardTitle>
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Volumetria por instância</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.instancias.length > 0 ? (
@@ -514,8 +514,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         {/* Status (Gráfico de Pizza) */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 font-bold">Volumetria por desfecho</CardTitle>
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Volumetria por desfecho</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             {ranks.status.length > 0 ? (
@@ -593,10 +593,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
       {/* 5. Volume de Processos Distribuídos por Ano */}
       <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between text-slate-800 font-bold">
+        <CardHeader className="pt-4 px-5 pb-3">
+          <CardTitle className="flex items-center justify-between text-[#102A63] text-[16px] font-bold uppercase tracking-tight">
             Volume de processos distribuídos 
-            <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Anual</Badge>
+            <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Anual</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -650,10 +650,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         {/* Advogados */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 font-bold flex items-center justify-between">
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold flex items-center justify-between uppercase tracking-tight">
               Ranking Advogado Adverso 
-              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Top 5</Badge>
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Top 5</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -691,10 +691,10 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
          {/* Funções */}
         <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 font-bold flex items-center justify-between">
+          <CardHeader className="pt-4 px-5 pb-3">
+            <CardTitle className="text-[#102A63] text-[16px] font-bold flex items-center justify-between uppercase tracking-tight">
               Ajuizamento por Cargo 
-              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-black text-[10px] uppercase tracking-widest">Top 5</Badge>
+              <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Top 5</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">

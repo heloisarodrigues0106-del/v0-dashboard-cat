@@ -104,16 +104,16 @@ export function ValoresTab({ valores }: { valores: any[] }) {
     <div className="w-full bg-transparent space-y-6">
       
       {/* Abas Textuais Minimalistas (Main Navigation) */}
-      <div className="flex items-center gap-8 border-b border-border/60">
+      <div className="flex items-center gap-8 border-b border-border/60 font-sans">
         <button
           onClick={() => setActiveMainTab("provisionamento")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-[14px] transition-all focus:outline-none ${activeMainTab === "provisionamento" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Provisionamento
         </button>
         <button
           onClick={() => setActiveMainTab("preparo_recursal")}
-          className={`pb-3 text-sm transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
+          className={`pb-3 text-[14px] transition-all focus:outline-none ${activeMainTab === "preparo_recursal" ? "font-bold text-[#111111] border-b-[3px] border-[#F6D000]" : "text-slate-500 font-medium hover:text-[#111111] border-b-[3px] border-transparent"}`}
         >
           Preparo Recursal
         </button>
@@ -135,37 +135,37 @@ export function ValoresTab({ valores }: { valores: any[] }) {
           <TabsContent value={riscoAtivo} className="space-y-6 mt-0">
             
             {/* Visões de Quarter Dinâmicas */}
-            <h3 className="text-lg font-medium">Comparativo Trimestral - Risco {riscoAtivo.charAt(0).toUpperCase() + riscoAtivo.slice(1)}</h3>
+            <h3 className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Comparativo Trimestral - Risco {riscoAtivo.charAt(0).toUpperCase() + riscoAtivo.slice(1)}</h3>
             <div className="grid gap-4 md:grid-cols-3">
               <Card className="shadow-sm border-slate-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Quarter Anterior</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Anterior</CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground/50" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xl md:text-2xl font-bold text-muted-foreground">{formatCurrency(kpis.quarter.anterior)}</div>
+                <CardContent className="px-5 pb-5">
+                  <div className="text-[32px] font-bold text-slate-400 tracking-tight leading-none">{formatCurrency(kpis.quarter.anterior)}</div>
                 </CardContent>
               </Card>
               
               <Card className="shadow-sm border-slate-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Quarter Atual</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Atual</CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-xl md:text-2xl font-bold">{formatCurrency(kpis.quarter.atual)}</div>
+                <CardContent className="px-5 pb-5">
+                  <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.quarter.atual)}</div>
                 </CardContent>
               </Card>
 
               <Card className={`shadow-sm border-slate-200 ${diffQuarter > 0 ? "bg-destructive/5" : diffQuarter < 0 ? "bg-emerald-500/5" : "bg-muted/5"}`}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className={`text-sm font-medium ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-muted-foreground"}`}>Variação do Período</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                  <CardTitle className={`text-[11px] font-bold uppercase tracking-[0.04em] ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>Variação do Período</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className={`text-xl md:text-2xl font-bold ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-muted-foreground"}`}>
+                <CardContent className="px-5 pb-5">
+                    <div className={`text-[32px] font-bold tracking-tight leading-none ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>
                       {diffQuarter > 0 ? '+' : ''}{formatCurrency(diffQuarter)}
                     </div>
-                    <div className="text-xs mt-1 font-medium flex items-center gap-1 text-muted-foreground">
+                    <div className="text-[10px] mt-2 font-bold flex items-center gap-1 uppercase tracking-tight text-slate-400">
                       {diffQuarter > 0 ? <ArrowUpIcon className="h-3 w-3 text-destructive" /> : diffQuarter < 0 ? <ArrowDownIcon className="h-3 w-3 text-emerald-600" /> : <ArrowRightIcon className="h-3 w-3" />}
                       {diffQuarter > 0 ? "Aumento de Provisão" : diffQuarter < 0 ? "Redução de Passivo" : "Estável"}
                     </div>
@@ -175,8 +175,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
 
             {/* Análise de Processos Drill-down - NOVA VERSÃO (CARDS EXPANSÍVEIS) */}
             <Card className="shadow-sm border border-slate-200 mt-8 bg-card">
-              <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
-                <CardTitle className="text-xl font-bold text-card-foreground">
+              <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 pt-4 px-5">
+                <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight">
                   Detalhamento Individual da Variação
                 </CardTitle>
                 <div className="relative w-full md:w-80">
@@ -208,22 +208,22 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                             className="w-full flex flex-col md:flex-row justify-between items-start md:items-center pl-5 pr-6 py-4 transition-colors hover:bg-blue-50/30 gap-3 text-left cursor-pointer group"
                           >
                             <div className="w-full md:w-[30%] flex flex-col gap-0.5 shrink-0">
-                              <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-[#183B8C] transition-colors">{item.numero_processo}</span>
-                              <span className="text-[11px] font-bold text-slate-500 uppercase">Q. Anterior: {formatCurrency(item.totalAnterior)}</span>
+                              <span className="font-bold text-slate-900 text-[13px] tracking-tight group-hover:text-[#183B8C] transition-colors">{item.numero_processo}</span>
+                              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Q. Anterior: {formatCurrency(item.totalAnterior)}</span>
                             </div>
                             
                             <div className="w-full md:w-[25%] shrink-0">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Q. Atual</span>
-                              <span className="text-sm font-semibold text-slate-800">{formatCurrency(item.totalAtual)}</span>
+                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] block mb-1">Q. Atual</span>
+                              <span className="text-[13px] font-bold text-slate-800">{formatCurrency(item.totalAtual)}</span>
                             </div>
-
+ 
                             <div className="w-full md:w-[20%] shrink-0">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Diferença</span>
-                              <span className={`text-sm font-bold ${isAumento ? 'text-destructive' : 'text-emerald-500'}`}>
+                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] block mb-1">Diferença</span>
+                              <span className={`text-[13px] font-bold ${isAumento ? 'text-destructive' : 'text-emerald-500'}`}>
                                 {isAumento ? '+' : ''}{formatCurrency(item.diferenca)}
                               </span>
                             </div>
-
+ 
                             <div className="flex items-center w-full md:flex-1 gap-5 justify-between md:justify-end shrink-0">
                               <Badge variant="outline" className={`px-2.5 py-0.5 font-bold uppercase text-[10px] border-transparent shadow-none ${isAumento ? 'bg-destructive/10 text-destructive' : 'bg-emerald-500/10 text-emerald-600'}`}>
                                 {item.tipo}
@@ -249,33 +249,33 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                               </div>
 
                               <div className="p-6">
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px] bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                                   <div>
-                                    <span className="text-muted-foreground block text-xs uppercase font-bold tracking-wide">Principal</span>
+                                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-[0.04em]">Principal</span>
                                     <div className="font-medium mt-2 text-slate-500">Ant: {formatCurrency(item.principalAnterior)}</div>
                                     <div className="font-bold text-slate-900">Atu: {formatCurrency(item.principalAtual)}</div>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground block text-xs uppercase font-bold tracking-wide">Correção</span>
+                                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-[0.04em]">Correção</span>
                                     <div className="font-medium mt-2 text-slate-500">Ant: {formatCurrency(item.correcaoAnterior)}</div>
                                     <div className="font-bold text-slate-900">Atu: {formatCurrency(item.correcaoAtual)}</div>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground block text-xs uppercase font-bold tracking-wide">Juros</span>
+                                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-[0.04em]">Juros</span>
                                     <div className="font-medium mt-2 text-slate-500">Ant: {formatCurrency(item.jurosAnterior)}</div>
                                     <div className="font-bold text-slate-900">Atu: {formatCurrency(item.jurosAtual)}</div>
                                   </div>
                                   <div className="border-l border-slate-200 pl-4">
-                                    <span className="text-muted-foreground block text-xs uppercase font-bold tracking-wide">Soma Total</span>
+                                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-[0.04em]">Soma Total</span>
                                     <div className="font-medium mt-2 text-slate-500">Ant: {formatCurrency(item.totalAnterior)}</div>
                                     <div className="font-bold text-slate-900">Atu: {formatCurrency(item.totalAtual)}</div>
                                   </div>
                                 </div>
 
                                 {item.justificativa && (
-                                  <div className="mt-4 bg-white border-l-4 border-l-[#183B8C] border-y border-r border-slate-200 rounded p-3 text-sm flex items-start gap-3 shadow-sm">
-                                    <span className="font-semibold text-[#111111] whitespace-nowrap pt-0.5">Justificativa:</span>
-                                    <span className="italic text-slate-600 pt-0.5">{item.justificativa}</span>
+                                  <div className="mt-4 bg-white border-l-4 border-l-[#183B8C] border-y border-r border-slate-200 rounded p-3 text-[11px] flex items-start gap-3 shadow-sm">
+                                    <span className="font-bold text-[#111111] uppercase tracking-tight whitespace-nowrap pt-0.5">Justificativa:</span>
+                                    <span className="italic text-slate-600 font-medium pt-0.5">{item.justificativa}</span>
                                   </div>
                                 )}
                               </div>
@@ -331,40 +331,40 @@ export function ValoresTab({ valores }: { valores: any[] }) {
           {/* Gestão de Custos e Garantias */}
           <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
             <Card className="shadow-sm border-slate-200 bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-widest">Custas Processuais</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Custas Processuais</CardTitle>
                 <Landmark className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-slate-800">{formatCurrency(kpis.geral.custas)}</div>
+              <CardContent className="px-5 pb-5">
+                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.custas)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-widest">Depósitos Recursais</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Depósitos Recursais</CardTitle>
                 <WalletCards className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-slate-800">{formatCurrency(kpis.geral.depositoRecursal)}</div>
+              <CardContent className="px-5 pb-5">
+                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.depositoRecursal)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-widest">Depósitos Judiciais</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Depósitos Judiciais</CardTitle>
                 <Landmark className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-slate-800">{formatCurrency(kpis.geral.depositoJudicial)}</div>
+              <CardContent className="px-5 pb-5">
+                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.depositoJudicial)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs font-medium text-slate-500 uppercase tracking-widest">Apolice/Seguro</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+                <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Apolice/Seguro</CardTitle>
                 <ShieldCheck className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold text-slate-800">{kpis.geral.apolice}</div>
-                <p className="text-xs text-muted-foreground font-medium mt-1">Registros ativos</p>
+              <CardContent className="px-5 pb-5">
+                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{kpis.geral.apolice}</div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">Registros ativos</p>
               </CardContent>
             </Card>
           </div>

@@ -136,7 +136,7 @@ export function GlobalFilters({
     <div className="px-8 pt-4">
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" className="flex items-center gap-2 font-medium">
+          <Button variant="outline" className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.04em]">
             <Filter className="h-4 w-4" />
             Filtros
             {hasActiveFilters ? (
@@ -147,19 +147,19 @@ export function GlobalFilters({
         
         <SheetContent side="left" className="w-[350px] sm:w-[450px] flex flex-col p-0">
           <SheetHeader className="px-6 py-4 border-b text-left">
-            <SheetTitle>Filtros</SheetTitle>
+            <SheetTitle className="text-[18px] font-bold text-[#102A63]">Filtros</SheetTitle>
           </SheetHeader>
           
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
             
             {/* Datas */}
             <div className="space-y-6">
-              <h3 className="text-sm font-semibold tracking-tight uppercase text-muted-foreground flex items-center gap-2">
+              <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" /> Periodização
               </h3>
               
-              <div className="space-y-3 p-4 bg-muted/40 rounded-lg border border-border/50">
-                <label className="text-xs font-medium text-foreground uppercase tracking-wider">Ajuizamento</label>
+              <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-[0.04em]">Ajuizamento</label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <span className="text-[10px] text-muted-foreground uppercase font-medium">Início</span>
@@ -190,8 +190,8 @@ export function GlobalFilters({
                 </div>
               </div>
 
-              <div className="space-y-3 p-4 bg-muted/40 rounded-lg border border-border/50">
-                <label className="text-xs font-medium text-foreground uppercase tracking-wider">Arquivamento</label>
+              <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-[0.04em]">Arquivamento</label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <span className="text-[10px] text-muted-foreground uppercase font-medium">Início</span>
@@ -227,12 +227,12 @@ export function GlobalFilters({
 
             {/* Valores de Risco / Causa */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold tracking-tight uppercase text-muted-foreground flex items-center gap-2">
+              <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
                 <DollarSign className="h-4 w-4" /> Valores (R$)
               </h3>
               
-              <div className="p-4 bg-muted/40 rounded-lg border border-border/50">
-                <label className="text-xs font-medium text-foreground uppercase tracking-wider mb-2 block">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-[0.04em] mb-2 block">
                   Faixa de Valor da Causa
                 </label>
                 <div className="-mx-2">
@@ -252,53 +252,53 @@ export function GlobalFilters({
 
             {/* Dados do Processo */}
             <div className="space-y-4 pb-8">
-              <h3 className="text-sm font-semibold tracking-tight uppercase text-muted-foreground flex items-center gap-2">
+              <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
                 <Filter className="h-4 w-4" /> Categorias
               </h3>
               
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Empresa (Reclamada)</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa (Reclamada)</label>
                   <MultiSelect options={filterOptions.empresas} selected={empresa} onChange={setEmpresa} placeholder="Todas as Empresas" />
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Unidade/Centro de Custo</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Unidade/Centro de Custo</label>
                   <MultiSelect options={filterOptions.unidades} selected={unidade} onChange={setUnidade} placeholder="Todas as Unidades" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Empresa Terceirizada</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa Terceirizada</label>
                   <MultiSelect options={filterOptions.terceirizadas} selected={terceirizada} onChange={setTerceirizada} placeholder="Todas as Empresas" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Advogado Adverso</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Advogado Adverso</label>
                   <MultiSelect options={filterOptions.advogados} selected={advogado} onChange={setAdvogado} placeholder="Todos os Advogados" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Tipo de Ação</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Tipo de Ação</label>
                   <MultiSelect options={filterOptions.tiposAcao} selected={tipoAcao} onChange={setTipoAcao} placeholder="Todos os Tipos" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Vara e Comarca</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Vara e Comarca</label>
                   <MultiSelect options={filterOptions.varas} selected={vara} onChange={setVara} placeholder="Todas as Varas e Comarcas" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Função Reclamante</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Função Reclamante</label>
                   <MultiSelect options={filterOptions.funcoes} selected={funcaoReclamante} onChange={setFuncaoReclamante} placeholder="Todas as Funções" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Status do Reclamante</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Reclamante</label>
                   <MultiSelect options={filterOptions.statusReclamantes} selected={statusReclamante} onChange={setStatusReclamante} placeholder="Todos os Status" />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-wider">Status do Processo</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Processo</label>
                   <MultiSelect options={filterOptions.statusProcesso} selected={statusProcesso} onChange={setStatusProcesso} placeholder="Todos os Status" />
                 </div>
               </div>
@@ -311,7 +311,7 @@ export function GlobalFilters({
                <Button 
                 variant="ghost" 
                 onClick={resetFilters}
-                className="text-muted-foreground hover:text-foreground -ml-4"
+                className="text-slate-400 hover:text-[#102A63] -ml-4 text-[11px] font-bold uppercase tracking-[0.04em]"
               >
                 Limpar Todos
               </Button>
@@ -320,7 +320,7 @@ export function GlobalFilters({
             )}
             
             <SheetClose asChild>
-              <Button className="bg-[#F6D000] hover:bg-[#d4a800] text-[#111111] rounded-md px-8 transition-all duration-300 transform active:scale-95 shadow-md font-medium">
+              <Button className="bg-[#F6D000] hover:bg-[#d4a800] text-[#111111] rounded-md px-8 transition-all duration-300 transform active:scale-95 shadow-md font-bold text-[11px] uppercase tracking-[0.04em]">
                 Aplicar e Fechar
               </Button>
             </SheetClose>

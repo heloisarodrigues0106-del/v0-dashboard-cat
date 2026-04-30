@@ -135,26 +135,26 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-2">
-              <div className="flex items-center text-emerald-700 font-semibold gap-2">
-                <TrendingDown className="h-5 w-5" />
+              <div className="flex items-center text-emerald-700 font-bold gap-2 text-[12px] uppercase tracking-[0.04em]">
+                <TrendingDown className="h-4 w-4" strokeWidth={3} />
                 <span>Economia Total Gerada</span>
               </div>
-              <div className="text-4xl md:text-5xl font-bold text-emerald-700">
+              <div className="text-[48px] font-bold text-emerald-700 tracking-tighter leading-none">
                 {formatCurrency(metrics.economiaTotal)}
               </div>
-              <p className="text-emerald-700/80 text-sm">Diferença entre valor da causa e valor acordado</p>
+              <p className="text-emerald-700/80 text-[11px] font-bold uppercase tracking-tight">Diferença entre valor da causa e valor acordado</p>
             </div>
             
             <div className="flex gap-4">
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[120px]">
-                <Percent className="h-6 w-6 text-emerald-600 mb-2" />
-                <span className="text-2xl font-bold text-emerald-700">{formatPercent(metrics.taxaEconomia)}</span>
-                <span className="text-xs text-emerald-600/80 font-medium">Taxa de Economia</span>
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
+                <Percent className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
+                <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{formatPercent(metrics.taxaEconomia)}</span>
+                <span className="text-[10px] text-emerald-600/80 font-bold uppercase mt-2 tracking-tight">Taxa de Economia</span>
               </div>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[120px]">
-                <CheckCircle2 className="h-6 w-6 text-emerald-600 mb-2" />
-                <span className="text-2xl font-bold text-emerald-700">{metrics.qtdAcordos}</span>
-                <span className="text-xs text-emerald-600/80 font-medium">Acordos Fechados</span>
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
+                <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{metrics.qtdAcordos}</span>
+                <span className="text-[10px] text-emerald-600/80 font-bold uppercase mt-2 tracking-tight">Acordos Fechados</span>
               </div>
             </div>
           </div>
@@ -163,30 +163,30 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
 
       {/* 3 Summary Cards */}
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total da Causa</CardTitle>
+        <Card className="shadow-sm border-slate-200">
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Total da Causa</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{formatCurrency(metrics.totalCausa)}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(metrics.totalCausa)}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Valor Total Acordado</CardTitle>
+        <Card className="shadow-sm border-slate-200">
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Total Acordado</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-slate-800">{formatCurrency(metrics.totalAcordado)}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(metrics.totalAcordado)}</div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Média de Desconto</CardTitle>
+        <Card className="shadow-sm border-slate-200">
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Média de Desconto</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-700">{formatPercent(metrics.mediaDesconto)}</div>
+          <CardContent className="px-5 pb-5">
+            <div className="text-[32px] font-bold text-amber-700 tracking-tight leading-none">{formatPercent(metrics.mediaDesconto)}</div>
           </CardContent>
         </Card>
       </div>
@@ -196,8 +196,8 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         
         {/* Totais e Média */}
         <Card className="flex flex-col min-w-0">
-          <CardHeader>
-            <CardTitle className="text-base">Totais e Média por Acordo</CardTitle>
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Totais e Média por Acordo</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 overflow-x-auto">
             <div className="h-[350px] min-w-[400px]">
@@ -228,9 +228,9 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
 
         {/* Scatter Causa vs Acordo */}
         <Card className="flex flex-col min-w-0">
-          <CardHeader>
-            <CardTitle className="text-base">Comparativo: Valor da Causa vs Valor do Acordo</CardTitle>
-            <div className="flex gap-4 text-xs text-muted-foreground mt-1">
+          <CardHeader className="pb-2 pt-4 px-5">
+            <CardTitle className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Comparativo: Valor da Causa vs Valor do Acordo</CardTitle>
+            <div className="flex gap-4 text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">
               <span>Eixo X: Valor da Causa</span>
               <span>Eixo Y: Valor do Acordo</span>
             </div>
@@ -278,13 +278,13 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       </div>
       {/* Detailed Agreement Table Card */}
       <Card className="border border-border bg-card shadow-sm">
-        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
+        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 pt-4 px-5">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-bold flex items-center gap-2">
+            <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight flex items-center gap-2">
               <span className="w-2 h-7 bg-emerald-500 rounded-full"></span>
               Detalhamento de Acordos e Savings
             </CardTitle>
-            <p className="text-sm text-muted-foreground">Listagem técnica de negociações e economia gerada</p>
+            <p className="text-[12px] text-slate-500 font-medium">Listagem técnica de negociações e economia gerada</p>
           </div>
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -300,14 +300,14 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
           <div className="w-full overflow-x-auto">
             <div className="min-w-[1100px] p-0">
               <Table>
-              <TableHeader className="sticky top-0 z-10 bg-slate-50 border-b shadow-sm">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="font-bold text-slate-800 py-3 pl-6 w-[180px]">Processo</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Reclamante</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[150px]">Função</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Juízo</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 min-w-[180px]">Advogado Adverso</TableHead>
-                  <TableHead className="font-bold text-slate-800 py-3 text-right pr-6 min-w-[180px]">Financeiro (Saving)</TableHead>
+              <TableHeader className="sticky top-0 z-10 bg-[#111111] shadow-sm">
+                <TableRow className="hover:bg-transparent border-none">
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 pl-6 w-[180px]">Processo</TableHead>
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 min-w-[180px]">Reclamante</TableHead>
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 min-w-[150px]">Função</TableHead>
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 min-w-[180px]">Juízo</TableHead>
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 min-w-[180px]">Advogado Adverso</TableHead>
+                  <TableHead className="font-bold text-white text-[11px] uppercase tracking-[0.04em] py-3 text-right pr-6 min-w-[180px]">Financeiro (Saving)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -315,33 +315,33 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
                   listAcordos.map((acordo, idx) => (
                     <TableRow key={idx} className="hover:bg-slate-50/50 transition-colors group">
                       <TableCell className="py-2.5 pl-6">
-                        <span className="font-mono text-[11px] text-slate-500 block group-hover:text-slate-900 transition-colors">
+                        <span className="font-mono text-[11px] font-bold text-slate-500 block group-hover:text-slate-900 transition-colors">
                           {acordo.numero}
                         </span>
                       </TableCell>
                       <TableCell className="py-2.5">
-                        <span className="font-bold text-slate-900 text-sm">{acordo.reclamante}</span>
+                        <span className="font-bold text-slate-900 text-[11px] uppercase tracking-tight">{acordo.reclamante}</span>
                       </TableCell>
                       <TableCell className="py-2.5">
-                        <span className="text-[12px] text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded-full">{acordo.funcao}</span>
+                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tight bg-slate-100 px-2 py-0.5 rounded-full">{acordo.funcao}</span>
                       </TableCell>
-                      <TableCell className="py-2.5 text-slate-600 text-[13px]">
+                      <TableCell className="py-2.5 text-slate-600 text-[11px] font-bold uppercase tracking-tight">
                         {acordo.juizo}
                       </TableCell>
-                      <TableCell className="py-2.5 text-slate-600 text-[13px]">
+                      <TableCell className="py-2.5 text-slate-600 text-[11px] font-bold uppercase tracking-tight">
                         {acordo.advogado}
                       </TableCell>
                       <TableCell className="py-2.5 text-right pr-6">
                         <div className="flex flex-col items-end gap-1">
-                          <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                              <span className="line-through">{formatCurrency(acordo.valorOriginal)}</span>
                              <ArrowDownRight className="h-3 w-3" />
                              <span className="text-slate-900 font-bold">{formatCurrency(acordo.valorAcordo)}</span>
                           </div>
-                          <Badge className={`bg-emerald-500/10 text-emerald-700 border-emerald-200/50 hover:bg-emerald-500/20 gap-1 px-2 py-0 h-6`}>
+                          <Badge className={`bg-emerald-500/10 text-emerald-700 border-emerald-200/50 hover:bg-emerald-500/20 gap-1 px-2 py-0 h-6 text-[10px] uppercase tracking-tight`}>
                             <TrendingDown className="h-3 w-3" />
                             <span className="font-bold">{formatPercent(acordo.savingPercent)}</span>
-                            <span className="font-medium">({formatCurrency(acordo.savingValor)})</span>
+                            <span className="font-bold">({formatCurrency(acordo.savingValor)})</span>
                           </Badge>
                         </div>
                       </TableCell>

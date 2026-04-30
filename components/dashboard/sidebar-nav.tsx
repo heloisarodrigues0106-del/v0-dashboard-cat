@@ -136,10 +136,10 @@ export function SidebarNav({
                 />
               </div>
               {showLabel && (
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white truncate tracking-wide">CATERPILLAR</p>
-                  <p className="text-[11px] text-white/50 truncate">Contencioso Trabalhista</p>
-                </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-bold text-white truncate tracking-[0.08em] uppercase">CATERPILLAR</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white/50">Contencioso Trabalhista</p>
+                  </div>
               )}
             </div>
           </div>
@@ -175,7 +175,7 @@ export function SidebarNav({
           {/* === NAVEGAÇÃO Section Label === */}
           <div className="px-6 pt-4 pb-2">
             {showLabel && (
-              <span className="text-[10px] font-semibold tracking-[2px] text-white/35 uppercase">
+              <span className="text-[10px] font-bold tracking-[0.15em] text-white/35 uppercase">
                 Navegação
               </span>
             )}
@@ -211,7 +211,7 @@ export function SidebarNav({
                     !showLabel ? "h-5 w-5" : "h-[18px] w-[18px]",
                     isActive ? "text-white" : "text-white/45 group-hover:text-white/75"
                   )} />
-                  {showLabel && <span className="whitespace-nowrap">{item.label}</span>}
+                  {showLabel && <span className="whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.06em]">{item.label}</span>}
                 </button>
               )
             })}
@@ -230,8 +230,8 @@ export function SidebarNav({
               </div>
               {showLabel && (
                 <div className="flex-1 truncate whitespace-nowrap overflow-hidden">
-                  <p className="text-sm font-medium text-white/90 truncate" title={userEmail}>{userEmail}</p>
-                  <p className="text-[11px] text-white/40">Advogado(a)</p>
+                  <p className="text-[12px] font-bold text-white/90 truncate" title={userEmail}>{userEmail}</p>
+                  <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Advogado(a)</p>
                 </div>
               )}
             </div>
@@ -241,7 +241,7 @@ export function SidebarNav({
               onClick={onLogout}
               title={!showLabel ? "Sair" : undefined}
               className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[11px] font-bold uppercase tracking-[0.06em] transition-all duration-200",
                 "text-white/40 hover:bg-red-500/12 hover:text-red-400",
                 !showLabel ? "justify-center" : "justify-start"
               )}
