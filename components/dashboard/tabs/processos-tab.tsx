@@ -22,6 +22,7 @@ const PEDIDO_KEYS = [
     acordaoKey: "acidente_trabalho",
     key: "acidente_trabalho"
   },
+  { key: "estabilidade", label: "Estabilidade" },
   { key: "do_mental", label: "Doença Mental" },
   { key: "do_ergonomica", label: "Doença Ergonômica" },
   { key: "incapacidade", label: "Incapacidade" },
