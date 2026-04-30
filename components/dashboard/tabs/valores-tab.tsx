@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon, DollarSign, WalletCards, Landmark, ShieldCheck, Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { FinancialAnalysis } from "../financial-analysis"
+import { formatLabel } from "@/lib/utils"
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
