@@ -25,7 +25,6 @@ const PEDIDO_KEYS = [
   { key: "estabilidade", label: "Estabilidade" },
   { key: "do_mental", label: "Doença Mental" },
   { key: "do_ergonomica", label: "Doença Ergonômica" },
-  { key: "incapacidade", label: "Incapacidade" },
   { key: "reintegracao", label: "Reintegração" },
   { key: "periculosidade", label: "Periculosidade" },
   { key: "insalubridade", label: "Insalubridade" },
@@ -39,8 +38,6 @@ const PEDIDO_KEYS = [
   { key: "equip_salarial", label: "Equiparação Salarial" },
   { key: "rec_vinculo", label: "Vínculo Empregatício" },
   { key: "honorarios_advocaticios", label: "Honorários Advocatícios" },
-  { key: "outros", label: "Outros" },
-  { key: "obrigacao", label: "Obrigação" },
 ]
 
 function BoolIcon({ value }: { value: boolean | null | undefined }) {
@@ -244,25 +241,42 @@ export function ProcessosTab({
     }).filter(r => r.hasData)
   }, [selectedPedido, processos, pedidosInicialMap, pedidosSentencaMap, pedidosAcordaoMap])
 
-  const renderCell = (data: { deferido: number, indeferido: number, total: number }) => {
+  const renderCell = (data: { deferido: number, indeferido: number, total: number }, type: 'inicial' | 'decisao' = 'decisao') => {
     if (data.total === 0) {
       return <span className="text-slate-300 text-xs">—</span>
     }
-    const rate = data.total > 0 ? (data.deferido / data.total * 100).toFixed(0) : "0"
-    const isDeferido = data.deferido > data.indeferido
+    
+    if (type === 'inicial') {
+      return (
+        <div className="flex flex-col items-center gap-0.5">
+          <FileText className="h-4 w-4 text-blue-500/50 mb-0.5" />
+          <span className="text-[11px] font-bold text-slate-700">
+            {data.deferido}
+          </span>
+          <span className="text-[9px] text-slate-400 font-medium">pedidos</span>
+        </div>
+      )
+    }
+
+    const successRate = data.total > 0 ? (data.deferido / data.total * 100).toFixed(0) : "0"
+    // Na visão de defesa: Vitoria = maioria indeferida. Risco = maioria deferida.
+    const isRisco = data.deferido > data.indeferido
+    
     return (
       <div className="flex flex-col items-center gap-0.5">
-        {isDeferido ? (
-          <Check className="h-5 w-5 text-emerald-500" strokeWidth={3} />
+        {isRisco ? (
+          <X className="h-5 w-5 text-red-500" strokeWidth={3} />
         ) : (
-          <X className="h-5 w-5 text-red-400" strokeWidth={3} />
+          <Check className="h-5 w-5 text-emerald-500" strokeWidth={3} />
         )}
-        <span className={`text-[10px] font-semibold ${isDeferido ? 'text-emerald-600' : 'text-red-400'}`}>
-          {data.deferido}/{data.total}
-        </span>
-        <span className="text-[9px] text-slate-400">
-          ({rate}%)
-        </span>
+        <div className="flex flex-col items-center -space-y-0.5">
+          <span className={`text-[11px] font-black ${isRisco ? 'text-red-600' : 'text-emerald-600'}`}>
+            {data.deferido}/{data.total}
+          </span>
+          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
+            ({successRate}% def.)
+          </span>
+        </div>
       </div>
     )
   }
@@ -332,7 +346,7 @@ export function ProcessosTab({
                         <th className="text-center px-4 py-4 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 min-w-[140px]">
                           <div className="flex flex-col items-center gap-0.5">
                             <span>Inicial</span>
-                            <span className="text-[10px] text-blue-200/70 font-bold tracking-tight">Pleiteado</span>
+                            <span className="text-[10px] text-blue-200/70 font-bold tracking-tight">Total Pleiteado</span>
                           </div>
                         </th>
                         <th className="text-center px-4 py-4 font-bold text-[11px] uppercase tracking-[0.04em] border-r border-white/10 min-w-[140px]">
@@ -365,13 +379,13 @@ export function ProcessosTab({
                             </div>
                           </td>
                           <td className="px-4 py-3.5 text-center border-r border-border">
-                            {renderCell(row.inicial)}
+                            {renderCell(row.inicial, 'inicial')}
                           </td>
                           <td className="px-4 py-3.5 text-center border-r border-border">
-                            {renderCell(row.sentenca)}
+                            {renderCell(row.sentenca, 'decisao')}
                           </td>
                           <td className="px-4 py-3.5 text-center border-r border-border">
-                            {renderCell(row.acordao)}
+                            {renderCell(row.acordao, 'decisao')}
                           </td>
                           <td className="px-3 py-3.5 text-center">
                             <button
@@ -402,7 +416,7 @@ export function ProcessosTab({
                   title="Funil de Doença" 
                   subtitle="Pedidos de doença médica geral"
                   icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
-                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_medica_geral)).length}
+                  initial={pedidosInicial.filter(p => isPositiveValue(p.do_at)).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral)).length}
                   acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral)).length}
                 />

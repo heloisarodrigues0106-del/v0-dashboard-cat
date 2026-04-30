@@ -34,13 +34,13 @@ export default async function DashboardPage() {
       'id, numero_processo, reintegracao, periculosidade, insalubridade, danos_morais, ' +
       'horas_extras, intrajornada, horas_itinere, acumulo_funcao, equip_salarial, ' +
       'rec_vinculo, outros, do_mental, do_ergonomica, incapacidade, acidente_trabalho, ' +
-      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, estabilidade'
+      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, estabilidade, do_medica_geral'
     ),
     supabase.from('tb_pedidos_acordao').select(
       'id, numero_processo, reintegracao, periculosidade, insalubridade, danos_morais, ' +
       'horas_extras, intrajornada, horas_itinere, acumulo_funcao, equip_salarial, ' +
       'rec_vinculo, outros, do_mental, do_ergonomica, incapacidade, acidente_trabalho, ' +
-      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, estabilidade'
+      'rescisao_indireta, danos_materiais, honorarios_advocaticios, obrigacao, estabilidade, do_medica_geral'
     ),
     supabase.from('tb_laudo').select('*'),
     supabase.from('tb_valores').select(
