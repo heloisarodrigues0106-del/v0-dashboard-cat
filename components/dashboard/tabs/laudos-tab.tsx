@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { AlertCircle, CheckCircle2, FileText, Search, ChevronLeft, ChevronRight, TrendingUp, Users, MapPin, User, AlertTriangle } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, formatLabel } from "@/lib/utils"
 
 const THEME = {
   azulProfundo: "#102A63",
@@ -272,7 +272,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                    const item = dataArray.find(d => d.name === value);
                    const total = dataArray.reduce((acc, curr) => acc + curr.value, 0);
                    const pct = total > 0 ? ((item?.value || 0) / total * 100).toFixed(1) : 0;
-                   return <span className="text-[11px] font-bold text-slate-500 tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-400 font-bold">{pct}%</span></span>
+                   const formattedLabel = formatLabel(value);
+                   return <span className="text-[11px] font-bold text-slate-500 tracking-tight ml-1">{formattedLabel} ({item?.value}) <span className="text-slate-400 font-bold">{pct}%</span></span>
                 }}
               />
             </PieChart>
@@ -410,7 +411,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={peritosData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} tickFormatter={(v) => formatLabel(v)} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
@@ -456,7 +457,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                 <BarChart data={assistentesData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} tickFormatter={(v) => formatLabel(v)} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
@@ -507,7 +508,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                   <div className="flex justify-between items-start mb-2">
                     <div className="space-y-0.5">
                       <div className="text-[15px] font-bold text-[#102A63] tracking-tight">{item.numero}</div>
-                      <div className="text-[13px] font-bold text-slate-700 uppercase leading-none">{item.reclamante}</div>
+                      <div className="text-[13px] font-bold text-slate-700 uppercase leading-none">{formatLabel(item.reclamante)}</div>
                       <div className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
                         <MapPin className="h-2.5 w-2.5" /> {item.vara} {item.comarca}
                       </div>

@@ -8,6 +8,7 @@ import {
   ScatterChart, Scatter, ComposedChart, Line, Legend, Cell
 } from "recharts"
 import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
+import { formatLabel } from "@/lib/utils"
 
 const CHART_COLORS = ['#102A63', '#183B8C', '#4F6DB8', '#94A3B8', '#14B8A6'];
 
@@ -320,16 +321,16 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
                         </span>
                       </TableCell>
                       <TableCell className="py-2.5">
-                        <span className="font-bold text-slate-900 text-[11px] uppercase tracking-tight">{acordo.reclamante}</span>
+                        <span className="font-bold text-slate-900 text-[11px] uppercase tracking-tight">{formatLabel(acordo.reclamante)}</span>
                       </TableCell>
                       <TableCell className="py-2.5">
-                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tight bg-slate-100 px-2 py-0.5 rounded-full">{acordo.funcao}</span>
+                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tight bg-slate-100 px-2 py-0.5 rounded-full">{formatLabel(acordo.funcao)}</span>
                       </TableCell>
                       <TableCell className="py-2.5 text-slate-600 text-[11px] font-bold uppercase tracking-tight">
-                        {acordo.juizo}
+                        {formatLabel(acordo.juizo)}
                       </TableCell>
                       <TableCell className="py-2.5 text-slate-600 text-[11px] font-bold uppercase tracking-tight">
-                        {acordo.advogado}
+                        {formatLabel(acordo.advogado)}
                       </TableCell>
                       <TableCell className="py-2.5 text-right pr-6">
                         <div className="flex flex-col items-end gap-1">

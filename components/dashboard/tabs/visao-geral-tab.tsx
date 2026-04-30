@@ -8,6 +8,7 @@ import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
 import { ConcessoesLiminares } from "./concessoes-liminares"
+import { formatLabel } from "@/lib/utils"
 
 const THEME = {
   azulProfundo: "#102A63",
@@ -36,7 +37,7 @@ function formatCurrency(value: number) {
 
 function getTopObj(mapRecord: Record<string, number>, top: number = 5) {
   return Object.entries(mapRecord)
-    .map(([name, count]) => ({ name, count }))
+    .map(([name, count]) => ({ name: formatLabel(name), count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, top)
 }
@@ -197,8 +198,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         fases: getTopObj(dictFases, 10).sort((a, b) => b.count - a.count),
         tiposAcao: getTopObj(dictTipoAcao, 8).sort((a, b) => b.count - a.count),
         anos: Object.entries(dictAnos).map(([name, count]) => ({ name, count })).sort((a, b) => Number(a.name) - Number(b.name)),
-        instancias: Object.entries(dictInstancias).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value),
-        status: Object.entries(dictStatus).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+        instancias: Object.entries(dictInstancias).map(([name, value]) => ({ name: formatLabel(name), value })).sort((a, b) => b.value - a.value),
+        status: Object.entries(dictStatus).map(([name, value]) => ({ name: formatLabel(name), value })).sort((a, b) => b.value - a.value)
       },
       mapData: dictUF
     }
@@ -317,7 +318,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
          {/* 2b. Mapa do Brasil (Heatmap por UF) */}
         <Card className="relative overflow-hidden border-border shadow-sm md:col-span-2">
           <CardHeader className="border-b bg-slate-50/50 pt-4 px-5 pb-3">
-            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Mapa de calor: processos por UF</CardTitle>
+            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Processos por UF</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center h-[550px] relative p-0 bg-white">
             
@@ -536,7 +537,16 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       align="center"
                       iconType="circle"
                       iconSize={8}
-                      formatter={(value) => <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">{value}</span>}
+                      formatter={(value) => {
+                        const item = ranks.instancias.find(i => i.name === value);
+                        const count = item ? item.value : 0;
+                        const percentage = kpis.totalProcessos > 0 ? ((count / kpis.totalProcessos) * 100).toFixed(1) : "0.0";
+                        return (
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
+                            {value} <span className="text-slate-500">({count})</span> <span className="text-slate-300 font-medium">{percentage}%</span>
+                          </span>
+                        );
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -610,7 +620,16 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                       iconType="circle"
                       iconSize={8}
                       wrapperStyle={{ paddingTop: "20px" }}
-                      formatter={(value) => <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter px-0.5">{value}</span>}
+                      formatter={(value) => {
+                        const item = ranks.status.find(i => i.name === value);
+                        const count = item ? item.value : 0;
+                        const percentage = kpis.totalProcessos > 0 ? ((count / kpis.totalProcessos) * 100).toFixed(1) : "0.0";
+                        return (
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter px-0.5">
+                            {value} <span className="text-slate-500">({count})</span> <span className="text-slate-300 font-medium">{percentage}%</span>
+                          </span>
+                        );
+                      }}
                     />
                   </PieChart>
                 </ResponsiveContainer>

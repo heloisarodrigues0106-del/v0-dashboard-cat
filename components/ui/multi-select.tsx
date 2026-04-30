@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, formatLabel } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -63,7 +63,7 @@ export function MultiSelect({
              {selected.length === 0 ? (
                <span className="text-muted-foreground">{placeholder}</span>
              ) : selected.length === 1 ? (
-               <span className="truncate">{selected[0]}</span>
+               <span className="truncate">{formatLabel(selected[0])}</span>
              ) : (
                <span>{selected.length} selecionado(s)</span>
              )}
@@ -110,7 +110,7 @@ export function MultiSelect({
                   >
                     <Check className="h-3 w-3" />
                   </div>
-                  {option}
+                  {formatLabel(option)}
                 </CommandItem>
               ))}
             </CommandGroup>
