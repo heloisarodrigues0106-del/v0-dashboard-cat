@@ -556,5 +556,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           </CardContent>
         </Card>
       </div>
+    </div>
   )
 }
