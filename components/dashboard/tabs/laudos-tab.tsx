@@ -157,7 +157,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
       if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
-      const ergoVal = String(laudo.ergonomia || "").toUpperCase();
       if (ergoVal.includes("POSITIVO") || ergoVal.includes("FAVORAVEL")) ergonomiaStatus.Positivo++; 
       else if (ergoVal.includes("NEGATIVO") || ergoVal.includes("DESFAVORAVEL")) ergonomiaStatus.Negativo++;
 
