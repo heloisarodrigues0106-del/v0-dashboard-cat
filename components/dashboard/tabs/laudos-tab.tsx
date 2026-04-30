@@ -471,7 +471,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
               </ResponsiveContainer>
             </div>
           </CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        </Card>
+      </div>
+
+      <div className="space-y-4 pt-6 border-t border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Card className="p-5 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
             <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">Total Honorários Prévios</div>
             <div className="text-[32px] font-bold text-[#102A63] tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
@@ -483,8 +487,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <Card className="p-5 bg-[#102A63] text-white flex flex-col items-center justify-center">
             <div className="text-[32px] font-bold tracking-tight leading-none">{honorariosData.lista.length}</div>
             <div className="text-[11px] font-bold uppercase opacity-80 mt-2 tracking-[0.04em]">Volume de Processos</div>
-          </Card>
-        </div>
           </Card>
         </div>
 
@@ -554,6 +556,5 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           </CardContent>
         </Card>
       </div>
-    </div>
   )
 }
