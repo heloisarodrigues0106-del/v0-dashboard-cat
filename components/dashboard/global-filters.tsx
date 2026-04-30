@@ -152,7 +152,63 @@ export function GlobalFilters({
           
           <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
             
-            {/* Datas */}
+            {/* Dados do Processo (Categorias) */}
+            <div className="space-y-4">
+              <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
+                <Filter className="h-4 w-4" /> Categorias
+              </h3>
+              
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Processo</label>
+                  <MultiSelect options={filterOptions.statusProcesso} selected={statusProcesso} onChange={setStatusProcesso} placeholder="Todos os Status" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Reclamante</label>
+                  <MultiSelect options={filterOptions.statusReclamantes} selected={statusReclamante} onChange={setStatusReclamante} placeholder="Todos os Status" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa (Reclamada)</label>
+                  <MultiSelect options={filterOptions.empresas} selected={empresa} onChange={setEmpresa} placeholder="Todas as Empresas" />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Unidade/Centro de Custo</label>
+                  <MultiSelect options={filterOptions.unidades} selected={unidade} onChange={setUnidade} placeholder="Todas as Unidades" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa Terceirizada</label>
+                  <MultiSelect options={filterOptions.terceirizadas} selected={terceirizada} onChange={setTerceirizada} placeholder="Todas as Empresas" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Advogado Adverso</label>
+                  <MultiSelect options={filterOptions.advogados} selected={advogado} onChange={setAdvogado} placeholder="Todos os Advogados" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Tipo de Ação</label>
+                  <MultiSelect options={filterOptions.tiposAcao} selected={tipoAcao} onChange={setTipoAcao} placeholder="Todos os Tipos" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Vara e Comarca</label>
+                  <MultiSelect options={filterOptions.varas} selected={vara} onChange={setVara} placeholder="Todas as Varas e Comarcas" />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Função Reclamante</label>
+                  <MultiSelect options={filterOptions.funcoes} selected={funcaoReclamante} onChange={setFuncaoReclamante} placeholder="Todas as Funções" />
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-border my-6" />
+
+            {/* Datas (Periodização) */}
             <div className="space-y-6">
               <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" /> Periodização
@@ -226,7 +282,7 @@ export function GlobalFilters({
             <div className="h-px bg-border my-6" />
 
             {/* Valores de Risco / Causa */}
-            <div className="space-y-4">
+            <div className="space-y-4 pb-8">
               <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
                 <DollarSign className="h-4 w-4" /> Valores (R$)
               </h3>
@@ -244,62 +300,6 @@ export function GlobalFilters({
                     value={valorAcaoRange}
                     onValueChange={setValorAcaoRange}
                   />
-                </div>
-              </div>
-            </div>
-
-            <div className="h-px bg-border my-6" />
-
-            {/* Dados do Processo */}
-            <div className="space-y-4 pb-8">
-              <h3 className="text-[13px] font-bold tracking-tight uppercase text-slate-500 flex items-center gap-2">
-                <Filter className="h-4 w-4" /> Categorias
-              </h3>
-              
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa (Reclamada)</label>
-                  <MultiSelect options={filterOptions.empresas} selected={empresa} onChange={setEmpresa} placeholder="Todas as Empresas" />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Unidade/Centro de Custo</label>
-                  <MultiSelect options={filterOptions.unidades} selected={unidade} onChange={setUnidade} placeholder="Todas as Unidades" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Empresa Terceirizada</label>
-                  <MultiSelect options={filterOptions.terceirizadas} selected={terceirizada} onChange={setTerceirizada} placeholder="Todas as Empresas" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Advogado Adverso</label>
-                  <MultiSelect options={filterOptions.advogados} selected={advogado} onChange={setAdvogado} placeholder="Todos os Advogados" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Tipo de Ação</label>
-                  <MultiSelect options={filterOptions.tiposAcao} selected={tipoAcao} onChange={setTipoAcao} placeholder="Todos os Tipos" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Vara e Comarca</label>
-                  <MultiSelect options={filterOptions.varas} selected={vara} onChange={setVara} placeholder="Todas as Varas e Comarcas" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Função Reclamante</label>
-                  <MultiSelect options={filterOptions.funcoes} selected={funcaoReclamante} onChange={setFuncaoReclamante} placeholder="Todas as Funções" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Reclamante</label>
-                  <MultiSelect options={filterOptions.statusReclamantes} selected={statusReclamante} onChange={setStatusReclamante} placeholder="Todos os Status" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-600">Status do Processo</label>
-                  <MultiSelect options={filterOptions.statusProcesso} selected={statusProcesso} onChange={setStatusProcesso} placeholder="Todos os Status" />
                 </div>
               </div>
             </div>

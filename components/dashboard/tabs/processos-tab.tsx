@@ -39,9 +39,8 @@ function BoolIcon({ value }: { value: boolean | null | undefined }) {
   return <span className="text-slate-300 text-xs block text-center">—</span>
 }
 
-function FunnelCard({ title, subtitle, icon, initial, sentenca, acordao }: { 
+function FunnelCard({ title, icon, initial, sentenca, acordao }: { 
   title: string, 
-  subtitle: string, 
   icon: React.ReactNode, 
   initial: number, 
   sentenca: number, 
@@ -64,7 +63,6 @@ function FunnelCard({ title, subtitle, icon, initial, sentenca, acordao }: {
           <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">{icon}</div>
           <div>
             <CardTitle className="text-[15px] font-bold text-[#111111] tracking-tight">{title}</CardTitle>
-            <p className="text-[11px] text-slate-500 font-medium">{subtitle}</p>
           </div>
         </div>
       </CardHeader>
@@ -442,32 +440,28 @@ export function ProcessosTab({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FunnelCard 
-                  title="Funil de Doença" 
-                  subtitle="Pedidos de doença médica geral"
+                  title="Doença Ocupacional" 
                   icon={<HeartPulse className="h-5 w-5 text-[#183B8C]" />}
                   initial={pedidosInicial.filter(p => isPositiveValue(p.do_at, "doenca")).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
                   acordao={pedidosAcordao.filter(p => isPositiveValue(p.do_medica_geral, "doenca")).length}
                 />
                 <FunnelCard 
-                  title="Funil de Acidente de Trabalho" 
-                  subtitle="Pedidos vinculados a acidentes típicos"
+                  title="Acidente de Trabalho" 
                   icon={<ShieldAlert className="h-5 w-5 text-[#183B8C]" />}
                   initial={pedidosInicial.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                   acordao={pedidosAcordao.filter(p => isPositiveValue(p.acidente_trabalho)).length}
                 />
                 <FunnelCard 
-                  title="Funil de Estabilidade" 
-                  subtitle="Garantia de emprego e indenizações substitutivas"
+                  title="Estabilidade" 
                   icon={<ShieldCheck className="h-5 w-5 text-[#183B8C]" />}
                   initial={pedidosInicial.filter(p => isPositiveValue(p.estabilidade)).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.estabilidade)).length}
                   acordao={pedidosAcordao.filter(p => isPositiveValue(p.estabilidade)).length}
                 />
                 <FunnelCard 
-                  title="Funil de Reintegração" 
-                  subtitle="Pedidos de retorno ao posto de trabalho"
+                  title="Reintegração" 
                   icon={<Landmark className="h-5 w-5 text-[#183B8C]" />}
                   initial={pedidosInicial.filter(p => isPositiveValue(p.reintegracao)).length}
                   sentenca={pedidosSentenca.filter(p => isPositiveValue(p.reintegracao)).length}
