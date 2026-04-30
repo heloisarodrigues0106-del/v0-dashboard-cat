@@ -86,7 +86,6 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     let tiposLaudo: Record<string, number> = { "Técnica": 0, "Médica Não Psíquica": 0, "Médica Psíquica": 0, "Ergonômica": 0 }
     let nexos = { Concausa: 0, Causa: 0, "Incapacidade/Restrição": 0 }
     let medicaGeralStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
-    let ergoStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let mentalStatus = { Causa: 0, Concausa: 0, "Sem Nexo": 0 }
     let insalubridadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
     let periculosidadeStatus = { Caracterizada: 0, "Não Caracterizada": 0 }
@@ -158,11 +157,9 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
       if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
-      if (ergoVal.includes("CAUSA") && !ergoVal.includes("CONCAUSA")) ergoStatus.Causa++;
-      else if (ergoVal.includes("CONCAUSA")) ergoStatus.Concausa++;
-      else ergoStatus["Sem Nexo"]++;
-      
-      if (ergoVal === "POSITIVO") ergonomiaStatus.Positivo++; else if (ergoVal === "NEGATIVO") ergonomiaStatus.Negativo++;
+      const ergoVal = String(laudo.ergonomia || "").toUpperCase();
+      if (ergoVal.includes("POSITIVO") || ergoVal.includes("FAVORAVEL")) ergonomiaStatus.Positivo++; 
+      else if (ergoVal.includes("NEGATIVO") || ergoVal.includes("DESFAVORAVEL")) ergonomiaStatus.Negativo++;
 
       const processoRelacionado = processos.find(p => String(p.numero_processo || '').trim() === String(laudo.numero_processo || '').trim()) || {};
       
@@ -191,7 +188,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     return { 
       total, favoraveis, desfavoraveis, incapacidadeCount, acidenteTrabalhoCount, matrizNexoIncapacidade, composicaoDesfavoraveis,
-      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, ergoStatus,
+      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus,
       totalValidos: total
     }
   }, [laudos, processos]);
@@ -252,9 +249,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const insalubridadeData = [{ name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
   const periculosidadeData = [{ name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
   const ergonomiaData = [
-    { name: "Causa", value: stats.ergoStatus.Causa, color: THEME.critico }, 
-    { name: "Concausa", value: stats.ergoStatus.Concausa, color: THEME.intermediario }, 
-    { name: "Sem Nexo", value: stats.ergoStatus["Sem Nexo"], color: THEME.neutro }
+    { name: "FAVORÁVEL (SEM RISCO)", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel }, 
+    { name: "DESFAVORÁVEL (COM RISCO)", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }
   ].filter(d => d.value > 0);
 
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (

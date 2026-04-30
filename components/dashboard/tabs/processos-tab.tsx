@@ -15,13 +15,13 @@ import { MapeamentoTestemunhas } from "./mapeamento-testemunhas"
 import { Check, X, Search, HeartPulse, ShieldCheck, Activity, Stethoscope, Scale, FileText, Landmark, ShieldAlert, AlertTriangle, UserSearch, Link as LinkIcon, ExternalLink } from "lucide-react"
 
 const PEDIDO_MAPPING = [
-  { id: "doenca_mental", label: "Doença Psíquica", inicial: "do_at", sentenca: "do_mental", acordao: "do_mental" },
+  { id: "doenca_mental", label: "Doença Psíquica", inicial: "do_at", sentenca: "do_psiquica", acordao: "do_psiquica" },
   { id: "doenca_geral", label: "Doença Médica Não Psíquica", inicial: "do_at", sentenca: "do_medica_geral", acordao: "do_medica_geral" },
   { id: "acidente", label: "Acidente de Trabalho", inicial: "do_at", sentenca: "acidente_trabalho", acordao: "acidente_trabalho" },
   { id: "materiais", label: "Danos Materiais", inicial: "danos_materiais", sentenca: "danos_materiais", acordao: "danos_materiais" },
   { id: "reintegracao", label: "Reintegração", inicial: "reintegracao", sentenca: "reintegracao", acordao: "reintegracao" },
   { id: "morais", label: "Danos Morais", inicial: "danos_morais", sentenca: "danos_morais", acordao: "danos_morais" },
-  { id: "honorarios", label: "Honorários Advocatícios", inicial: "honorarios_advocaticios", sentenca: "honorarios_advocaticios", acordao: "honorarios_advocaticios" },
+  { id: "honorarios", label: "Honorários Advocatícios", inicial: "honorarios_adv", sentenca: "honorarios_adv", acordao: "honorarios_adv" },
   { id: "estabilidade", label: "Estabilidade", inicial: "estabilidade", sentenca: "estabilidade", acordao: "estabilidade" },
   { id: "periculosidade", label: "Periculosidade", inicial: "periculosidade", sentenca: "periculosidade", acordao: "periculosidade" },
   { id: "insalubridade", label: "Insalubridade", inicial: "insalubridade", sentenca: "insalubridade", acordao: "insalubridade" },
@@ -52,7 +52,7 @@ function FunnelCard({ title, icon, initial, sentenca, acordao }: {
   const retFinal = initial > 0 ? (acordao / initial * 100).toFixed(1) : "0.0"
 
   const stages = [
-    { label: "Inicial", value: initial, percent: "100%", color: "bg-[#183B8C]" },
+    { label: "Inicial", value: initial, percent: initial > 0 ? "100%" : "0%", color: "bg-[#183B8C]" },
     { label: "Sentença", value: sentenca, percent: initial > 0 ? Math.round(sentenca/initial*100) + "%" : "0%", color: "bg-[#4F6DB8]" },
     { label: "Acórdão", value: acordao, percent: initial > 0 ? Math.round(acordao/initial*100) + "%" : "0%", color: "bg-[#94A3B8]" },
   ]
@@ -158,7 +158,7 @@ export function ProcessosTab({
     const positiveTerms = [
       "SIM", "DEFERIDO", "RECONHECIDO", "MANTIDO", "MANTIDA", 
       "TRUE", "PROCEDENTE", "PARCIALMENTE PROCEDENTE", 
-      "CAUSA", "CONCAUSA"
+      "CAUSA", "CONCAUSA", "S", "X", "POSITIVO", "FAVORAVEL", "FAVORÁVEL"
     ]
     
     if (positiveTerms.some(term => s === term || s.includes(term))) return true
