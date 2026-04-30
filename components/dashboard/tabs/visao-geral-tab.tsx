@@ -183,7 +183,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Total de processos</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">TOTAL DE PROCESSOS</CardTitle>
             <div className="bg-slate-100 p-2 rounded-lg">
               <FileText className="h-4 w-4 text-slate-600" />
             </div>
@@ -195,7 +195,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Processos ativos</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">PROCESSOS ATIVOS</CardTitle>
             <div className="bg-blue-50 p-2 rounded-lg">
               <Activity className="h-4 w-4 text-[#183B8C]" />
             </div>
@@ -207,7 +207,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Processos Arquivados</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">PROCESSOS ARQUIVADOS</CardTitle>
             <div className="bg-slate-50 p-2 rounded-lg">
               <Archive className="h-4 w-4 text-slate-500" />
             </div>
@@ -219,7 +219,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Valor total da causa</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">VALOR TOTAL DA CAUSA</CardTitle>
             <div className="bg-emerald-50 p-2 rounded-lg">
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>

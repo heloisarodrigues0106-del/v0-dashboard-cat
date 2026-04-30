@@ -199,7 +199,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <div className="bg-slate-100 p-2 rounded-lg">{icon}</div>
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{percentage}</span>
       </div>
-      <div className="text-[11px] font-bold text-slate-500 tracking-[0.04em] mb-1.5 leading-tight">{title}</div>
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em] mb-1.5 leading-tight">{title}</div>
       <div className={`text-[32px] font-bold ${color} tracking-tight leading-none`}>{value}</div>
       <p className="text-[11px] text-slate-400 mt-2 font-medium">{subtext}</p>
     </Card>
@@ -354,7 +354,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
             <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Composição dos laudos desfavoráveis</CardTitle>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Fatores de risco identificados nos laudos desfavoráveis</p>
+            <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em]">Fatores de risco identificados nos laudos desfavoráveis</p>
           </CardHeader>
           <CardContent className="px-5 pb-5 pt-2">
              <div className="space-y-4">
@@ -386,7 +386,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
                 <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Ranking de peritos</CardTitle>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Amostragem por desfavorabilidade</p>
+                <p className="text-[11px] text-slate-400 font-bold tracking-[0.04em]">Amostragem por desfavorabilidade</p>
               </div>
               <div className="flex flex-wrap gap-1">
                  {["Todos", "Médico", "Técnico", "Ergonômico"].map(f => (
@@ -432,7 +432,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
                 <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Performance de assistentes</CardTitle>
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Ranking por resultados positivos</p>
+                <p className="text-[11px] text-slate-400 font-bold tracking-[0.04em]">Ranking por resultados positivos</p>
               </div>
               <div className="flex flex-wrap gap-1">
                  {["Médico", "Técnico"].map(f => (
@@ -477,15 +477,15 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="space-y-4 pt-6 border-t border-slate-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Card className="p-5 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">Total honorários prévios</div>
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">TOTAL HONORÁRIOS PRÉVIOS</div>
             <div className="text-[32px] font-bold text-[#111111] tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
           </Card>
           <Card className="p-5 bg-[#183B8C] text-white flex flex-col justify-center">
-            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">Ticket médio</div>
+            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">TICKET MÉDIO</div>
             <div className="text-[32px] font-bold tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
           </Card>
           <Card className="p-5 bg-[#102A63] text-white flex flex-col justify-center">
-            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">Volume de processos</div>
+            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">VOLUME DE PROCESSOS</div>
             <div className="text-[32px] font-bold tracking-tight leading-none">{honorariosData.lista.length}</div>
           </Card>
         </div>
