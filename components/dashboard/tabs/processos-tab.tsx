@@ -155,31 +155,40 @@ export function ProcessosTab({
     if (val === true || val === 1 || val === "1") return true
     
     const s = String(val).toUpperCase().trim()
-    const positiveTerms = [
-      "SIM", "DEFERIDO", "RECONHECIDO", "MANTIDO", "MANTIDA", 
-      "TRUE", "PROCEDENTE", "PARCIALMENTE PROCEDENTE", 
-      "CAUSA", "CONCAUSA", "S", "X", "POSITIVO", "FAVORAVEL", "FAVORÁVEL"
+    
+    const exactMatches = [
+      "SIM", "S", "X", "TRUE", "POSITIVO", "FAVORAVEL", "FAVORÁVEL", 
+      "DEFERIDO", "PROCEDENTE", "PARCIALMENTE PROCEDENTE", 
+      "RECONHECIDO", "MANTIDO", "MANTIDA", "CAUSA", "CONCAUSA"
     ]
     
-    if (positiveTerms.some(term => s === term || s.includes(term))) return true
-    if ((pedidoId === "doenca" || pedidoId === "doenca_mental" || pedidoId === "doenca_geral" || pedidoId === "acidente") && (s.includes("INCAPAZ") || s.includes("CAUSA") || s.includes("SIM"))) return true
+    if (exactMatches.includes(s)) return true
+    
+    // Check inside phrases carefully
+    if (s.includes("DEFERIDO") && !s.includes("INDEFERIDO")) return true
+    if (s.includes("PROCEDENTE") && !s.includes("IMPROCEDENTE")) return true
+    if (s.includes("FAVORAVEL") && !s.includes("DESFAVORAVEL")) return true
+    if (s.includes("FAVORÁVEL") && !s.includes("DESFAVORÁVEL")) return true
+    if (s.includes("NEXO") && !s.includes("SEM NEXO")) return true
+    
+    if ((pedidoId === "doenca" || pedidoId === "doenca_mental" || pedidoId === "doenca_geral" || pedidoId === "acidente") && (s.includes("INCAPAZ") || s.includes("CAUSA") || s === "SIM")) return true
     
     return false
   }
 
   // Helper to check if a value is negative (Requisito 4)
   const isNegativeValue = (val: any) => {
-    if (val === null || val === undefined || val === "" || val === "-") return true
+    if (val === null || val === undefined || val === "" || val === "-") return false
     if (val === false || val === 0 || val === "0") return true
     
     const s = String(val).toUpperCase().trim()
-    const negativeTerms = [
-      "NÃO", "NAO", "INDEFERIDO", "IMPROCEDENTE", "SEM NEXO", "CAPAZ", 
-      "FALSE", "FALSO", "NEGADO", "DESPROVIDO", "MANTIDA A IMPROCEDENCIA", 
-      "MANTIDO O INDEFERIMENTO", "0", "-"
-    ]
     
-    if (negativeTerms.some(term => s === term || s.includes(term))) return true
+    const exactMatches = ["NÃO", "NAO", "N", "FALSE", "FALSO", "0", "-"]
+    if (exactMatches.includes(s)) return true
+    
+    if (s.includes("INDEFERIDO") || s.includes("IMPROCEDENTE") || s.includes("SEM NEXO") || 
+        s.includes("CAPAZ") && !s.includes("INCAPAZ") || s.includes("NEGADO") || 
+        s.includes("DESPROVIDO") || s.includes("DESFAVORAVEL") || s.includes("DESFAVORÁVEL")) return true
     
     return false
   }
@@ -196,17 +205,27 @@ export function ProcessosTab({
         return pSen && isPositiveValue(pSen[config.sentenca], config.id)
       }).length
 
+      const indeferidosSen = cohort.filter(p => {
+        const pSen = pedidosSentencaMap[String(p.numero_processo)]
+        return pSen && isNegativeValue(pSen[config.sentenca])
+      }).length
+
       const deferidosAco = cohort.filter(p => {
         const pAco = pedidosAcordaoMap[String(p.numero_processo)]
         return pAco && isPositiveValue(pAco[config.acordao], config.id)
       }).length
 
+      const indeferidosAco = cohort.filter(p => {
+        const pAco = pedidosAcordaoMap[String(p.numero_processo)]
+        return pAco && isNegativeValue(pAco[config.acordao])
+      }).length
+
       return {
         key: config.id,
         name: config.label,
-        inicial: { deferido: totalIni, total: totalIni, exists: true },
-        sentenca: { deferido: deferidosSen, total: totalIni, exists: true },
-        acordao: { deferido: deferidosAco, total: totalIni, exists: true },
+        inicial: { deferido: totalIni, indeferido: 0, total: totalIni, exists: true },
+        sentenca: { deferido: deferidosSen, indeferido: indeferidosSen, total: totalIni, exists: true },
+        acordao: { deferido: deferidosAco, indeferido: indeferidosAco, total: totalIni, exists: true },
         totalPedidos: totalIni,
       }
     })
