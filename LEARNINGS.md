@@ -134,7 +134,54 @@
 
 ---
 
-## 4. Fluxo de Atualização de Dados (Processo Definido)
+## 5. Sessão 2026-04-30 — Diagnóstico e Correção de Tipos Excel → Banco
+
+### Problema geral
+Várias colunas chegavam em branco no banco porque o tipo definido no código (`BOOL_COLS`) ou no schema Supabase (`boolean`) não correspondia aos valores reais do Excel.
+
+### Método de diagnóstico
+Ler todos os valores únicos de cada coluna com `dtype=str` e comparar com o conversor esperado:
+```python
+df = pd.read_excel(arquivo, dtype=str)
+for col in df.columns:
+    print(col, df[col].dropna().unique())
+```
+
+### Correções aplicadas
+
+#### 1. `do_psiquica`, `do_medica_geral`, `incapacidade` em `tb_pedidos_sentenca` e `tb_pedidos_acordao`
+- **Problema:** estavam em `BOOL_COLS` e como `boolean` no banco, mas contêm texto (`"CAUSA"`, `"CONCAUSA"`, `"SEM NEXO"`, `"INCAPAZ"`, `"CAPAZ"`)
+- **Solução:** removidas de `BOOL_COLS`; migration SQL alterou as colunas para `text`
+- **Migration:** `supabase/migrations/20260430_fix_text_cols_sentenca_acordao.sql`
+
+#### 2. `\xa0` (espaço não-quebrável) em campos numéricos
+- **Problema:** Excel exporta alguns valores com `\xa0` no início — `to_numeric` não removia esse caractere
+- **Solução:** adicionado `.replace("\xa0", "")` em `to_numeric`
+- **Exemplos:** `"\xa050.000.00"` → `50000.0`, `"\xa012.665.14"` → `12665.14`
+
+#### 3. Ponto de milhar + ponto decimal (`"50.000.00"`)
+- **Problema:** Python interpretava dois pontos como float inválido
+- **Solução:** detectar 3 partes no split por `.` e tratar como `milhar + decimal`
+- **Lógica:** `"50.000.00"` → partes `["50","000","00"]` → `"50000.00"` → `50000.0`
+
+#### 4. `datetime` do pandas em colunas numéricas (`tb_valores`)
+- **Problema:** células formatadas como data no Excel (com valores corrompidos tipo `1910-03-10`) chegam como `datetime.datetime` ao pandas — `to_numeric` convertia para string e falhava
+- **Solução:** rejeitar objetos com atributo `.year` e `.month` diretamente → `None`
+- **Afetados:** `provavel_juros_quarter_anterior` (2 linhas) e `provavel_total_anterior` (3 linhas)
+
+#### 5. `\xa0` em campos text (`numero_processo_apenso`, `perito_tecnico`, etc.)
+- **Problema:** `limpar_valor` fazia apenas `strip()`, que não remove `\xa0` no meio ou início
+- **Solução:** adicionado `.replace("\xa0", "")` em `limpar_valor`
+
+#### 6. `grau_psiquica = "ALTO"` em `tb_laudo`
+- **Comportamento:** `to_numeric` converte para `None` corretamente — dado corrompido no Excel sem valor numérico recuperável
+
+### Regra reforçada
+Antes de classificar uma coluna como `boolean` ou `numeric`, sempre inspecionar os valores únicos no Excel. Valores textuais em coluna `boolean` do banco causam erro `invalid input syntax for type boolean` e descartam o batch inteiro.
+
+---
+
+## 6. Fluxo de Atualização de Dados (Processo Definido)
 
 ```
 1. Colocar novos .xlsx na pasta import/
