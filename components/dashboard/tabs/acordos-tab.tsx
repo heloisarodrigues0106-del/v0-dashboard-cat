@@ -148,13 +148,13 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
             <div className="flex gap-4">
               <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
                 <Percent className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
+                <span className="text-[10px] text-emerald-600/80 font-bold mb-2 tracking-tight">Taxa de economia</span>
                 <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{formatPercent(metrics.taxaEconomia)}</span>
-                <span className="text-[10px] text-emerald-600/80 font-bold uppercase mt-2 tracking-tight">Taxa de Economia</span>
               </div>
               <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
                 <CheckCircle2 className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
+                <span className="text-[10px] text-emerald-600/80 font-bold mb-2 tracking-tight">Acordos fechados</span>
                 <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{metrics.qtdAcordos}</span>
-                <span className="text-[10px] text-emerald-600/80 font-bold uppercase mt-2 tracking-tight">Acordos Fechados</span>
               </div>
             </div>
           </div>
@@ -197,7 +197,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         {/* Totais e Média */}
         <Card className="flex flex-col min-w-0">
           <CardHeader className="pb-2 pt-4 px-5">
-            <CardTitle className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Totais e Média por Acordo</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Totais e média por acordo</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 overflow-x-auto">
             <div className="h-[350px] min-w-[400px]">
@@ -229,7 +229,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         {/* Scatter Causa vs Acordo */}
         <Card className="flex flex-col min-w-0">
           <CardHeader className="pb-2 pt-4 px-5">
-            <CardTitle className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Comparativo: Valor da Causa vs Valor do Acordo</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Comparativo: valor da causa vs valor do acordo</CardTitle>
             <div className="flex gap-4 text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">
               <span>Eixo X: Valor da Causa</span>
               <span>Eixo Y: Valor do Acordo</span>
@@ -280,9 +280,9 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 pt-4 px-5">
           <div className="space-y-1">
-            <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight flex items-center gap-2">
+            <CardTitle className="text-[18px] font-bold text-[#111111] tracking-tight flex items-center gap-2">
               <span className="w-2 h-7 bg-emerald-500 rounded-full"></span>
-              Detalhamento de Acordos e Savings
+              Detalhamento de acordos e savings
             </CardTitle>
             <p className="text-[12px] text-slate-500 font-medium">Listagem técnica de negociações e economia gerada</p>
           </div>

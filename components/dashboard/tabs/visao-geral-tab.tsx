@@ -183,7 +183,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total de Processos</CardTitle>
+            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Total de processos</CardTitle>
             <div className="bg-slate-100 p-2 rounded-lg">
               <FileText className="h-4 w-4 text-slate-600" />
             </div>
@@ -195,7 +195,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
 
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Processos Ativos</CardTitle>
+            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Processos ativos</CardTitle>
             <div className="bg-blue-50 p-2 rounded-lg">
               <Activity className="h-4 w-4 text-[#183B8C]" />
             </div>
@@ -219,7 +219,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor em Risco (Causa)</CardTitle>
+            <CardTitle className="text-[11px] font-bold tracking-[0.04em] text-slate-500">Valor total da causa</CardTitle>
             <div className="bg-emerald-50 p-2 rounded-lg">
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>
@@ -234,9 +234,9 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* 2a. Top 5 Localidades Ranking */}
         <Card className="flex flex-col border-border shadow-sm md:col-span-1">
           <CardHeader className="border-b bg-slate-50/50 pt-4 px-5 pb-3">
-            <CardTitle className="text-[16px] font-bold flex items-center gap-2 text-slate-800">
+            <CardTitle className="text-[16px] font-bold flex items-center gap-2 text-[#111111]">
               <MapPin className="h-4 w-4 text-[#183B8C]" />
-              Concentração de Ajuizamentos
+              Concentração de ajuizamentos
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-4 space-y-3 bg-white">
@@ -283,7 +283,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
          {/* 2b. Mapa do Brasil (Heatmap por UF) */}
         <Card className="relative overflow-hidden border-border shadow-sm md:col-span-2">
           <CardHeader className="border-b bg-slate-50/50 pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Mapa de Calor: Processos por UF</CardTitle>
+            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Mapa de calor: processos por UF</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center items-center h-[550px] relative p-0 bg-white">
             
@@ -298,13 +298,13 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest">Processos:</span>
+                    <span className="text-slate-400 text-[11px] font-bold tracking-widest">Processos:</span>
                     <span className="font-black text-base text-[#183B8C]">
                       {hoveredUF.details.count}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest">Valor Total:</span>
+                    <span className="text-slate-400 text-[11px] font-bold tracking-widest">Valor Total:</span>
                     <span className="font-bold text-emerald-600 text-sm">
                       {formatCurrency(hoveredUF.details.valorTotal)}
                     </span>
@@ -386,8 +386,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* 3. Fases Processuais (Gráfico Barras Horizontal) */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="flex items-center justify-between text-[#102A63] text-[16px] font-bold uppercase tracking-tight">
-              Processos Ativos por Fase 
+            <CardTitle className="flex items-center justify-between text-[#111111] text-[16px] font-bold tracking-tight">
+              Processos ativos por fase 
               <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Total</Badge>
             </CardTitle>
           </CardHeader>
@@ -423,7 +423,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* 4. Distribuição por Tipo de Ação */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Distribuição por Tipo de Ação</CardTitle>
+            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Distribuição por tipo de ação</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">
@@ -449,7 +449,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* Instâncias (Gráfico de Pizza) */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Volumetria por instância</CardTitle>
+            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Volumetria por instância</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center">
             {ranks.instancias.length > 0 ? (
@@ -515,7 +515,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* Status (Gráfico de Pizza) */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold uppercase tracking-tight">Volumetria por desfecho</CardTitle>
+            <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Volumetria por desfecho</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             {ranks.status.length > 0 ? (
@@ -594,7 +594,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       {/* 5. Volume de Processos Distribuídos por Ano */}
       <Card className="border-border shadow-sm">
         <CardHeader className="pt-4 px-5 pb-3">
-          <CardTitle className="flex items-center justify-between text-[#102A63] text-[16px] font-bold uppercase tracking-tight">
+          <CardTitle className="flex items-center justify-between text-[#111111] text-[16px] font-bold tracking-tight">
             Volume de processos distribuídos 
             <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Anual</Badge>
           </CardTitle>
@@ -651,8 +651,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         {/* Advogados */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold flex items-center justify-between uppercase tracking-tight">
-              Ranking Advogado Adverso 
+            <CardTitle className="text-[#111111] text-[16px] font-bold flex items-center justify-between tracking-tight">
+              Ranking advogado adverso 
               <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Top 5</Badge>
             </CardTitle>
           </CardHeader>
@@ -692,8 +692,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
          {/* Funções */}
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
-            <CardTitle className="text-[#102A63] text-[16px] font-bold flex items-center justify-between uppercase tracking-tight">
-              Ajuizamento por Cargo 
+            <CardTitle className="text-[#111111] text-[16px] font-bold flex items-center justify-between tracking-tight">
+              Ajuizamento por cargo 
               <Badge variant="secondary" className="bg-[#DCE6F8] text-[#183B8C] font-bold text-[10px] uppercase tracking-[0.04em]">Top 5</Badge>
             </CardTitle>
           </CardHeader>

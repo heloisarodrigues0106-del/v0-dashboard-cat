@@ -284,9 +284,9 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                         <div className="space-y-2">
-                          <h4 className="font-semibold text-slate-600 flex items-center gap-2">
+                          <h4 className="font-bold text-[#111111] flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#4F6DB8]"></span>
-                            Atua como Testemunha
+                            Atua como testemunha
                           </h4>
                           <div className="flex flex-col gap-2">
                             {item.processosTestemunha.map((proc, i) => (
@@ -299,9 +299,9 @@ export function MapeamentoTestemunhas({ processos = [] }: { processos: any[] }) 
                         </div>
 
                         <div className="space-y-2">
-                          <h4 className="font-semibold text-slate-600 flex items-center gap-2">
+                          <h4 className="font-bold text-[#111111] flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#111111]"></span>
-                            Figura como Reclamante
+                            Figura como reclamante
                           </h4>
                           <div className="flex flex-col gap-2">
                              {item.processosReclamante.map((proc, i) => (

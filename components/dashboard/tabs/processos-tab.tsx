@@ -331,7 +331,7 @@ export function ProcessosTab({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="lg:col-span-2">
                 <CardHeader className="pb-2 pt-4 px-5">
-                  <CardTitle className="text-[16px] font-bold text-[#183B8C] uppercase tracking-tight">Pedidos Sensíveis — Doença e Estabilidade</CardTitle>
+                  <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Pedidos sensíveis — doença e estabilidade</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="relative flex items-center justify-between w-full">
@@ -360,7 +360,7 @@ export function ProcessosTab({
 
               <Card>
                 <CardHeader className="pb-2 pt-4 px-5">
-                  <CardTitle className="text-[16px] font-bold text-[#183B8C] uppercase tracking-tight">Obrigações Sensíveis</CardTitle>
+                  <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Obrigações sensíveis</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
                   {rankingObrigacoes.map((item, i) => {
@@ -387,8 +387,8 @@ export function ProcessosTab({
 
             <Card>
               <CardHeader className="pt-4 px-5 pb-3">
-                <CardTitle className="text-[16px] font-bold text-[#102A63] flex items-center gap-2 uppercase tracking-tight">
-                  Análise de Pedidos — Matriz de Deferimento <Badge variant="secondary" className="font-bold bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8] text-[10px] uppercase tracking-[0.04em]">Inicial → Sentença → Acórdão</Badge>
+                <CardTitle className="text-[16px] font-bold text-[#111111] flex items-center gap-2 tracking-tight">
+                  Análise de pedidos — matriz de deferimento <Badge variant="secondary" className="font-bold bg-[#DCE6F8] text-[#183B8C] hover:bg-[#DCE6F8] text-[10px] uppercase tracking-[0.04em]">Inicial → Sentença → Acórdão</Badge>
                 </CardTitle>
                 <p className="text-[12px] text-slate-500 font-medium">
                   Visualização do resultado de cada pedido ao longo das fases processuais. Clique em <Search className="inline h-3.5 w-3.5" /> para ver o detalhe por processo.
@@ -465,7 +465,7 @@ export function ProcessosTab({
             <Dialog open={!!selectedPedido} onOpenChange={(open) => { if (!open) setSelectedPedido(null) }}>
               <DialogContent className="sm:max-w-[95vw] sm:w-[95vw] w-[98vw] max-h-[95vh] overflow-hidden bg-white p-0 !max-w-none">
                 <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 bg-slate-50/50">
-                  <DialogTitle className="text-[20px] font-bold text-[#102A63] flex items-center gap-3">
+                  <DialogTitle className="text-[20px] font-bold text-[#111111] flex items-center gap-3">
                     <span className="w-2 h-8 rounded-full bg-[#183B8C] shrink-0"></span>
                     {selectedPedido?.label}
                     <Badge className="bg-[#DCE6F8] text-[#183B8C] font-bold hover:bg-[#DCE6F8] text-[11px] uppercase tracking-[0.04em]">

@@ -199,8 +199,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <div className="bg-slate-100 p-2 rounded-lg">{icon}</div>
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{percentage}</span>
       </div>
+      <div className="text-[11px] font-bold text-slate-500 tracking-[0.04em] mb-1.5 leading-tight">{title}</div>
       <div className={`text-[32px] font-bold ${color} tracking-tight leading-none`}>{value}</div>
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em] mt-1.5 leading-tight">{title}</div>
       <p className="text-[11px] text-slate-400 mt-2 font-medium">{subtext}</p>
     </Card>
   )
@@ -253,7 +253,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
     <Card className="border border-border shadow-sm bg-white overflow-hidden">
       <CardHeader className="pb-2 pt-4 px-5">
-        <CardTitle className="text-[16px] font-bold text-slate-800 leading-tight">{title}</CardTitle>
+        <CardTitle className="text-[16px] font-bold text-[#111111] leading-tight">{title}</CardTitle>
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{subtitle}</p>
       </CardHeader>
       <CardContent className="px-5">
@@ -306,7 +306,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-[16px] font-bold text-slate-800 uppercase tracking-tight">Matriz Médica Geral x Incapacidade</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Matriz médica geral x incapacidade</CardTitle>
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Cruzamento entre nexo médico e capacidade laboral</p>
           </CardHeader>
           <CardContent className="px-5 pb-5">
@@ -353,7 +353,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-[16px] font-bold text-slate-800 uppercase tracking-tight">Composição dos Laudos Desfavoráveis</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Composição dos laudos desfavoráveis</CardTitle>
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Fatores de risco identificados nos laudos desfavoráveis</p>
           </CardHeader>
           <CardContent className="px-5 pb-5 pt-2">
@@ -367,7 +367,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                             <span className="text-[11px] font-bold text-slate-800">{count} <span className="text-slate-400 ml-1 font-medium">({pct.toFixed(1)}%)</span></span>
                          </div>
                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-600" style={{ width: `${pct}%` }} />
+                            <div className="h-full bg-[#183B8C]" style={{ width: `${pct}%` }} />
                          </div>
                       </div>
                    )
@@ -385,7 +385,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader className="pb-4 pt-4 px-5">
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <CardTitle className="text-[16px] font-bold text-slate-900 tracking-tight uppercase">Ranking de Peritos</CardTitle>
+                <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Ranking de peritos</CardTitle>
                 <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Amostragem por desfavorabilidade</p>
               </div>
               <div className="flex flex-wrap gap-1">
@@ -395,7 +395,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                       onClick={() => setPeritoFilter(f)}
                       className={cn(
                         "px-2.5 py-0.5 text-[11px] font-bold uppercase rounded-full border transition-all",
-                        peritoFilter === f ? "bg-slate-800 text-white border-slate-800 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                        peritoFilter === f ? "bg-[#111111] text-white border-[#111111] shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
                       )}
                    >
                       {f}
@@ -405,20 +405,20 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </div>
           </CardHeader>
           <CardContent className="px-5 pb-5">
-            <div className="h-[380px]">
+            <div className="h-[540px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={peritosData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
                   />
-                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={16} minPointSize={5}>
+                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={20} minPointSize={5}>
                     <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
-                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={16} minPointSize={5}>
+                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={20} minPointSize={5}>
                     <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                 </BarChart>
@@ -431,7 +431,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
           <CardHeader className="pb-4 pt-4 px-5">
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
               <div className="flex flex-col gap-0.5">
-                <CardTitle className="text-[16px] font-bold text-slate-900 tracking-tight uppercase">Performance de Assistentes</CardTitle>
+                <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Performance de assistentes</CardTitle>
                 <p className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.04em]">Ranking por resultados positivos</p>
               </div>
               <div className="flex flex-wrap gap-1">
@@ -441,7 +441,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                       onClick={() => setAssistenteFilter(f)}
                       className={cn(
                         "px-3 py-1 text-[11px] font-bold uppercase rounded-full border transition-all",
-                        assistenteFilter === f ? "bg-teal-600 text-white border-teal-600 shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                        assistenteFilter === f ? "bg-[#111111] text-white border-[#111111] shadow-sm" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
                       )}
                    >
                       {f}
@@ -451,20 +451,20 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
             </div>
           </CardHeader>
           <CardContent className="px-5 pb-5">
-            <div className="h-[380px]">
+            <div className="h-[540px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={assistentesData} layout="vertical" margin={{ right: 30, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 11, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
+                  <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 10, fontWeight: 700, fill: "#1e293b", fontFamily: "Verdana" }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", padding: "8px", fontFamily: "Verdana" }}
                     itemStyle={{ fontSize: '11px', fontWeight: 700 }}
                   />
-                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={16} minPointSize={5}>
+                  <Bar dataKey="Favorável" fill={THEME.favoravel} stackId="a" barSize={20} minPointSize={5}>
                     <LabelList dataKey="Favorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
-                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={16} minPointSize={5}>
+                  <Bar dataKey="Desfavorável" fill={THEME.critico} stackId="a" barSize={20} minPointSize={5}>
                     <LabelList dataKey="Desfavorável" position="center" fill="#fff" style={{ fontSize: '10px', fontWeight: 700, fontFamily: "Verdana" }} formatter={(v: any) => v > 2 ? v : ""} />
                   </Bar>
                 </BarChart>
@@ -477,22 +477,22 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       <div className="space-y-4 pt-6 border-t border-slate-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Card className="p-5 bg-white border-slate-200 shadow-sm flex flex-col justify-center">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">Total Honorários Prévios</div>
-            <div className="text-[32px] font-bold text-[#102A63] tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] mb-1">Total honorários prévios</div>
+            <div className="text-[32px] font-bold text-[#111111] tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.totalHonorarios)}</div>
           </Card>
-          <Card className="p-5 bg-[#183B8C] text-white flex flex-col items-center justify-center">
+          <Card className="p-5 bg-[#183B8C] text-white flex flex-col justify-center">
+            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">Ticket médio</div>
             <div className="text-[32px] font-bold tracking-tight leading-none">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(honorariosData.ticketMedio)}</div>
-            <div className="text-[11px] font-bold uppercase opacity-80 mt-2 tracking-[0.04em]">Ticket Médio</div>
           </Card>
-          <Card className="p-5 bg-[#102A63] text-white flex flex-col items-center justify-center">
+          <Card className="p-5 bg-[#102A63] text-white flex flex-col justify-center">
+            <div className="text-[11px] font-bold uppercase opacity-80 mb-1 tracking-[0.04em]">Volume de processos</div>
             <div className="text-[32px] font-bold tracking-tight leading-none">{honorariosData.lista.length}</div>
-            <div className="text-[11px] font-bold uppercase opacity-80 mt-2 tracking-[0.04em]">Volume de Processos</div>
           </Card>
         </div>
 
         <Card className="border border-border bg-card shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 p-4 flex flex-row items-center justify-between border-b border-slate-100">
-            <CardTitle className="text-[16px] font-bold text-slate-800">Listagem de Honorários</CardTitle>
+            <CardTitle className="text-[16px] font-bold text-[#111111]">Listagem de honorários</CardTitle>
             <Input 
               className="w-full md:w-[280px] h-9 rounded-lg text-[12px] bg-white font-normal" 
               placeholder="Buscar..." 

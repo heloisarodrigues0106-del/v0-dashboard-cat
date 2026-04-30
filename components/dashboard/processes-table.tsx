@@ -167,8 +167,8 @@ export function ProcessesTable({
     <section className="py-0">
       <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6">
-          <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight">
-            Detalhamento dos Processos
+          <CardTitle className="text-[18px] font-bold text-[#111111] tracking-tight">
+            Detalhamento dos processos
           </CardTitle>
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -224,8 +224,8 @@ export function ProcessesTable({
                       
                       {/* 1. Resumo Processual */}
                       <div className="space-y-4">
-                        <h4 className="text-[14px] font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-[0.04em]">
-                          <Activity className="h-4 w-4" /> Resumo Processual
+                        <h4 className="text-[14px] font-bold text-[#111111] flex items-center gap-2 tracking-[0.04em]">
+                          <Activity className="h-4 w-4" /> Resumo processual
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-[11px]">
                           <div className="space-y-1">
@@ -263,8 +263,8 @@ export function ProcessesTable({
 
                       {/* 2. Marcadores Técnicos / Processuais */}
                       <div className="space-y-4">
-                        <h4 className="text-[14px] font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-[0.04em]">
-                          <LinkIcon className="h-4 w-4" /> Resumo Técnico-Pericial
+                        <h4 className="text-[14px] font-bold text-[#111111] flex items-center gap-2 tracking-[0.04em]">
+                          <LinkIcon className="h-4 w-4" /> Resumo técnico-pericial
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12 gap-y-6 gap-x-2 text-[11px]">
                           <div className="space-y-1">
@@ -326,8 +326,8 @@ export function ProcessesTable({
 
                       {/* 3. Pedidos e Desfechos */}
                       <div className="space-y-4">
-                        <h4 className="text-sm font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-wide">
-                          <Search className="h-4 w-4" /> Pedidos e Desfechos
+                        <h4 className="text-sm font-bold text-[#111111] flex items-center gap-2 tracking-wide">
+                          <Search className="h-4 w-4" /> Pedidos e desfechos
                         </h4>
                         <div className="overflow-x-auto rounded-lg border border-slate-100">
                           <table className="w-full text-[11px]">
@@ -370,8 +370,8 @@ export function ProcessesTable({
                       {/* 4. Alertas do Processo */}
                       {(processo.liminar || processo.numero_processo_apenso || processo.processo_apenso) ? (
                         <div className="space-y-4 pt-2">
-                          <h4 className="text-sm font-bold text-[#183B8C] flex items-center gap-2 uppercase tracking-wide">
-                            <AlertCircle className="h-4 w-4" /> Alertas do Processo
+                          <h4 className="text-sm font-bold text-[#111111] flex items-center gap-2 tracking-wide">
+                            <AlertCircle className="h-4 w-4" /> Alertas do processo
                           </h4>
                           <div className="flex flex-wrap gap-4">
                             {processo.liminar && (

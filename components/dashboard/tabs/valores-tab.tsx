@@ -135,7 +135,7 @@ export function ValoresTab({ valores }: { valores: any[] }) {
           <TabsContent value={riscoAtivo} className="space-y-6 mt-0">
             
             {/* Visões de Quarter Dinâmicas */}
-            <h3 className="text-[16px] font-bold text-[#102A63] uppercase tracking-tight">Comparativo Trimestral - Risco {riscoAtivo.charAt(0).toUpperCase() + riscoAtivo.slice(1)}</h3>
+            <h3 className="text-[16px] font-bold text-[#111111] tracking-tight">Comparativo trimestral - risco {riscoAtivo.charAt(0).toUpperCase() + riscoAtivo.slice(1)}</h3>
             <div className="grid gap-4 md:grid-cols-3">
               <Card className="shadow-sm border-slate-200">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
@@ -176,8 +176,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
             {/* Análise de Processos Drill-down - NOVA VERSÃO (CARDS EXPANSÍVEIS) */}
             <Card className="shadow-sm border border-slate-200 mt-8 bg-card">
               <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 pt-4 px-5">
-                <CardTitle className="text-[18px] font-bold text-[#102A63] uppercase tracking-tight">
-                  Detalhamento Individual da Variação
+                <CardTitle className="text-[18px] font-bold text-[#111111] tracking-tight">
+                  Detalhamento individual da variação
                 </CardTitle>
                 <div className="relative w-full md:w-80">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
