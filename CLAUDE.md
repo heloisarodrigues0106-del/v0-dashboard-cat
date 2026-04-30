@@ -23,19 +23,19 @@ Colunas date: `data_ajuizamento`, `data_arquivamento`, `data_admissao_reclamante
 ### tb_pedidos_inicial
 PK: `id` (bigserial)  
 Todos os pedidos são `boolean` exceto `outros` (text)  
-Colunas boolean: `do_at`, `reintegracao`, `periculosidade`, `insalubridade`, `rescisao_indireta`, `danos_morais`, `danos_materiais`, `horas_extras`, `intrajornada`, `horas_itinere`, `acumulo_funcao`, `equip_salarial`, `rec_vinculo`, `honorarios_advocaticios`
+Colunas boolean: `do_at`, `reintegracao`, `periculosidade`, `insalubridade`, `rescisao_indireta`, `danos_morais`, `danos_materiais`, `horas_extras`, `intrajornada`, `horas_itinere`, `acumulo_funcao`, `equip_salarial`, `rec_vinculo`, `honorarios_adv`, `estabilidade`
 
 ### tb_pedidos_sentenca e tb_pedidos_acordao
 PK: `id` (bigserial)  
-Colunas boolean: mesmas do inicial + `do_mental`, `do_ergonomica`, `incapacidade`, `acidente_trabalho`, `estabilidade`  
-Colunas text: `obrigacao`, `outros`, `ergonomia`
+Colunas boolean: mesmas do inicial + `do_psiquica`, `do_medica_geral`, `incapacidade`, `acidente_trabalho`  
+Colunas text: `obrigacoes_fazer`, `outros`, `ergonomia`
 
 ### tb_laudo
 PK: `id` (bigserial)  
-Colunas text: `do_mental`, `do_medica_geral`, `ergonomia`, `incapacidade`, `resultado_medico`, `resultado_tecnico`  
+Colunas text: `do_psiquica`, `do_medico_geral`, `resultado_ergonomico`, `incapacidade`, `resultado_medico`, `resultado_tecnico`  
 Colunas boolean: `acidente_trabalho`, `periculosidade`, `insalubridade`  
-Colunas numeric: `grau_mental`, `grau_medico_geral`, `grau_insalubridade`  
-Obs: `do_mental` e `do_medica_geral` são text ("CAUSA", "CONCAUSA", "SEM NEXO") — NÃO boolean
+Colunas numeric: `grau_psiquica`, `grau_medico`, `grau_insalubridade`  
+Obs: `do_psiquica` e `do_medico_geral` são text ("CAUSA", "CONCAUSA", "SEM NEXO") — NÃO boolean
 
 ### tb_valores
 PK: `numero_processo` (text)  
