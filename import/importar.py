@@ -64,14 +64,14 @@ BOOL_COLS = {
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
         "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
         "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
-        "incapacidade",
+        "incapacidade", "estabilidade",
     ],
     "tb_pedidos_acordao": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
         "danos_materiais", "horas_extras", "intrajornada", "horas_itinere",
         "acumulo_funcao", "equip_salarial", "rec_vinculo", "honorarios_advocaticios",
         "rescisao_indireta", "acidente_trabalho", "do_mental", "do_ergonomica",
-        "incapacidade",
+        "incapacidade", "estabilidade",
     ],
     # tb_laudo: do_mental e do_medica_geral são text ("CAUSA","CONCAUSA","SEM NEXO")
     # apenas acidente_trabalho, periculosidade e insalubridade são boolean
@@ -132,8 +132,6 @@ TABELAS = {
             "obrigacoes_fazer": "obrigacao",
             "honorarios_adv":  "honorarios_advocaticios",
         },
-        # colunas do Excel que não existem no banco — serão ignoradas
-        "ignorar": ["ergonomia"],
     },
     "tb_pedidos_acordao.xlsx": {
         "tabela": "tb_pedidos_acordao",
@@ -144,7 +142,6 @@ TABELAS = {
             "obrigacoes_fazer": "obrigacao",
             "honorarios_adv":  "honorarios_advocaticios",
         },
-        "ignorar": ["ergonomia"],
     },
     "tb_laudo.xlsx": {
         "tabela": "tb_laudo",
@@ -155,7 +152,6 @@ TABELAS = {
             "grau_medico":          "grau_medico_geral",
             "resultado_ergonomico": "ergonomia",
         },
-        "ignorar": ["resultado_medico", "resultado_tecnico"],
     },
     "tb_valores.xlsx": {
         "tabela": "tb_valores",

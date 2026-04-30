@@ -83,6 +83,8 @@ CREATE TABLE public.tb_pedidos_sentenca (
   equip_salarial           boolean,
   rec_vinculo              boolean,
   honorarios_advocaticios  boolean,
+  estabilidade             boolean,
+  ergonomia                text,
   obrigacao                text,
   outros                   text
 );
@@ -109,6 +111,8 @@ CREATE TABLE public.tb_pedidos_acordao (
   equip_salarial           boolean,
   rec_vinculo              boolean,
   honorarios_advocaticios  boolean,
+  estabilidade             boolean,
+  ergonomia                text,
   obrigacao                text,
   outros                   text
 );
@@ -128,7 +132,9 @@ CREATE TABLE public.tb_laudo (
   acidente_trabalho   boolean,
   periculosidade      boolean,
   insalubridade       boolean,
-  grau_insalubridade  numeric
+  grau_insalubridade  numeric,
+  resultado_medico    text,
+  resultado_tecnico   text
 );
 
 -- ─── tb_valores ───────────────────────────────────────────────────────────────
