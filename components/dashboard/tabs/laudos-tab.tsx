@@ -35,6 +35,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const [honorariosPage, setHonorariosPage] = useState(1);
   const [honorariosSearch, setHonorariosSearch] = useState("");
   const [peritoFilter, setPeritoFilter] = useState("Todos");
+  const [assistenteFilter, setAssistenteFilter] = useState("Médico");
 
   const peritoClassificacaoMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -64,6 +65,8 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       "Outros": 0
     }
     let statsPerito: Record<string, { favoraveis: number, desfavoraveis: number, classificacao: string }> = {}
+    let statsAssistenteMedico: Record<string, { favoraveis: number, desfavoraveis: number }> = {}
+    let statsAssistenteTecnico: Record<string, { favoraveis: number, desfavoraveis: number }> = {}
     let tiposLaudo: Record<string, number> = { 
       "Técnica": 0, 
       "Médica Geral": 0, 
@@ -239,6 +242,36 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
          "Técnico", 
          [laudo.insalubridade, laudo.periculosidade]
       );
+
+      // Nova Estatística para Assistentes
+      const registrarEstatisticaAssistente = (nomeAssistente: any, statsObj: Record<string, { favoraveis: number, desfavoraveis: number }>, camposAvaliados: any[]) => {
+         if (!nomeAssistente || hasValue(nomeAssistente) === false) return;
+         
+         const camposValidos = camposAvaliados.filter(f => hasValue(f) || f === true || f === false);
+         if (camposValidos.length === 0) return;
+
+         const isDesfav = camposValidos.some(f => isBadForCompany(f));
+         const key = String(nomeAssistente).trim();
+
+         if (!statsObj[key]) {
+            statsObj[key] = { favoraveis: 0, desfavoraveis: 0 };
+         }
+         
+         if (isDesfav) statsObj[key].desfavoraveis++;
+         else statsObj[key].favoraveis++;
+      }
+
+      registrarEstatisticaAssistente(
+         processoRelacionado.assistente_medico,
+         statsAssistenteMedico,
+         [laudo.do_mental, laudo.doenca_mental, laudo.do_medica_geral, laudo.doenca, laudo.acidente_trabalho, laudo.incapacidade, laudo.ergonomia, laudo.do_ergonomica, laudo.doenca_ergonomica]
+      );
+
+      registrarEstatisticaAssistente(
+         processoRelacionado.assistente_tecnico,
+         statsAssistenteTecnico,
+         [laudo.insalubridade, laudo.periculosidade]
+      );
     })
 
     // Agregação de Graus de Insalubridade de tb_laudo.grau_insalubridade
@@ -256,7 +289,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     })
 
     return { 
-      total, favoraveis, desfavoraveis, motivos, statsPerito, tiposLaudo, nexos, 
+      total, favoraveis, desfavoraveis, motivos, statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, nexos, 
       medicaGeralStatus, ergoStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade
     }
   }, [laudos, processos, peritoClassificacaoMap])
@@ -342,6 +375,22 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     
     return rawData.slice(0, 15)
   }, [stats.statsPerito, peritoFilter])
+
+  const assistentesData = useMemo(() => {
+    const source = assistenteFilter === "Médico" ? stats.statsAssistenteMedico : stats.statsAssistenteTecnico;
+    
+    let rawData = Object.entries(source)
+      .map(([name, data]) => ({ 
+        name, 
+        Favorável: data.favoraveis, 
+        Desfavorável: data.desfavoraveis, 
+        Total: data.favoraveis + data.desfavoraveis 
+      }));
+
+    rawData = rawData.sort((a, b) => b.Favorável - a.Favorável) // Prioridade: Maior volume de favoráveis no topo
+    
+    return rawData.slice(0, 15)
+  }, [stats.statsAssistenteMedico, stats.statsAssistenteTecnico, assistenteFilter])
 
   const tiposData = [
     { name: "Técnica", value: stats.tiposLaudo["Técnica"], color: CATEGORICAL_COLORS.tecnica },
@@ -694,6 +743,114 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                  <span className="font-semibold text-lg text-slate-500">Nenhum perito encontrado.</span>
                  <span className="text-sm">Tente selecionar outra classificação ou ajustar os filtros globais.</span>
+               </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+      </Card>
+
+      {/* Gráfico de Assistentes (Espelhado dos Peritos, mas focado em Favorável) */}
+      <Card className="border border-border bg-card shadow-sm">
+        <CardHeader className="pb-6">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <CardTitle className="text-xl font-black text-slate-900 tracking-tight">Performance de Assistentes Técnicos e Médicos</CardTitle>
+              <p className="text-sm text-slate-500 font-medium">Ranking dos assistentes com maior volume de resultados positivos (Favoráveis).</p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+               {["Médico", "Técnico"].map(f => (
+                 <button
+                    key={f}
+                    onClick={() => setAssistenteFilter(f)}
+                    className={`px-6 py-2 text-xs font-black rounded-full transition-all border ${assistenteFilter === f ? 'bg-teal-600 text-white border-teal-600 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                 >
+                    {f}
+                 </button>
+               ))}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[650px] w-full pt-4 overflow-x-auto">
+            <div className="h-full min-w-[700px]">
+            {assistentesData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart  
+                data={assistentesData} 
+                layout="vertical" 
+                margin={{ top: 10, right: 120, left: 40, bottom: 20 }}
+                barGap={0}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={true} stroke={THEME.border} opacity={0.4} />
+                <XAxis 
+                  type="number" 
+                  allowDecimals={false}
+                  domain={[0, 'dataMax + 1']}
+                  stroke={THEME.textSecondary} 
+                  tick={{ fontSize: 11, fontWeight: 600 }}
+                  axisLine={false}
+                />
+                <YAxis 
+                  dataKey="name" 
+                  type="category" 
+                  width={180} 
+                  stroke={THEME.textPrimary} 
+                  tick={{ fontSize: 12, fontWeight: 700, fill: THEME.textPrimary }} 
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip 
+                  cursor={{ fill: THEME.tealLight, opacity: 0.3 }}
+                  contentStyle={{ 
+                    borderRadius: "12px", 
+                    border: "1px solid #E5E7EB", 
+                    boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.05)",
+                    padding: "12px"
+                  }}
+                  itemStyle={{ fontSize: '13px', fontWeight: 600 }}
+                />
+                <Legend 
+                  verticalAlign="top" 
+                  align="center"
+                  iconType="circle"
+                  iconSize={10}
+                  wrapperStyle={{ paddingBottom: "30px", paddingTop: "0px" }}
+                  formatter={(value) => <span className="text-slate-600 font-bold px-2 text-xs uppercase tracking-wider">{value}</span>}
+                />
+                <Bar dataKey="Favorável" stackId="a" fill={THEME.favoravel} radius={[0, 0, 0, 0]} barSize={24}>
+                  <LabelList 
+                    dataKey="Favorável" 
+                    position="center" 
+                    fill="#fff" 
+                    style={{ fontSize: '10px', fontWeight: 900 }}
+                    formatter={(val: any) => val > 0 ? val : ""}
+                  />
+                </Bar>
+                <Bar dataKey="Desfavorável" stackId="a" fill={THEME.critico} radius={[0, 4, 4, 0]} barSize={24}>
+                  <LabelList 
+                    dataKey="Desfavorável" 
+                    position="center" 
+                    fill="#fff" 
+                    style={{ fontSize: '10px', fontWeight: 900 }} 
+                    formatter={(val: any) => val > 0 ? val : ""}
+                  />
+                  <LabelList 
+                    dataKey="Total" 
+                    position="right" 
+                    offset={15}
+                    fill={THEME.textSecondary} 
+                    style={{ fontSize: '11px', fontWeight: 800 }}
+                    formatter={(val: any) => `Total: ${val}`}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+               <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
+                 <span className="font-semibold text-lg text-slate-500">Nenhum assistente encontrado.</span>
+                 <span className="text-sm">Tente selecionar outro tipo ou ajustar os filtros globais.</span>
                </div>
             )}
           </div>
