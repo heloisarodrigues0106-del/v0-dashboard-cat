@@ -76,6 +76,23 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     const dictInstancias: Record<string, number> = {}
     const dictStatus: Record<string, number> = {}
 
+    const normalizeAction = (val: any) => {
+      if (!val) return null;
+      const s = String(val).toUpperCase().trim();
+      const ignored = ["NULL", "N/A", "NA", "-", "—", "FALSE", ""];
+      if (ignored.includes(s)) return null;
+
+      // Normalização sem acentos para comparação
+      const norm = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      
+      if (norm === "MS" || norm.includes("MANDADO DE SEGURANCA")) return "MANDADO DE SEGURANÇA";
+      if (norm.includes("EXECUCAO PROVISORIA") || norm.includes("EXEC. PROVISORIA")) return "EXECUÇÃO PROVISÓRIA";
+      if (norm.includes("RECLAMACAO TRABALHISTA")) return "RECLAMAÇÃO TRABALHISTA";
+      if (norm.includes("ACAO RESCISORIA")) return "AÇÃO RESCISÓRIA";
+      
+      return s; // Retorna original (em uppercase) se não for um mapeado
+    };
+
     processos.forEach(p => {
       valorTotal += (p.valor_causa || 0)
 
@@ -92,7 +109,8 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       if (p.advogado_reclamante) dictAdvogados[p.advogado_reclamante] = (dictAdvogados[p.advogado_reclamante] || 0) + 1
       if (p.funcao_reclamante) dictFuncoes[p.funcao_reclamante] = (dictFuncoes[p.funcao_reclamante] || 0) + 1
       
-      const fase = p.fase_processual || p.fase_processo_atual
+      let fase = (p.fase_processual || p.fase_processo_atual || "").toUpperCase().trim()
+      if (fase === "EXECUÇÃO") fase = "EXECUCAO"
       if (fase) dictFases[fase] = (dictFases[fase] || 0) + 1
       
       if (p.comarca) {
@@ -123,9 +141,26 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         } catch (e) {}
       }
 
-      if (p.tipo_acao) dictTipoAcao[p.tipo_acao] = (dictTipoAcao[p.tipo_acao] || 0) + 1
-      if (p.instancia) dictInstancias[p.instancia] = (dictInstancias[p.instancia] || 0) + 1
+      // Agregação de Tipo de Ação (Principal + Apensos)
+      const principal = normalizeAction(p.tipo_acao);
+      if (principal) dictTipoAcao[principal] = (dictTipoAcao[principal] || 0) + 1;
 
+      if (p.tipo_processo_apenso) {
+        const regexSplit = /;|:|,|\/|\||\n/;
+        const partes = String(p.tipo_processo_apenso).split(regexSplit);
+        const uniqueInProcess = new Set<string>();
+        
+        partes.forEach(pt => {
+          const normPt = normalizeAction(pt);
+          if (normPt) uniqueInProcess.add(normPt);
+        });
+        
+        uniqueInProcess.forEach(pt => {
+          dictTipoAcao[pt] = (dictTipoAcao[pt] || 0) + 1;
+        });
+      }
+
+      if (p.instancia) dictInstancias[p.instancia] = (dictInstancias[p.instancia] || 0) + 1
       if (statusVal) dictStatus[statusVal] = (dictStatus[statusVal] || 0) + 1
 
       let uf = p.uf?.toUpperCase()
@@ -424,6 +459,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         <Card className="border-border shadow-sm">
           <CardHeader className="pt-4 px-5 pb-3">
             <CardTitle className="text-[#111111] text-[16px] font-bold tracking-tight">Distribuição por tipo de ação</CardTitle>
+            <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em] mt-1">Inclui ações principais e processos vinculados/apensos</p>
           </CardHeader>
           <CardContent className="flex-1">
             <div className="h-[350px]">

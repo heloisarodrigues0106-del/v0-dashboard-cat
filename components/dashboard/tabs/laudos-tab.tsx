@@ -199,7 +199,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <div className="bg-slate-100 p-2 rounded-lg">{icon}</div>
         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{percentage}</span>
       </div>
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em] mb-1.5 leading-tight">{title}</div>
+      <div className="text-[11px] font-bold text-slate-500 tracking-[0.04em] mb-1.5 leading-tight">{title}</div>
       <div className={`text-[32px] font-bold ${color} tracking-tight leading-none`}>{value}</div>
       <p className="text-[11px] text-slate-400 mt-2 font-medium">{subtext}</p>
     </Card>
@@ -254,7 +254,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
     <Card className="border border-border shadow-sm bg-white overflow-hidden">
       <CardHeader className="pb-2 pt-4 px-5">
         <CardTitle className="text-[16px] font-bold text-[#111111] leading-tight">{title}</CardTitle>
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">{subtitle}</p>
+        <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em]">{subtitle}</p>
       </CardHeader>
       <CardContent className="px-5">
         <div className="h-[220px]">
@@ -272,7 +272,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
                    const item = dataArray.find(d => d.name === value);
                    const total = dataArray.reduce((acc, curr) => acc + curr.value, 0);
                    const pct = total > 0 ? ((item?.value || 0) / total * 100).toFixed(1) : 0;
-                   return <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-400 font-bold">{pct}%</span></span>
+                   return <span className="text-[11px] font-bold text-slate-500 tracking-tight ml-1">{value} ({item?.value}) <span className="text-slate-400 font-bold">{pct}%</span></span>
                 }}
               />
             </PieChart>
@@ -307,7 +307,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <Card className="border border-border bg-card shadow-sm">
           <CardHeader className="pb-3 pt-4 px-5">
             <CardTitle className="text-[16px] font-bold text-[#111111] tracking-tight">Matriz médica geral x incapacidade</CardTitle>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em]">Cruzamento entre nexo médico e capacidade laboral</p>
+            <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em]">Cruzamento entre nexo médico e capacidade laboral</p>
           </CardHeader>
           <CardContent className="px-5 pb-5">
             <div className="overflow-x-auto">

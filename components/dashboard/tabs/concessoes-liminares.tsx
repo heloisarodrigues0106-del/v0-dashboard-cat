@@ -9,68 +9,115 @@ import { Scale } from "lucide-react"
 
 const CHART_COLORS = ['#102A63', '#183B8C', '#4F6DB8', '#94A3B8', '#14B8A6'];
 
+const CustomYAxisTick = ({ x, y, payload }: any) => {
+  const text = payload.value;
+  if (!text) return null;
+  
+  const MAX_LINE_LENGTH = 30;
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let currentLine = "";
+
+  words.forEach((word: string) => {
+    if ((currentLine + word).length > MAX_LINE_LENGTH) {
+      if (currentLine) lines.push(currentLine.trim());
+      currentLine = word + " ";
+    } else {
+      currentLine += word + " ";
+    }
+  });
+  if (currentLine) lines.push(currentLine.trim());
+
+  // Limitar a 3 linhas para não poluir
+  const displayLines = lines.slice(0, 3);
+  const hasMore = lines.length > 3;
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {displayLines.map((line, index) => (
+        <text
+          key={index}
+          x={-10}
+          y={index * 12 - (displayLines.length - 1) * 6}
+          dy={4}
+          textAnchor="end"
+          fill="#475569"
+          style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase' }}
+        >
+          {index === 2 && hasMore ? `${line.substring(0, MAX_LINE_LENGTH - 3)}...` : line}
+        </text>
+      ))}
+    </g>
+  );
+};
+
 export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
   const [agrupamento, setAgrupamento] = useState<"Assunto" | "Origem">("Assunto")
   const [assuntoFilter, setAssuntoFilter] = useState<string>("all")
   const [ufFilter, setUfFilter] = useState<string>("all")
 
-  // Helper para normalizar o assunto da liminar (Unifica categorias semelhantes)
-  const getAssuntoNormalizado = (liminar: any) => {
-    let valor = String(liminar || "")
+  // Função robusta para normalização e separação de múltiplos assuntos
+  const splitAndNormalizeAssuntos = (valorRaw: any): string[] => {
+    if (!valorRaw) return [];
+    
+    // 1. Converter para string e limpeza inicial
+    let texto = String(valorRaw)
       .replace(/concedida\s*-\s*/i, '')
       .replace(/parcialmente concedida\s*-\s*/i, '')
-      .trim()
-      .toUpperCase();
+      .replace(/\s+/g, ' ') // remover espaços duplicados
+      .trim();
     
-    // Unificação: MANUTENCAO DO PLANO DE SAUDE -> PLANO DE SAUDE
-    if (valor.includes("MANUTENCAO DO PLANO DE SAUDE")) {
-      valor = valor.replace("MANUTENCAO DO PLANO DE SAUDE", "PLANO DE SAUDE");
-    }
+    const ignoredValues = ["NULL", "N/A", "NA", "-", "—", "NULO", "VAZIO"];
+    if (!texto || ignoredValues.includes(texto.toUpperCase())) return [];
+
+    // 2. Delimitadores: ponto seguido de espaço, ponto e vírgula, quebra de linha, barra, pipe
+    // Usamos regex para capturar as diferentes formas de separação
+    const regex = /\.\s|;|\n|\/|\|/g;
+    const partes = texto.split(regex);
     
-    return valor || "Não Especificado";
+    const subjects = partes
+      .map(p => p.trim())
+      // Remover pontuação residual no início e fim de cada parte
+      .map(p => p.replace(/^[.,;:/|]+|[.,;:/|]+$/g, '').trim())
+      // Unificação básica e caixa alta
+      .map(p => {
+         let v = p.toUpperCase();
+         if (v === "MANUTENCAO DO PLANO DE SAUDE") return "PLANO DE SAUDE";
+         return v;
+      })
+      // Filtrar itens vazios ou ignorados após limpeza
+      .filter(p => p.length > 0 && !ignoredValues.includes(p.toUpperCase()));
+
+    // Remover duplicados dentro do mesmo registro (Requisito 12)
+    return Array.from(new Set(subjects));
   }
 
-  // Extrair base de liminares
+  // Extrair base de liminares (Regras de Negócio 4)
   const baseLiminares = useMemo(() => {
     return processos.filter(p => {
-      // 1. Liminar não nula
-      if (!p.liminar) return false;
-      
-      // 2. Status 'Concedida' ou 'Parcialmente Concedida'
-      // Assumindo que o status possa estar nestas colunas comuns de nomenclatura
       const statusText = String(p.status_liminar || p.concessao_liminar || p.decisao_liminar || p.status_concessao || "").toUpperCase();
-      
-      // Se a base de dados tiver o status textualmente junto da liminar:
-      const liminarText = String(p.liminar).toUpperCase();
+      const liminarText = String(p.liminar || "").toUpperCase();
 
+      // Status permitidos: Concedida ou Parcialmente Concedida
       const isConcedida = 
-        statusText.includes("CONCEDIDA") || 
-        statusText.includes("PARCIALMENTE CONCEDIDA") ||
-        (liminarText.includes("CONCEDIDA") && !statusText); // Fallback caso esteja na mesma string
-        
-      // Mesmo sem ter a coluna exata de status preenchida nas mocks, vamos permitir que se o user pediu para 
-      // filtrar a coluna liminar NÃO NULL, nós assumimos ela como válida nas mocks se não tivermos certeza, 
-      // mas mantemos a regra de negócio robusta.
-      // Para demonstração de frontend com base imprevisível, validaremos se *qualquer* texto de concessão 
-      // foi marcado ou apenas assumimos válido se nenhuma coluna de status de liminar existir (fallback seguro).
+        statusText === "CONCEDIDA" || 
+        statusText === "PARCIALMENTE CONCEDIDA" ||
+        statusText.includes("CONCEDIDA") || // Abranger variações
+        (liminarText.includes("CONCEDIDA") && !statusText);
       
-      const hasAnyLiminarStatusCol = p.status_liminar || p.concessao_liminar || p.decisao_liminar || p.status_concessao;
+      // Bloquear explicitamente indeferidas ou nulas
+      const isIndeferida = statusText.includes("INDEFERIDA") || statusText.includes("NEGADA") || statusText.includes("REJEITADA");
       
-      if (hasAnyLiminarStatusCol) {
-        return isConcedida;
-      }
-      
-      // Fallback pra aprovação total se não existir coluna explícita (para não zerar gráficos de imediato caso a tabela varie)
-      return true;
+      return isConcedida && !isIndeferida && p.liminar;
     });
   }, [processos]);
 
-  // Lista única de Assuntos
+  // Lista única de Assuntos considerando os valores separados
   const assuntosUnicos = useMemo(() => {
     const s = new Set<string>();
     baseLiminares.forEach(p => {
-      const valor = getAssuntoNormalizado(p.liminar);
-      if (valor && valor !== "Não Especificado") s.add(valor);
+      const subjects = splitAndNormalizeAssuntos(p.liminar);
+      subjects.forEach(sub => s.add(sub));
     });
     return Array.from(s).sort();
   }, [baseLiminares]);
@@ -85,24 +132,33 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
     return Array.from(s).sort();
   }, [baseLiminares]);
 
-  // Agregar dados conforme o filtro e agrupamento
+  // Agregar dados conforme o filtro e agrupamento (Regras de Agregação 9-13)
   const chartData = useMemo(() => {
-    // 1. Aplica filtros principais (Dropdowns) se houver
+    // 1. Aplica filtros principais
     const filtered = baseLiminares.filter(p => {
-      if (assuntoFilter !== "all" && getAssuntoNormalizado(p.liminar) !== assuntoFilter) return false;
       if (ufFilter !== "all" && (p.uf ? String(p.uf).trim().toUpperCase() : "") !== ufFilter) return false;
+      
+      if (assuntoFilter !== "all") {
+        const subjects = splitAndNormalizeAssuntos(p.liminar);
+        if (!subjects.includes(assuntoFilter)) return false;
+      }
+      
       return true;
     });
 
     // 2. Agrupa os valores
     const counts: Record<string, number> = {};
+    
     filtered.forEach(p => {
-      let chave = "";
       if (agrupamento === "Assunto") {
-        chave = getAssuntoNormalizado(p.liminar);
+        const subjects = splitAndNormalizeAssuntos(p.liminar);
+        subjects.forEach(subject => {
+          counts[subject] = (counts[subject] || 0) + 1;
+        });
       } else if (agrupamento === "Origem") {
         const v = p.vara ? String(p.vara).trim() : "";
         const c = p.comarca ? String(p.comarca).trim() : "";
+        let chave = "";
         
         if (v && c) {
           chave = `${v} VARA DE ${c}`.toUpperCase();
@@ -113,18 +169,15 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
         } else {
           chave = "ORIGEM NÃO INFORMADA".toUpperCase();
         }
+        counts[chave] = (counts[chave] || 0) + 1;
       }
-      
-      counts[chave] = (counts[chave] || 0) + 1;
     });
 
-    // 3. Transforma em array e ordena (Ranking descendente)
-    const result = Object.entries(counts)
+    // 3. Transforma em array e ordena (Ranking descendente - Requisito 16)
+    return Object.entries(counts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
-
-    return result;
-  }, [baseLiminares, agrupamento, assuntoFilter, ufFilter]);
+  }, [baseLiminares, agrupamento, assuntoFilter, ufFilter]);ssuntoFilter, ufFilter]);
 
   // Calcular altura do container para gerar scroll apenas se houver muitos itens (> 10)
   const isScrollable = chartData.length > 10;
@@ -208,7 +261,7 @@ export function ConcessoesLiminares({ processos = [] }: { processos: any[] }) {
                     axisLine={false} 
                     tickLine={false} 
                     width={220}
-                    tick={{ fontSize: 11, fill: "#64748B", fontWeight: 700 }}
+                    tick={<CustomYAxisTick />}
                   />
                   <Tooltip 
                     cursor={{ fill: "#F8FAFC", opacity: 0.5 }}
