@@ -216,27 +216,36 @@ export function ProcessosTab({
 
   const detailRows = useMemo(() => {
     if (!selectedPedido) return []
+    const config = PEDIDO_MAPPING.find(m => m.id === selectedPedido.key)
+    if (!config) return []
     
     return processos.map(p => {
       const numProc = String(p.numero_processo)
       const ini = pedidosInicialMap[numProc]
+      
+      const inicialRaw = ini ? ini[config.inicial] : undefined
+      if (!isPositiveValue(inicialRaw, config.id)) return { hasData: false }
+      
       const sen = pedidosSentencaMap[numProc]
       const aco = pedidosAcordaoMap[numProc]
 
-      const inicialVal = ini ? ini[selectedPedido.key] : undefined
-      const sentencaVal = sen ? sen[selectedPedido.key] : undefined
-      const acordaoVal = aco ? aco[selectedPedido.key] : undefined
-
-      const hasData = inicialVal !== undefined || sentencaVal !== undefined || acordaoVal !== undefined
+      const sentencaRaw = sen ? sen[config.sentenca] : undefined
+      const acordaoRaw = aco ? aco[config.acordao] : undefined
+      
+      const evalValue = (val: any) => {
+        if (val === null || val === undefined || val === "") return null;
+        if (isPositiveValue(val, config.id)) return true;
+        return false;
+      }
 
       return {
         numero: numProc,
         reclamante: p.nome_reclamante || "—",
         status: p.status || "—",
-        inicial: inicialVal ?? null,
-        sentenca: sentencaVal ?? null,
-        acordao: acordaoVal ?? null,
-        hasData,
+        inicial: true,
+        sentenca: evalValue(sentencaRaw),
+        acordao: evalValue(acordaoRaw),
+        hasData: true,
       }
     }).filter(r => r.hasData)
   }, [selectedPedido, processos, pedidosInicialMap, pedidosSentencaMap, pedidosAcordaoMap])
