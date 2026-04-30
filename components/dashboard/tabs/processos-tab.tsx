@@ -269,7 +269,7 @@ export function ProcessosTab({
 
     const successRate = data.total > 0 ? (data.deferido / data.total * 100).toFixed(0) : "0"
     // Na visão de defesa: Vitoria = maioria indeferida. Risco = maioria deferida.
-    const isRisco = data.deferido > data.indeferido
+    const isRisco = data.deferido > ind
     
     return (
       <div className="flex flex-col items-center gap-0.5">
