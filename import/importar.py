@@ -57,7 +57,7 @@ BOOL_COLS = {
         "do_at", "reintegracao", "periculosidade", "insalubridade",
         "rescisao_indireta", "danos_morais", "danos_materiais", "horas_extras",
         "intrajornada", "horas_itinere", "acumulo_funcao", "equip_salarial",
-        "rec_vinculo", "honorarios_advocaticios",
+        "rec_vinculo", "honorarios_advocaticios", "estabilidade",
     ],
     "tb_pedidos_sentenca": [
         "reintegracao", "periculosidade", "insalubridade", "danos_morais",
@@ -90,8 +90,12 @@ NUMERIC_COLS = {
         "provavel_juros_quarter_anterior", "provavel_total_anterior",
         "provavel_principal_quarter_atual", "provavel_correcao_quarter_atual",
         "provavel_juros_quarter_atual", "provavel_total_atual",
+        "possivel_principal_quarter_anterior", "possivel_correcao_quarter_anterior",
+        "possivel_juros_quarter_anterior", "possivel_total_anterior",
         "possivel_principal_quarter_atual", "possivel_correcao_quarter_atual",
         "possivel_juros_quarter_atual", "possivel_total_atual",
+        "remoto_principal_quarter_anterior", "remoto_correcao_quarter_anterior",
+        "remoto_juros_quarter_anterior", "remoto_total_anterior",
         "remoto_principal_quarter_atual", "remoto_correcao_quarter_atual",
         "remoto_juros_quarter_atual", "remoto_total_atual",
         "valor_pago_reclamante",
@@ -240,6 +244,80 @@ def sanitize_record(record: dict) -> dict:
         clean[k] = v
     return clean
 
+# ─── Verificação de colunas ──────────────────────────────────────────────────
+
+def verificar_colunas(xlsx_path: Path, config: dict) -> bool:
+    """
+    Compara colunas do Excel (após renomear) com colunas do banco.
+    Imprime divergências e retorna False se houver alguma.
+    """
+    tabela   = config["tabela"]
+    renomear = config.get("renomear", {})
+
+    # Lê colunas do Excel
+    df = pd.read_excel(xlsx_path, dtype=str, nrows=0)
+    df = df.loc[:, df.columns.notna()]
+    df.columns = [str(c).strip() for c in df.columns]
+    df = df.rename(columns=renomear)
+    df = df.loc[:, ~df.columns.duplicated()]
+    cols_excel = set(df.columns) - {"id"}
+
+    # Lê colunas do banco via information_schema (SQL direto)
+    resp = supabase.rpc(
+        "get_table_columns",
+        {"p_table": tabela}
+    ).execute()
+    cols_banco = {r["column_name"] for r in resp.data} - {"id"}
+
+    so_excel  = cols_excel - cols_banco   # existem no Excel, faltam no banco
+    so_banco  = cols_banco - cols_excel   # existem no banco, faltam no Excel
+
+    ok = not so_excel and not so_banco
+
+    print(f"\n  [{tabela}]")
+    if ok:
+        print(f"    OK — {len(cols_excel)} colunas sincronizadas.")
+    else:
+        if so_excel:
+            print(f"    FALTA NO BANCO  : {sorted(so_excel)}")
+        if so_banco:
+            print(f"    FALTA NO EXCEL  : {sorted(so_banco)}")
+
+    return ok
+
+
+def checar_todas() -> bool:
+    """Roda verificacao em todos os arquivos. Retorna True se tudo OK."""
+    print("=" * 60)
+    print("  VERIFICACAO DE COLUNAS")
+    print("=" * 60)
+
+    xlsx_files = sorted(IMPORT_DIR.glob("*.xlsx"))
+    tudo_ok = True
+
+    for xlsx_path in xlsx_files:
+        config = TABELAS.get(xlsx_path.name)
+        if not config:
+            print(f"\n  AVISO: {xlsx_path.name} sem configuracao em TABELAS, pulando.")
+            continue
+        try:
+            ok = verificar_colunas(xlsx_path, config)
+            if not ok:
+                tudo_ok = False
+        except Exception as e:
+            print(f"\n  ERRO ao verificar {xlsx_path.name}: {e}")
+            tudo_ok = False
+
+    print(f"\n{'='*60}")
+    if tudo_ok:
+        print("  Todas as tabelas sincronizadas. Prosseguindo com importacao...")
+    else:
+        print("  DIVERGENCIAS encontradas. Corrija antes de importar.")
+    print("=" * 60)
+
+    return tudo_ok
+
+
 # ─── Importação ──────────────────────────────────────────────────────────────
 
 def importar_arquivo(xlsx_path: Path, config: dict):
@@ -329,15 +407,23 @@ def importar_arquivo(xlsx_path: Path, config: dict):
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    print("=" * 60)
-    print("  IMPORTACAO — Dashboard CAT")
-    print("=" * 60)
-
     xlsx_files = sorted(IMPORT_DIR.glob("*.xlsx"))
 
     if not xlsx_files:
         print("Nenhum arquivo .xlsx encontrado na pasta import/")
         return
+
+    tudo_ok = checar_todas()
+
+    if not tudo_ok:
+        resp = input("\nDeseja importar mesmo assim? (s/N): ").strip().lower()
+        if resp != "s":
+            print("Importacao cancelada.")
+            return
+
+    print("\n" + "=" * 60)
+    print("  IMPORTACAO — Dashboard CAT")
+    print("=" * 60)
 
     for xlsx_path in xlsx_files:
         config = TABELAS.get(xlsx_path.name)
