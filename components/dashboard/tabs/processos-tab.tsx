@@ -296,18 +296,12 @@ export function ProcessosTab({
     }
 
     const successRate = data.total > 0 ? (data.deferido / data.total * 100).toFixed(0) : "0"
-    // Na visão de defesa: Vitoria = maioria indeferida. Risco = maioria deferida.
-    const isRisco = data.deferido > ind
     
     return (
       <div className="flex flex-col items-center gap-0.5">
-        {isRisco ? (
-          <X className="h-5 w-5 text-red-500" strokeWidth={3} />
-        ) : (
-          <Check className="h-5 w-5 text-emerald-500" strokeWidth={3} />
-        )}
+        <Check className="h-5 w-5 text-emerald-500" strokeWidth={3} />
         <div className="flex flex-col items-center -space-y-0.5">
-          <span className={`text-[11px] font-black ${isRisco ? 'text-red-600' : 'text-emerald-600'}`}>
+          <span className="text-[11px] font-black text-emerald-600">
             {data.deferido}/{data.total}
           </span>
           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
@@ -449,7 +443,7 @@ export function ProcessosTab({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {PEDIDO_MAPPING.filter(m => ["doenca_mental", "doenca_geral", "acidente", "estabilidade", "reintegracao"].includes(m.id)).map(config => {
+                {PEDIDO_MAPPING.filter(m => ["doenca_geral", "acidente", "estabilidade", "reintegracao"].includes(m.id)).map(config => {
                   const cohort = pedidosInicial.filter(p => isPositiveValue(p[config.inicial], config.id))
                   const iniCount = cohort.length
                   const senCount = cohort.filter(p => {
