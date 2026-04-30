@@ -277,12 +277,12 @@ export function ProcessesTable({
                             <p className="font-bold text-slate-700 uppercase tracking-tight">{formatLabel(processo.fase_processual) || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Mental</span>
-                            <p className="font-bold text-slate-700">{laudo.do_mental || "—"}</p>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Psíquico</span>
+                            <p className="font-bold text-slate-700">{formatLabel(laudo.do_mental) || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
-                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Méd. Geral</span>
-                            <p className="font-bold text-slate-700">{laudo.do_medica_geral || "—"}</p>
+                            <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Nexo Méd. Não Psíquico</span>
+                            <p className="font-bold text-slate-700">{formatLabel(laudo.do_medica_geral) || "—"}</p>
                           </div>
                           <div className="space-y-1 text-center">
                             <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Ergonomia</span>
@@ -290,7 +290,8 @@ export function ProcessesTable({
                           </div>
                           <div className="space-y-1 text-center">
                             <span className="text-slate-400 font-bold uppercase tracking-[0.04em] text-[10px]">Incapacidade</span>
-                               {formatLabel(laudo.incapacidade) || "—"}
+                            <p className="font-bold text-slate-700">
+                              {formatLabel(laudo.incapacidade) || "—"}
                             </p>
                           </div>
                           <div className="space-y-1 text-center">
