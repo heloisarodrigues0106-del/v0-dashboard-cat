@@ -249,6 +249,11 @@ def verificar_colunas(xlsx_path: Path, config: dict) -> bool:
     return ok
 
 
+def config_para(xlsx_path: Path) -> dict:
+    """Retorna config do arquivo: usa TABELAS se existir, senão usa o nome do arquivo como tabela."""
+    return TABELAS.get(xlsx_path.name, {"tabela": xlsx_path.stem})
+
+
 def checar_todas() -> bool:
     """Roda verificacao em todos os arquivos. Retorna True se tudo OK."""
     print("=" * 60)
@@ -259,10 +264,7 @@ def checar_todas() -> bool:
     tudo_ok = True
 
     for xlsx_path in xlsx_files:
-        config = TABELAS.get(xlsx_path.name)
-        if not config:
-            print(f"\n  AVISO: {xlsx_path.name} sem configuracao em TABELAS, pulando.")
-            continue
+        config = config_para(xlsx_path)
         try:
             ok = verificar_colunas(xlsx_path, config)
             if not ok:
@@ -335,10 +337,11 @@ def importar_arquivo(xlsx_path: Path, config: dict):
     if "id" in df.columns:
         df = df.drop(columns=["id"])
 
-    # Limpa a tabela
+    # Limpa a tabela — usa a primeira coluna do df como âncora do filtro
     print(f"  Limpando tabela {tabela}...", end=" ", flush=True)
     try:
-        supabase.table(tabela).delete().neq("numero_processo", "__NUNCA_EXISTE__").execute()
+        primeira_col = df.columns[0]
+        supabase.table(tabela).delete().neq(primeira_col, "__NUNCA_EXISTE__").execute()
         print("OK")
     except Exception as e:
         print(f"ERRO: {e}")
@@ -389,10 +392,7 @@ def main():
     print("=" * 60)
 
     for xlsx_path in xlsx_files:
-        config = TABELAS.get(xlsx_path.name)
-        if not config:
-            print(f"\nAVISO: {xlsx_path.name} sem configuracao em TABELAS, pulando.")
-            continue
+        config = config_para(xlsx_path)
         try:
             importar_arquivo(xlsx_path, config)
         except Exception as e:
