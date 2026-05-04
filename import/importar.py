@@ -194,16 +194,17 @@ def limpar_valor(v):
     return s
 
 def sanitize_record(record: dict) -> dict:
-    """Remove NaN residuais que pandas pode deixar mesmo após conversão."""
+    """Substitui NaN e strings vazias por None para manter consistência de chaves no batch."""
     clean = {}
     for k, v in record.items():
         if v is None:
-            continue
-        if isinstance(v, float) and math.isnan(v):
-            continue
-        if isinstance(v, str) and v.strip().lower() in ("nan", ""):
-            continue
-        clean[k] = v
+            clean[k] = None
+        elif isinstance(v, float) and math.isnan(v):
+            clean[k] = None
+        elif isinstance(v, str) and v.strip().lower() in ("nan", ""):
+            clean[k] = None
+        else:
+            clean[k] = v
     return clean
 
 # ─── Verificação de colunas ──────────────────────────────────────────────────
