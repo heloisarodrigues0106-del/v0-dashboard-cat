@@ -119,6 +119,20 @@ TABELAS = {
     "tb_pedidos_acordao.xlsx": {"tabela": "tb_pedidos_acordao"},
     "tb_laudo.xlsx":           {"tabela": "tb_laudo"},
     "tb_valores.xlsx":         {"tabela": "tb_valores"},
+    
+    # RFG Tables
+    "rfg_tb_processo.xlsx": {
+        "tabela": "rfg_tb_processo",
+        "renomear": {
+            "numero_ processo_apenso": "numero_processo_apenso",
+            "testemunha reclamante": "testemunha_reclamante"
+        }
+    },
+    "rfg_tb_pedidos_inicial.xlsx":  {"tabela": "rfg_tb_pedidos_inicial"},
+    "rfg_tb_pedidos_sentenca.xlsx": {"tabela": "rfg_tb_pedidos_sentenca"},
+    "rfg_tb_pedidos_acordao.xlsx":  {"tabela": "rfg_tb_pedidos_acordao"},
+    "rfg_tb_laudo.xlsx":            {"tabela": "rfg_tb_laudo"},
+    "rfg_tb_valores.xlsx":          {"tabela": "rfg_tb_valores"},
 }
 
 # ─── Conversores ─────────────────────────────────────────────────────────────
@@ -313,15 +327,20 @@ def importar_arquivo(xlsx_path: Path, config: dict):
 
     # Remove linhas completamente vazias
     df = df.dropna(how="all")
+    
+    # Remove linhas sem número de processo (essencial para integridade)
+    if "numero_processo" in df.columns:
+        df = df.dropna(subset=["numero_processo"])
 
     total = len(df)
     print(f"  Linhas  : {total}")
     print(f"  Colunas : {list(df.columns)}")
 
-    # Aplica conversões de tipo
-    bool_cols    = BOOL_COLS.get(tabela, [])
-    numeric_cols = NUMERIC_COLS.get(tabela, [])
-    date_cols    = DATE_COLS.get(tabela, [])
+    # Aplica conversões de tipo (remove prefixo rfg_ para buscar configurações)
+    lookup_table = tabela.replace("rfg_", "")
+    bool_cols    = BOOL_COLS.get(lookup_table, [])
+    numeric_cols = NUMERIC_COLS.get(lookup_table, [])
+    date_cols    = DATE_COLS.get(lookup_table, [])
 
     for col in df.columns:
         if col in bool_cols:

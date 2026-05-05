@@ -159,6 +159,11 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
       if (String(laudo.insalubridade).toUpperCase() === "TRUE") insalubridadeStatus.Caracterizada++; else insalubridadeStatus["Não Caracterizada"]++;
       if (String(laudo.periculosidade).toUpperCase() === "TRUE") periculosidadeStatus.Caracterizada++; else periculosidadeStatus["Não Caracterizada"]++;
       
+      const grauVal = parseFloat(laudo.grau_insalubridade);
+      if (grauVal === 0.1) grausInsalubridade["Mínimo (10%)"]++;
+      else if (grauVal === 0.2) grausInsalubridade["Médio (20%)"]++;
+      else if (grauVal === 0.4) grausInsalubridade["Máximo (40%)"]++;
+      
       const isErgoFavoravel = ergoVal.includes("POSITIVO") || ergoVal.includes("FAVORAVEL") || ergoVal.includes("FAVORÁVEL") || ergoVal === "S" || ergoVal === "SIM" || ergoVal === "TRUE" || ergoVal === "1";
       const isErgoDesfavoravel = ergoVal.includes("NEGATIVO") || ergoVal.includes("DESFAVORAVEL") || ergoVal.includes("DESFAVORÁVEL") || ergoVal === "N" || ergoVal === "NAO" || ergoVal === "NÃO" || ergoVal === "FALSE" || ergoVal === "0" || ergoVal === "COM RISCO";
       
@@ -192,7 +197,7 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
 
     return { 
       total, favoraveis, desfavoraveis, incapacidadeCount, acidenteTrabalhoCount, matrizNexoIncapacidade, composicaoDesfavoraveis,
-      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus,
+      statsPerito, statsAssistenteMedico, statsAssistenteTecnico, tiposLaudo, medicaGeralStatus, mentalStatus, insalubridadeStatus, periculosidadeStatus, ergonomiaStatus, grausInsalubridade,
       totalValidos: total
     }
   }, [laudos, processos]);
@@ -252,10 +257,43 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
   const mentalData = [{ name: "Causa", value: stats.mentalStatus.Causa, color: THEME.critico }, { name: "Concausa", value: stats.mentalStatus.Concausa, color: THEME.intermediario }, { name: "Sem Nexo", value: stats.mentalStatus["Sem Nexo"], color: THEME.neutro }].filter(d => d.value > 0);
   const insalubridadeData = [{ name: "Caracterizada", value: stats.insalubridadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.insalubridadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
   const periculosidadeData = [{ name: "Caracterizada", value: stats.periculosidadeStatus.Caracterizada, color: THEME.critico }, { name: "Não Caracterizada", value: stats.periculosidadeStatus["Não Caracterizada"], color: THEME.favoravel }].filter(d => d.value > 0);
+  const grauInsalubridadeData = [
+    { name: "Mínimo (10%)", value: stats.grausInsalubridade["Mínimo (10%)"], color: THEME.favoravel },
+    { name: "Médio (20%)", value: stats.grausInsalubridade["Médio (20%)"], color: THEME.intermediario },
+    { name: "Máximo (40%)", value: stats.grausInsalubridade["Máximo (40%)"], color: THEME.critico },
+  ].filter(d => d.value > 0);
+
   const ergonomiaData = [
     { name: "FAVORÁVEL (SEM RISCO)", value: stats.ergonomiaStatus.Positivo, color: THEME.favoravel }, 
     { name: "DESFAVORÁVEL (COM RISCO)", value: stats.ergonomiaStatus.Negativo, color: THEME.critico }
   ].filter(d => d.value > 0);
+
+  const renderGrauInsalubridade = (dataArray: any[]) => (
+    <Card className="border border-border shadow-sm bg-white overflow-hidden">
+      <CardHeader className="pb-2 pt-4 px-5">
+        <CardTitle className="text-[16px] font-bold text-[#111111] leading-tight">Grau de Insalubridade</CardTitle>
+        <p className="text-[11px] font-bold text-slate-400 tracking-[0.04em]">Níveis mínimo, médio e máximo</p>
+      </CardHeader>
+      <CardContent className="px-5 pb-4">
+        <div className="h-[220px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dataArray} layout="vertical" margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={true} opacity={0.2} />
+              <XAxis type="number" hide />
+              <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 10, fontWeight: 700, fill: "#64748b" }} axisLine={false} tickLine={false} />
+              <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: "12px", border: "1px solid #E5E7EB" }} />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={25}>
+                {dataArray.map((entry: any, index: number) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+                <LabelList dataKey="value" position="right" style={{ fontSize: '11px', fontWeight: 700, fill: '#1e293b' }} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   const renderMiniPie = (dataArray: any[], title: string, subtitle: string) => (
     <Card className="border border-border shadow-sm bg-white overflow-hidden">
@@ -300,14 +338,22 @@ export function LaudosTab({ laudos, processos = [] }: { laudos: any[], processos
         <KpiCard title="Acidente reconhecido" value={stats.acidenteTrabalhoCount} icon={<AlertTriangle className="h-5 w-5 text-amber-500" />} subtext="Casos com acidente de trabalho" percentage={`${stats.total > 0 ? ((stats.acidenteTrabalhoCount / stats.total) * 100).toFixed(1) : 0}%`} color="text-amber-500" />
       </div>
 
+      {/* Linha 2 */}
       <div className="grid gap-4 lg:grid-cols-2">
         {renderMiniPie(tiposData, "Natureza das Perícias", "Distribuição por especialidade técnica")}
         {renderMiniPie(medicaGeralData, "Doença Médica Não Psíquica", "Causa, Concausa e Sem Nexo")}
-        
+      </div>
+
+      {/* Linha 3 */}
+      <div className="grid gap-4 lg:grid-cols-2">
         {renderMiniPie(mentalData, "Doença Psíquica", "Causa, Concausa e Sem Nexo")}
         {renderMiniPie(ergonomiaData, "Ergonomia", "Riscos ergonômicos")}
+      </div>
 
+      {/* Linha 4 */}
+      <div className="grid gap-4 lg:grid-cols-3">
         {renderMiniPie(insalubridadeData, "Insalubridade", "Caracterizada e Não Caracterizada")}
+        {renderGrauInsalubridade(grauInsalubridadeData)}
         {renderMiniPie(periculosidadeData, "Periculosidade", "Caracterizada e Não Caracterizada")}
       </div>
 
