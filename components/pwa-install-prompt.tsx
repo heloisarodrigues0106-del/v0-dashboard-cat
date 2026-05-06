@@ -94,14 +94,14 @@ export function PWAInstallPrompt() {
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#F6D000]/10 p-2">
                 <Image
                   src="/caterpillar-logo.svg"
-                  alt="Dashboard CAT"
+                  alt="Labor Hub | Caterpillar"
                   width={40}
                   height={40}
                   className="h-auto w-full brightness-0 invert"
                 />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Dashboard CAT</h2>
+                <h2 className="text-lg font-bold text-white">Labor Hub | Caterpillar</h2>
                 <p className="text-xs text-[#888]">Instale para acesso rápido</p>
               </div>
             </div>

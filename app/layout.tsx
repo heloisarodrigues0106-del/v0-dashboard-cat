@@ -4,14 +4,14 @@ import { ServiceWorkerRegistration } from '@/components/sw-registration'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Dashboard CAT',
+  title: 'Labor Hub | Caterpillar',
   description: 'Painel executivo para gestão de processos trabalhistas e análise de risco jurídico',
   generator: 'v0.app',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Dashboard CAT',
+    title: 'Labor Hub | Caterpillar',
   },
   icons: {
     icon: [

@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Dashboard CAT',
-    short_name: 'Dashboard CAT',
+    name: 'Labor Hub | Caterpillar',
+    short_name: 'Labor Hub',
     description: 'Painel executivo para gestão de processos trabalhistas e análise de risco jurídico',
     start_url: '/',
     display: 'standalone',
