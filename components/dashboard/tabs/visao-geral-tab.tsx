@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { FileText, DollarSign, MapPin, Archive, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
+import { FileText, DollarSign, MapPin, Archive, ArrowUpRight, ArrowDownRight, Activity, TrendingUp } from "lucide-react"
 import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, PieChart, Pie, Cell, Legend, Label } from "recharts"
 import { ComposableMap, Geographies, Geography } from "react-simple-maps"
 import { scaleLinear } from "d3-scale"
@@ -189,6 +189,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         processosAtivos: processosAtivosCount,
         processosArquivados: processosArquivadosCount,
         valorCausa: valorTotal,
+        ticketMedio: processosAtivosCount > 0 ? valorTotal / processosAtivosCount : 0,
         topComarcasString: topComarcasDetalhes.map(c => c.name).join(', ') || 'N/A',
         topComarcasDetalhes
       },
@@ -215,7 +216,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
     <div className="space-y-6">
       
       {/* 1. KPIs */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card className="border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
             <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">TOTAL DE PROCESSOS</CardTitle>
@@ -259,8 +260,23 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
               <DollarSign className="h-4 w-4 text-emerald-600" />
             </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="text-[32px] font-bold text-emerald-600 tracking-tight leading-none">{formatCurrency(kpis.valorCausa)}</div>
+          <CardContent className="px-5 pb-5 overflow-hidden">
+            <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-emerald-600 tracking-tight leading-none whitespace-nowrap tabular-nums">
+              {formatCurrency(kpis.valorCausa)}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-border shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">TICKET MÉDIO (ATIVOS)</CardTitle>
+            <div className="bg-amber-50 p-2 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-amber-600" />
+            </div>
+          </CardHeader>
+          <CardContent className="px-5 pb-5 overflow-hidden">
+            <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-amber-600 tracking-tight leading-none whitespace-nowrap tabular-nums">
+              {formatCurrency(kpis.ticketMedio)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -340,7 +356,7 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400 text-[11px] font-bold tracking-widest">Valor Total:</span>
-                    <span className="font-bold text-emerald-600 text-sm">
+                    <span className="font-bold text-emerald-600 text-sm whitespace-nowrap tabular-nums">
                       {formatCurrency(hoveredUF.details.valorTotal)}
                     </span>
                   </div>

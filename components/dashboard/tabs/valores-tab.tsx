@@ -143,8 +143,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                   <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Anterior</CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground/50" />
                 </CardHeader>
-                <CardContent className="px-5 pb-5">
-                  <div className="text-[32px] font-bold text-slate-400 tracking-tight leading-none">{formatCurrency(kpis.quarter.anterior)}</div>
+                <CardContent className="px-5 pb-5 overflow-hidden">
+                  <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-400 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.anterior)}</div>
                 </CardContent>
               </Card>
               
@@ -153,8 +153,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                   <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Atual</CardTitle>
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent className="px-5 pb-5">
-                  <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.quarter.atual)}</div>
+                <CardContent className="px-5 pb-5 overflow-hidden">
+                  <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.atual)}</div>
                 </CardContent>
               </Card>
 
@@ -162,8 +162,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
                   <CardTitle className={`text-[11px] font-bold uppercase tracking-[0.04em] ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>Variação do Período</CardTitle>
                 </CardHeader>
-                <CardContent className="px-5 pb-5">
-                    <div className={`text-[32px] font-bold tracking-tight leading-none ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>
+                <CardContent className="px-5 pb-5 overflow-hidden">
+                    <div className={`text-[clamp(1.25rem,4vw,2rem)] font-bold tracking-tight leading-none whitespace-nowrap tabular-nums ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>
                       {diffQuarter > 0 ? '+' : ''}{formatCurrency(diffQuarter)}
                     </div>
                     <div className="text-[10px] mt-2 font-bold flex items-center gap-1 uppercase tracking-tight text-slate-400">
@@ -322,8 +322,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                 <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Custas Processuais</CardTitle>
                 <Landmark className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent className="px-5 pb-5">
-                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.custas)}</div>
+              <CardContent className="px-5 pb-5 overflow-hidden">
+                <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.geral.custas)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
@@ -331,8 +331,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                 <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Depósitos Recursais</CardTitle>
                 <WalletCards className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent className="px-5 pb-5">
-                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.depositoRecursal)}</div>
+              <CardContent className="px-5 pb-5 overflow-hidden">
+                <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.geral.depositoRecursal)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
@@ -340,8 +340,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                 <CardTitle className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.04em]">Depósitos Judiciais</CardTitle>
                 <Landmark className="h-4 w-4 text-slate-400" />
               </CardHeader>
-              <CardContent className="px-5 pb-5">
-                <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{formatCurrency(kpis.geral.depositoJudicial)}</div>
+              <CardContent className="px-5 pb-5 overflow-hidden">
+                <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.geral.depositoJudicial)}</div>
               </CardContent>
             </Card>
             <Card className="shadow-sm border-slate-200 bg-white">
