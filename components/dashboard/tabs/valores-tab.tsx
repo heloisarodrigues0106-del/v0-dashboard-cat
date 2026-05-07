@@ -138,23 +138,27 @@ export function ValoresTab({ valores }: { valores: any[] }) {
             {/* Visões de Quarter Dinâmicas */}
             <h3 className="text-[16px] font-bold text-[#111111] tracking-tight">Comparativo trimestral - Risco {formatLabel(riscoAtivo)}</h3>
             <div className="grid gap-4 md:grid-cols-3">
-              <Card className="shadow-sm border-slate-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Anterior</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground/50" />
+              <Card className="shadow-sm border-slate-200 relative overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">Total Quarter Anterior</CardTitle>
+                  <div className="absolute top-3 right-3 opacity-30">
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
                 </CardHeader>
-                <CardContent className="px-5 pb-5 overflow-hidden">
-                  <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-400 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.anterior)}</div>
+                <CardContent className="px-4 pb-5 overflow-hidden">
+                  <div className="text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold text-slate-400 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.anterior)}</div>
                 </CardContent>
               </Card>
               
-              <Card className="shadow-sm border-slate-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Total Quarter Atual</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <Card className="shadow-sm border-slate-200 relative overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+                  <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">Total Quarter Atual</CardTitle>
+                  <div className="absolute top-3 right-3 opacity-50">
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
                 </CardHeader>
-                <CardContent className="px-5 pb-5 overflow-hidden">
-                  <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.atual)}</div>
+                <CardContent className="px-4 pb-5 overflow-hidden">
+                  <div className="text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">{formatCurrency(kpis.quarter.atual)}</div>
                 </CardContent>
               </Card>
 
@@ -162,8 +166,8 @@ export function ValoresTab({ valores }: { valores: any[] }) {
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
                   <CardTitle className={`text-[11px] font-bold uppercase tracking-[0.04em] ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>Variação do Período</CardTitle>
                 </CardHeader>
-                <CardContent className="px-5 pb-5 overflow-hidden">
-                    <div className={`text-[clamp(1.25rem,4vw,2rem)] font-bold tracking-tight leading-none whitespace-nowrap tabular-nums ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>
+                <CardContent className="px-4 pb-5 overflow-hidden">
+                    <div className={`text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold tracking-tight leading-none whitespace-nowrap tabular-nums ${diffQuarter > 0 ? "text-destructive" : diffQuarter < 0 ? "text-emerald-600" : "text-slate-500"}`}>
                       {diffQuarter > 0 ? '+' : ''}{formatCurrency(diffQuarter)}
                     </div>
                     <div className="text-[10px] mt-2 font-bold flex items-center gap-1 uppercase tracking-tight text-slate-400">

@@ -216,51 +216,51 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
       
       {/* 1. KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">TOTAL DE PROCESSOS</CardTitle>
-            <div className="bg-slate-100 p-2 rounded-lg">
-              <FileText className="h-4 w-4 text-slate-600" />
+        <Card className="border-border shadow-sm relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">TOTAL DE PROCESSOS</CardTitle>
+            <div className="absolute top-3 right-3 bg-slate-100 p-1.5 rounded-lg">
+              <FileText className="h-3.5 w-3.5 text-slate-600" />
             </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="text-[32px] font-bold text-slate-800 tracking-tight leading-none">{kpis.totalProcessos}</div>
+          <CardContent className="px-4 pb-5">
+            <div className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap">{kpis.totalProcessos}</div>
           </CardContent>
         </Card>
 
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">PROCESSOS ATIVOS</CardTitle>
-            <div className="bg-blue-50 p-2 rounded-lg">
-              <Activity className="h-4 w-4 text-[#183B8C]" />
+        <Card className="border-border shadow-sm relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">PROCESSOS ATIVOS</CardTitle>
+            <div className="absolute top-3 right-3 bg-blue-50 p-1.5 rounded-lg">
+              <Activity className="h-3.5 w-3.5 text-[#183B8C]" />
             </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="text-[32px] font-bold text-[#183B8C] tracking-tight leading-none">{kpis.processosAtivos}</div>
+          <CardContent className="px-4 pb-5">
+            <div className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-[#183B8C] tracking-tight leading-none whitespace-nowrap">{kpis.processosAtivos}</div>
           </CardContent>
         </Card>
 
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">PROCESSOS ARQUIVADOS</CardTitle>
-            <div className="bg-slate-50 p-2 rounded-lg">
-              <Archive className="h-4 w-4 text-slate-500" />
+        <Card className="border-border shadow-sm relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">PROCESSOS ARQUIVADOS</CardTitle>
+            <div className="absolute top-3 right-3 bg-slate-50 p-1.5 rounded-lg">
+              <Archive className="h-3.5 w-3.5 text-slate-500" />
             </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="text-[32px] font-bold text-slate-500 tracking-tight leading-none">{kpis.processosArquivados}</div>
+          <CardContent className="px-4 pb-5">
+            <div className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-slate-500 tracking-tight leading-none whitespace-nowrap">{kpis.processosArquivados}</div>
           </CardContent>
         </Card>
         
-        <Card className="border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">VALOR TOTAL DA CAUSA (ATIVOS)</CardTitle>
-            <div className="bg-emerald-50 p-2 rounded-lg">
-              <DollarSign className="h-4 w-4 text-emerald-600" />
+        <Card className="border-border shadow-sm relative overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500 pr-8">VALOR TOTAL DA CAUSA (ATIVOS)</CardTitle>
+            <div className="absolute top-3 right-3 bg-emerald-50 p-1.5 rounded-lg opacity-80">
+              <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
             </div>
           </CardHeader>
-          <CardContent className="px-5 pb-5 overflow-hidden">
-            <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-emerald-600 tracking-tight leading-none whitespace-nowrap tabular-nums">
+          <CardContent className="px-4 pb-5 overflow-hidden">
+            <div className="text-[clamp(1rem,3.5vw,1.875rem)] font-bold text-emerald-600 tracking-tight leading-none whitespace-nowrap tabular-nums">
               {formatCurrency(kpis.valorCausa)}
             </div>
           </CardContent>

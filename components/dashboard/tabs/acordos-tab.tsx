@@ -165,22 +165,22 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       {/* 3 Summary Cards */}
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
         <Card className="shadow-sm border-slate-200">
-          <CardHeader className="pb-2 pt-4 px-5">
+          <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Total da Causa</CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5 overflow-hidden">
-            <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">
+          <CardContent className="px-4 pb-5 overflow-hidden">
+            <div className="text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">
               {formatCurrency(metrics.totalCausa)}
             </div>
           </CardContent>
         </Card>
 
         <Card className="shadow-sm border-slate-200">
-          <CardHeader className="pb-2 pt-4 px-5">
+          <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Total Acordado</CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5 overflow-hidden">
-            <div className="text-[clamp(1.25rem,4vw,2rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">
+          <CardContent className="px-4 pb-5 overflow-hidden">
+            <div className="text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">
               {formatCurrency(metrics.totalAcordado)}
             </div>
           </CardContent>
