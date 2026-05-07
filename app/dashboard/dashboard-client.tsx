@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { SidebarNav } from "@/components/dashboard/sidebar-nav"
-import { PWAInstallPrompt } from "@/components/pwa-install-prompt"
+
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 
 // Importações dos novos componentes de Abas (agora rotas do sidebar)
@@ -243,7 +243,7 @@ export default function DashboardClient({
   return (
     <div className="flex min-h-screen bg-background">
       {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
+
 
       {/* Sidebar */}
       <SidebarNav 
