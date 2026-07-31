@@ -26,14 +26,16 @@ export default function DashboardClient({
   pedidosSentenca,
   pedidosAcordao,
   laudos,
-  valores
+  valoresOperacionais,
+  valoresProvisionamento
 }: { 
   processos: any[],
   pedidosInicial: any[],
   pedidosSentenca: any[],
   pedidosAcordao: any[],
   laudos: any[],
-  valores: any[]
+  valoresOperacionais: any[],
+  valoresProvisionamento: any[]
 }) {
   const router = useRouter()
   const [activeNavItem, setActiveNavItem] = useState("dashboard")
@@ -219,7 +221,8 @@ export default function DashboardClient({
   const filteredPedidosSentenca = useMemo(() => pedidosSentenca.filter((p: any) => validProcessosSet.has(p.numero_processo)), [pedidosSentenca, validProcessosSet])
   const filteredPedidosAcordao = useMemo(() => pedidosAcordao.filter((p: any) => validProcessosSet.has(p.numero_processo)), [pedidosAcordao, validProcessosSet])
   const filteredLaudos = useMemo(() => laudos.filter((l: any) => validProcessosSet.has(l.numero_processo)), [laudos, validProcessosSet])
-  const filteredValores = useMemo(() => valores.filter((v: any) => validProcessosSet.has(v.numero_processo)), [valores, validProcessosSet])
+  const filteredValoresOperacionais = useMemo(() => valoresOperacionais.filter((v: any) => validProcessosSet.has(v.numero_processo)), [valoresOperacionais, validProcessosSet])
+  const filteredValoresProvisionamento = useMemo(() => valoresProvisionamento.filter((v: any) => validProcessosSet.has(v.numero_processo)), [valoresProvisionamento, validProcessosSet])
 
   const getBreadcrumb = () => {
     switch (activeNavItem) {
@@ -330,7 +333,7 @@ export default function DashboardClient({
           {/* 3. Acordos */}
           {activeNavItem === "acordos" && (
             <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
-               <AcordosTab processos={filteredProcessos} valores={filteredValores} />
+               <AcordosTab processos={filteredProcessos} valores={filteredValoresProvisionamento} />
             </div>
           )}
 
@@ -344,7 +347,11 @@ export default function DashboardClient({
           {/* 4. Valores */}
           {activeNavItem === "valores" && (
             <div className="px-4 md:px-8 pt-4 md:pt-6 animate-in fade-in-50 duration-500">
-               <ValoresTab valores={filteredValores} />
+               <ValoresTab 
+                 valoresOperacionais={filteredValoresOperacionais} 
+                 valoresProvisionamento={filteredValoresProvisionamento} 
+                 processos={filteredProcessos}
+               />
             </div>
           )}
 

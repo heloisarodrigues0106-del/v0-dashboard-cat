@@ -9,6 +9,7 @@ import {
 } from "recharts"
 import { TrendingDown, Percent, CheckCircle2, Search, DollarSign, ArrowDownRight } from "lucide-react"
 import { formatLabel } from "@/lib/utils"
+import { toNumber } from "@/lib/config"
 
 const CHART_COLORS = ['#102A63', '#183B8C', '#4F6DB8', '#94A3B8', '#14B8A6'];
 
@@ -54,11 +55,13 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       let riscoProvavel = 0
       
       if (valorRecord) {
-        riscoProvavel = Number(valorRecord.provavel_total_anterior) || Number(valorRecord.provavel_total_atual) || 0
+        const anterior = toNumber(valorRecord.provavel_total_anterior)
+        const atual = toNumber(valorRecord.provavel_total_atual)
+        riscoProvavel = anterior > 0 ? anterior : (atual > 0 ? atual : 0)
       }
       
-      const causa = riscoProvavel > 0 ? riscoProvavel : Number(p.valor_causa || p.valor_acao || 0)
-      const acordado = Number(p.valor_acordo || 0)
+      const causa = riscoProvavel > 0 ? riscoProvavel : toNumber(p.valor_causa || p.valor_acao)
+      const acordado = toNumber(p.valor_acordo)
       
       // Apenas somamos para a métrica de ECONOMIA se houver um valor base para comparar
       if (causa > 0) {

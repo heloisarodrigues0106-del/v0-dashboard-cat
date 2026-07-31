@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import DashboardClient from './dashboard-client'
+import { provisionamentoConfig } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +13,8 @@ export default async function DashboardPage() {
     { data: pedidosSentenca, error: errPS },
     { data: pedidosAcordao, error: errPA },
     { data: laudos, error: errLaudo },
-    { data: valores, error: errValores }
+    { data: valoresOperacionais, error: errValoresOp },
+    { data: valoresProvisionamento, error: errValoresProv }
   ] = await Promise.all([
     supabase.from('tb_processo').select(
       'numero_processo, nome_reclamante, status_reclamante, funcao_reclamante, advogado_reclamante, ' +
@@ -29,28 +31,26 @@ export default async function DashboardPage() {
     supabase.from('tb_pedidos_acordao').select('*'),
     supabase.from('tb_laudo').select('*'),
     supabase.from('tb_valores').select(
-      'numero_processo, deposito_recursal, apolice, custas_processuais, ' +
-      'deposito_judicial, provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, ' +
-      'provavel_juros_quarter_anterior, provavel_total_anterior, provavel_principal_quarter_atual, ' +
-      'provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
-      'possivel_principal_quarter_anterior, possivel_correcao_quarter_anterior, ' +
-      'possivel_juros_quarter_anterior, possivel_total_anterior, ' +
-      'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, ' +
-      'possivel_juros_quarter_atual, possivel_total_atual, ' +
-      'remoto_principal_quarter_anterior, remoto_correcao_quarter_anterior, ' +
-      'remoto_juros_quarter_anterior, remoto_total_anterior, ' +
-      'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, ' +
-      'remoto_juros_quarter_atual, remoto_total_atual, ' +
-      'justificativa_reavaliacao_quarter_anterior, justificativa_reavaliacao_quarter_atual'
+      'numero_processo, deposito_recursal, apolice, custas_processuais, deposito_judicial'
     ),
+    supabase.from(provisionamentoConfig.tabela).select(
+      'numero_processo, ' +
+      'provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, provavel_juros_quarter_anterior, provavel_total_anterior, ' +
+      'possivel_principal_quarter_anterior, possivel_correcao_quarter_anterior, possivel_juros_quarter_anterior, possivel_total_anterior, ' +
+      'remoto_principal_quarter_anterior, remoto_correcao_quarter_anterior, remoto_juros_quarter_anterior, remoto_total_anterior, ' +
+      'provavel_principal_quarter_atual, provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
+      'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, possivel_juros_quarter_atual, possivel_total_atual, ' +
+      'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual, ' +
+      'justificativa_reavaliacao_quarter_atual, valor_pago_reclamante'
+    )
   ])
 
-  const erros = { errProc, errPI, errPS, errPA, errLaudo, errValores }
+  const erros = { errProc, errPI, errPS, errPA, errLaudo, errValoresOp, errValoresProv }
   Object.entries(erros).forEach(([k, v]) => {
     if (v) console.error(`[dashboard] ${k}:`, JSON.stringify(v))
   })
 
-  const errorMsg = [errProc, errValores, errLaudo]
+  const errorMsg = [errProc, errValoresOp, errValoresProv, errLaudo]
     .filter(Boolean)
     .map((e: any) => e.message)
     .join(" | ")
@@ -68,7 +68,8 @@ export default async function DashboardPage() {
         pedidosSentenca={pedidosSentenca || []}
         pedidosAcordao={pedidosAcordao || []}
         laudos={laudos || []}
-        valores={valores || []}
+        valoresOperacionais={valoresOperacionais || []}
+        valoresProvisionamento={valoresProvisionamento || []}
       />
     </>
   )
