@@ -34,13 +34,13 @@ export default async function DashboardPage() {
     supabase.from('tb_valores').select(
       'numero_processo, deposito_recursal, apolice, custas_processuais, deposito_judicial'
     ),
-    supabase.from('tb_valores_q1_2026').select(
+    supabase.from(provisionamentoConfig.tabelaAnterior).select(
       'numero_processo, ' +
       'provavel_principal_quarter_atual, provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, possivel_juros_quarter_atual, possivel_total_atual, ' +
       'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual'
     ),
-    supabase.from('tb_valores_q2_2026').select(
+    supabase.from(provisionamentoConfig.tabelaAtual).select(
       'numero_processo, ' +
       'provavel_principal_quarter_atual, provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, possivel_juros_quarter_atual, possivel_total_atual, ' +
