@@ -49,14 +49,15 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      // 1. Identificar o valor base de risco (Regra Cascata - Apenas Risco Provável).
-      // Busca a provisão anterior provável, se não tiver usa a atual provável, se não tiver usa o valor da causa bruto
+      // 1. Identificar o valor base de risco (Regra Cascata - Risco Provável + Possível).
+      // Busca a provisão anterior (provável + possível). Se não houver, usa a atual (provável + possível).
+      // Se não houver, usa o valor da causa bruto.
       const valorRecord = valoresMap.get(p.numero_processo)
       let riscoProvavel = 0
       
       if (valorRecord) {
-        const anterior = toNumber(valorRecord.provavel_total_anterior)
-        const atual = toNumber(valorRecord.provavel_total_atual)
+        const anterior = toNumber(valorRecord.provavel_total_anterior) + toNumber(valorRecord.possivel_total_anterior)
+        const atual = toNumber(valorRecord.provavel_total_atual) + toNumber(valorRecord.possivel_total_atual)
         riscoProvavel = anterior > 0 ? anterior : (atual > 0 ? atual : 0)
       }
       
