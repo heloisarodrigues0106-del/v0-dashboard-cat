@@ -106,8 +106,16 @@ export function VisaoGeralTab({ processos, pedidos = [] }: { processos: any[], p
         valorTotal += (p.valor_causa || 0)
       }
 
-      if (p.advogado_reclamante) dictAdvogados[p.advogado_reclamante] = (dictAdvogados[p.advogado_reclamante] || 0) + 1
-      if (p.funcao_reclamante) dictFuncoes[p.funcao_reclamante] = (dictFuncoes[p.funcao_reclamante] || 0) + 1
+      if (p.advogado_reclamante) {
+        const rawName = p.advogado_reclamante.trim();
+        const normName = rawName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/\s+/g, " ");
+        dictAdvogados[normName] = (dictAdvogados[normName] || 0) + 1;
+      }
+      if (p.funcao_reclamante) {
+        const rawFunc = p.funcao_reclamante.trim();
+        const normFunc = rawFunc.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/\s+/g, " ");
+        dictFuncoes[normFunc] = (dictFuncoes[normFunc] || 0) + 1;
+      }
       
       let fase = (p.fase_processual || p.fase_processo_atual || "").toUpperCase().trim()
       if (fase === "EXECUÇÃO") fase = "EXECUCAO"
