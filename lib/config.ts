@@ -1,6 +1,5 @@
 export const provisionamentoConfig = {
-  tabelaAtual: "tb_valores_q2_2026",
-  tabelaAnterior: "tb_valores_q1_2026",
+  tabela: "tb_valores_q2_2026",
   quarterAnterior: "Q1 2026",
   quarterAtual: "Q2 2026",
 };

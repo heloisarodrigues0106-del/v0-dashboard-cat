@@ -14,8 +14,7 @@ export default async function DashboardPage() {
     { data: pedidosAcordao, error: errPA },
     { data: laudos, error: errLaudo },
     { data: valoresOperacionais, error: errValoresOp },
-    { data: valoresQ1, error: errValoresQ1 },
-    { data: valoresQ2, error: errValoresQ2 }
+    { data: valoresProvisionamento, error: errValoresProv }
   ] = await Promise.all([
     supabase.from('tb_processo').select(
       'numero_processo, nome_reclamante, status_reclamante, funcao_reclamante, advogado_reclamante, ' +
@@ -34,14 +33,11 @@ export default async function DashboardPage() {
     supabase.from('tb_valores').select(
       'numero_processo, deposito_recursal, apolice, custas_processuais, deposito_judicial'
     ),
-    supabase.from(provisionamentoConfig.tabelaAnterior).select(
+    supabase.from(provisionamentoConfig.tabela).select(
       'numero_processo, ' +
-      'provavel_principal_quarter_atual, provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
-      'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, possivel_juros_quarter_atual, possivel_total_atual, ' +
-      'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual'
-    ),
-    supabase.from(provisionamentoConfig.tabelaAtual).select(
-      'numero_processo, ' +
+      'provavel_principal_quarter_anterior, provavel_correcao_quarter_anterior, provavel_juros_quarter_anterior, provavel_total_anterior, ' +
+      'possivel_principal_quarter_anterior, possivel_correcao_quarter_anterior, possivel_juros_quarter_anterior, possivel_total_anterior, ' +
+      'remoto_principal_quarter_anterior, remoto_correcao_quarter_anterior, remoto_juros_quarter_anterior, remoto_total_anterior, ' +
       'provavel_principal_quarter_atual, provavel_correcao_quarter_atual, provavel_juros_quarter_atual, provavel_total_atual, ' +
       'possivel_principal_quarter_atual, possivel_correcao_quarter_atual, possivel_juros_quarter_atual, possivel_total_atual, ' +
       'remoto_principal_quarter_atual, remoto_correcao_quarter_atual, remoto_juros_quarter_atual, remoto_total_atual, ' +
@@ -49,88 +45,31 @@ export default async function DashboardPage() {
     )
   ])
 
-  const erros = { errProc, errPI, errPS, errPA, errLaudo, errValoresOp, errValoresQ1, errValoresQ2 }
+  const erros = { errProc, errPI, errPS, errPA, errLaudo, errValoresOp, errValoresProv }
   Object.entries(erros).forEach(([k, v]) => {
     if (v) console.error(`[dashboard] ${k}:`, JSON.stringify(v))
   })
 
-  const errorMsg = [errProc, errValoresOp, errValoresQ1, errValoresQ2, errLaudo]
+  const errorMsg = [errProc, errValoresOp, errValoresProv, errLaudo]
     .filter(Boolean)
     .map((e: any) => e.message)
     .join(" | ")
 
-  // Consolidar valores do Q1 (Anterior) e Q2 (Atual) por numero_processo
-  const q1Map = new Map<string, any>()
-  const safeValoresQ1 = (valoresQ1 as any[]) || []
-  safeValoresQ1.forEach((row: any) => {
-    if (row.numero_processo) {
-      q1Map.set(row.numero_processo, row)
+  function formatCNJ(numStr: string): string {
+    if (!numStr) return "";
+    const clean = numStr.replace(/[^a-zA-Z0-9]/g, "").trim();
+    if (clean.length === 20) {
+      return `${clean.slice(0, 7)}-${clean.slice(7, 9)}.${clean.slice(9, 13)}.${clean.slice(13, 14)}.${clean.slice(14, 16)}.${clean.slice(16)}`;
     }
-  })
+    return numStr.trim();
+  }
 
-  const q2Map = new Map<string, any>()
-  const safeValoresQ2 = (valoresQ2 as any[]) || []
-  safeValoresQ2.forEach((row: any) => {
-    if (row.numero_processo) {
-      q2Map.set(row.numero_processo, row)
-    }
-  })
-
-  const allProcessosSet = new Set<string>([
-    ...safeValoresQ1.map((r: any) => r.numero_processo),
-    ...safeValoresQ2.map((r: any) => r.numero_processo)
-  ].filter(Boolean))
-
-  const valoresProvisionamento = Array.from(allProcessosSet).map(numProc => {
-    const q1Row = q1Map.get(numProc) || {}
-    const q2Row = q2Map.get(numProc) || {}
-
-    return {
-      numero_processo: numProc,
-      
-      // Valores Q1 (Anterior) vem do Q1's actual/atual columns
-      provavel_principal_quarter_anterior: q1Row.provavel_principal_quarter_atual ?? null,
-      provavel_correcao_quarter_anterior: q1Row.provavel_correcao_quarter_atual ?? null,
-      provavel_juros_quarter_anterior: q1Row.provavel_juros_quarter_atual ?? null,
-      provavel_total_anterior: q1Row.provavel_total_atual ?? 0,
-
-      possivel_principal_quarter_anterior: q1Row.possivel_principal_quarter_atual ?? null,
-      possivel_correcao_quarter_anterior: q1Row.possivel_correcao_quarter_atual ?? null,
-      possivel_juros_quarter_anterior: q1Row.possivel_juros_quarter_atual ?? null,
-      possivel_total_anterior: q1Row.possivel_total_atual ?? 0,
-
-      remoto_principal_quarter_anterior: q1Row.remoto_principal_quarter_atual ?? null,
-      remoto_correcao_quarter_anterior: q1Row.remoto_correcao_quarter_atual ?? null,
-      remoto_juros_quarter_anterior: q1Row.remoto_juros_quarter_atual ?? null,
-      remoto_total_anterior: q1Row.remoto_total_atual ?? 0,
-
-      // Valores Q2 (Atual) vem do Q2's actual/atual columns
-      provavel_principal_quarter_atual: q2Row.provavel_principal_quarter_atual ?? null,
-      provavel_correcao_quarter_atual: q2Row.provavel_correcao_quarter_atual ?? null,
-      provavel_juros_quarter_atual: q2Row.provavel_juros_quarter_atual ?? null,
-      provavel_total_atual: q2Row.provavel_total_atual ?? 0,
-
-      possivel_principal_quarter_atual: q2Row.possivel_principal_quarter_atual ?? null,
-      possivel_correcao_quarter_atual: q2Row.possivel_correcao_quarter_atual ?? null,
-      possivel_juros_quarter_atual: q2Row.possivel_juros_quarter_atual ?? null,
-      possivel_total_atual: q2Row.possivel_total_atual ?? 0,
-
-      remoto_principal_quarter_atual: q2Row.remoto_principal_quarter_atual ?? null,
-      remoto_correcao_quarter_atual: q2Row.remoto_correcao_quarter_atual ?? null,
-      remoto_juros_quarter_atual: q2Row.remoto_juros_quarter_atual ?? null,
-      remoto_total_atual: q2Row.remoto_total_atual ?? 0,
-
-      justificativa_reavaliacao_quarter_atual: q2Row.justificativa_reavaliacao_quarter_atual || "",
-      valor_pago_reclamante: q2Row.valor_pago_reclamante ?? 0
-    }
-  })
-
-  // Normalização de comarcas (Requisito: Agrupar Piracicaba, Hortolândia e Sete Lagoas)
+  // Normalização de comarcas (Requisito: Agrupar Piracicaba, Hortolândia e Sete Lagoas) e formatação de processos
   const normalizedProcessos = ((processos as any[]) || []).map((p: any) => {
+    let normalized = p.comarca;
     if (p.comarca) {
       const clean = p.comarca.trim();
       const upper = clean.toUpperCase();
-      let normalized = clean;
       
       if (upper === 'PIRACICABA') {
         normalized = 'PIRACICABA';
@@ -141,11 +80,43 @@ export default async function DashboardPage() {
       } else {
         normalized = upper; // Garante consistência visual em caixa alta para todas as outras comarcas
       }
-      
-      return { ...p, comarca: normalized };
     }
-    return p;
+    return {
+      ...p,
+      numero_processo: formatCNJ(p.numero_processo),
+      comarca: normalized
+    };
   });
+
+  const normalizedValoresProvisionamento = ((valoresProvisionamento as any[]) || []).map((v: any) => ({
+    ...v,
+    numero_processo: formatCNJ(v.numero_processo)
+  }));
+
+  const normalizedPedidosInicial = ((pedidosInicial as any[]) || []).map((p: any) => ({
+    ...p,
+    numero_processo: formatCNJ(p.numero_processo)
+  }));
+
+  const normalizedPedidosSentenca = ((pedidosSentenca as any[]) || []).map((p: any) => ({
+    ...p,
+    numero_processo: formatCNJ(p.numero_processo)
+  }));
+
+  const normalizedPedidosAcordao = ((pedidosAcordao as any[]) || []).map((p: any) => ({
+    ...p,
+    numero_processo: formatCNJ(p.numero_processo)
+  }));
+
+  const normalizedLaudos = ((laudos as any[]) || []).map((l: any) => ({
+    ...l,
+    numero_processo: formatCNJ(l.numero_processo)
+  }));
+
+  const normalizedValoresOperacionais = ((valoresOperacionais as any[]) || []).map((v: any) => ({
+    ...v,
+    numero_processo: formatCNJ(v.numero_processo)
+  }));
 
   return (
     <>
@@ -156,12 +127,12 @@ export default async function DashboardPage() {
       )}
       <DashboardClient
         processos={normalizedProcessos}
-        pedidosInicial={pedidosInicial || []}
-        pedidosSentenca={pedidosSentenca || []}
-        pedidosAcordao={pedidosAcordao || []}
-        laudos={laudos || []}
-        valoresOperacionais={valoresOperacionais || []}
-        valoresProvisionamento={valoresProvisionamento || []}
+        pedidosInicial={normalizedPedidosInicial}
+        pedidosSentenca={normalizedPedidosSentenca}
+        pedidosAcordao={normalizedPedidosAcordao}
+        laudos={normalizedLaudos}
+        valoresOperacionais={normalizedValoresOperacionais}
+        valoresProvisionamento={normalizedValoresProvisionamento}
       />
     </>
   )
