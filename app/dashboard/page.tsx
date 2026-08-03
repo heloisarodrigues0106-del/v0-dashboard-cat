@@ -55,6 +55,28 @@ export default async function DashboardPage() {
     .map((e: any) => e.message)
     .join(" | ")
 
+  // Normalização de comarcas (Requisito: Agrupar Piracicaba, Hortolândia e Sete Lagoas)
+  const normalizedProcessos = ((processos as any[]) || []).map((p: any) => {
+    if (p.comarca) {
+      const clean = p.comarca.trim();
+      const upper = clean.toUpperCase();
+      let normalized = clean;
+      
+      if (upper === 'PIRACICABA') {
+        normalized = 'PIRACICABA';
+      } else if (upper === 'HORTOLANDIA' || upper === 'HORTOLÂNDIA') {
+        normalized = 'HORTOLÂNDIA';
+      } else if (upper === 'SETE LAGOAS') {
+        normalized = 'SETE LAGOAS';
+      } else {
+        normalized = upper; // Garante consistência visual em caixa alta para todas as outras comarcas
+      }
+      
+      return { ...p, comarca: normalized };
+    }
+    return p;
+  });
+
   return (
     <>
       {errorMsg && (
@@ -63,7 +85,7 @@ export default async function DashboardPage() {
         </div>
       )}
       <DashboardClient
-        processos={processos || []}
+        processos={normalizedProcessos}
         pedidosInicial={pedidosInicial || []}
         pedidosSentenca={pedidosSentenca || []}
         pedidosAcordao={pedidosAcordao || []}
