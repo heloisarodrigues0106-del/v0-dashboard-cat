@@ -94,13 +94,22 @@ export function ProcessesTable({
   
   const filteredProcessos = useMemo(() => {
     const query = searchQuery.toLowerCase().trim()
-    if (!query) return processos
+    const baseList = !query 
+      ? [...processos] 
+      : processos.filter((p) => 
+          (p.nome_reclamante || "").toLowerCase().includes(query) ||
+          (p.numero_processo || "").toLowerCase().includes(query) ||
+          (p.funcao_reclamante || "").toLowerCase().includes(query)
+        )
 
-    return processos.filter((p) => 
-      (p.nome_reclamante || "").toLowerCase().includes(query) ||
-      (p.numero_processo || "").toLowerCase().includes(query) ||
-      (p.funcao_reclamante || "").toLowerCase().includes(query)
-    )
+    return baseList.sort((a, b) => {
+      const aArchived = String(a.instancia || "").toUpperCase().includes("ARQUIVADO")
+      const bArchived = String(b.instancia || "").toUpperCase().includes("ARQUIVADO")
+      
+      if (aArchived && !bArchived) return 1
+      if (!aArchived && bArchived) return -1
+      return 0
+    })
   }, [processos, searchQuery])
 
   const totalPages = Math.max(1, Math.ceil(filteredProcessos.length / ITEMS_PER_PAGE))

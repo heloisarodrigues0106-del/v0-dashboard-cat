@@ -49,26 +49,18 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      // 1. Identificar o valor base de risco. 
-      // Busca a provisão anterior (maior valor entre provável, possível e remoto), se não tiver usa a atual, se não tiver usa o valor da causa bruto
+      // 1. Identificar o valor base de risco (Regra Cascata - Apenas Risco Provável).
+      // Busca a provisão anterior provável, se não tiver usa a atual provável, se não tiver usa o valor da causa bruto
       const valorRecord = valoresMap.get(p.numero_processo)
-      let riscoBase = 0
+      let riscoProvavel = 0
       
       if (valorRecord) {
-        const antProv = toNumber(valorRecord.provavel_total_anterior)
-        const antPoss = toNumber(valorRecord.possivel_total_anterior)
-        const antRemo = toNumber(valorRecord.remoto_total_anterior)
-        const maxAnterior = Math.max(antProv, antPoss, antRemo)
-
-        const atuProv = toNumber(valorRecord.provavel_total_atual)
-        const atuPoss = toNumber(valorRecord.possivel_total_atual)
-        const atuRemo = toNumber(valorRecord.remoto_total_atual)
-        const maxAtual = Math.max(atuProv, atuPoss, atuRemo)
-
-        riscoBase = maxAnterior > 0 ? maxAnterior : (maxAtual > 0 ? maxAtual : 0)
+        const anterior = toNumber(valorRecord.provavel_total_anterior)
+        const atual = toNumber(valorRecord.provavel_total_atual)
+        riscoProvavel = anterior > 0 ? anterior : (atual > 0 ? atual : 0)
       }
       
-      const causa = riscoBase > 0 ? riscoBase : toNumber(p.valor_causa || p.valor_acao)
+      const causa = riscoProvavel > 0 ? riscoProvavel : toNumber(p.valor_causa || p.valor_acao)
       const acordado = toNumber(p.valor_acordo)
       
       // Apenas somamos para a métrica de ECONOMIA se houver um valor base para comparar
@@ -99,7 +91,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         savingValor: savingVal,
         savingPercent: savingPerc,
         funcao: p.funcao_reclamante || "Não informada",
-        usouRiscoProvavel: riscoBase > 0
+        usouRiscoProvavel: riscoProvavel > 0
       })
     })
 
