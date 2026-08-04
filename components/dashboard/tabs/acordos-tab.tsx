@@ -118,7 +118,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         mediaDesconto: taxaEconomia
       },
       chartData: [
-        { name: "Valor Total da Causa", total: totalCausa, media: mediaCausa },
+        { name: "Valor Provisionado ou Valor da Causa", total: totalCausa, media: mediaCausa },
         { name: "Valor Total Acordado", total: totalAcordado, media: mediaAcordado },
         { name: "Economia Total Gerada", total: economiaTotal, media: mediaEconomia }
       ],
@@ -145,7 +145,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
               <div className={`text-[clamp(2rem,6vw,3rem)] font-bold ${isNegativeSaving ? "text-rose-700" : "text-emerald-700"} tracking-tighter leading-none whitespace-nowrap tabular-nums`}>
                 {formatCurrency(metrics.economiaTotal)}
               </div>
-              <p className={`${isNegativeSaving ? "text-rose-700/80" : "text-emerald-700/80"} text-[11px] font-bold uppercase tracking-tight`}>Diferença entre o valor de referência e o valor acordado</p>
+              <p className={`${isNegativeSaving ? "text-rose-700/80" : "text-emerald-700/80"} text-[11px] font-bold uppercase tracking-tight`}>Diferença entre o valor provisionado ou valor da causa e o valor acordado</p>
             </div>
             
             <div className="flex gap-4">
@@ -168,7 +168,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
         <Card className="shadow-sm border-slate-200">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Total da Causa</CardTitle>
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.04em] text-slate-500">Valor Provisionado ou Valor da Causa</CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-5 overflow-hidden">
             <div className="text-[clamp(1.1rem,3.5vw,1.875rem)] font-bold text-slate-800 tracking-tight leading-none whitespace-nowrap tabular-nums">
