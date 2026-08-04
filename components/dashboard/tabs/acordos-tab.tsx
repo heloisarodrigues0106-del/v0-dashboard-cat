@@ -34,14 +34,6 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
       return status === 'ACORDO' || status.includes('ACORDO CELEBRADO') || status.includes('ACORDO JUDICIAL');
     })
     
-    // Mapear valores por numero_processo para acesso rápido
-    const valoresMap = new Map()
-    if (valores) {
-      valores.forEach(v => {
-        valoresMap.set(v.numero_processo, v)
-      })
-    }
-    
     let totalCausa = 0
     let totalAcordado = 0
     
@@ -49,50 +41,53 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
     const mappedAcordos: any[] = []
 
     acordos.forEach(p => {
-      // 1. Identificar o valor base de risco (Regra Cascata - Risco Provável + Possível).
-      // Busca a provisão anterior (provável + possível). Se não houver, usa a atual (provável + possível).
-      // Se não houver, usa o valor da causa bruto.
-      const valorRecord = valoresMap.get(p.numero_processo)
-      let riscoProvavel = 0
-      
-      if (valorRecord) {
-        const anterior = toNumber(valorRecord.provavel_total_anterior) + toNumber(valorRecord.possivel_total_anterior)
-        const atual = toNumber(valorRecord.provavel_total_atual) + toNumber(valorRecord.possivel_total_atual)
-        riscoProvavel = anterior > 0 ? anterior : (atual > 0 ? atual : 0)
-      }
-      
-      const causa = riscoProvavel > 0 ? riscoProvavel : toNumber(p.valor_causa || p.valor_acao)
-      const acordado = toNumber(p.valor_acordo)
-      
-      // Apenas somamos para a métrica de ECONOMIA se houver um valor base para comparar
-      if (causa > 0) {
-        totalCausa += causa
-        totalAcordado += acordado
-      }
-      
-      // Cálculo de economia individual para a lista
-      const savingVal = causa - acordado
-      const savingPerc = causa > 0 ? (savingVal / causa) * 100 : 0
-      
-      if (causa > 0 || acordado > 0) {
-        validScatterData.push({
-          x: causa,
-          y: acordado,
-          economia: savingVal
+      // O cálculo somente deve ser realizado quando houver valor do acordo preenchido
+      const hasValorAcordo = p.valor_acordo !== null && p.valor_acordo !== undefined && String(p.valor_acordo).trim() !== '';
+      if (!hasValorAcordo) {
+        mappedAcordos.push({
+          numero: p.numero_processo,
+          reclamante: p.nome_reclamante || "Não informado",
+          juizo: `${p.vara || "?"} VARA DE ${p.comarca || "?"}`.toUpperCase(),
+          advogado: p.advogado_reclamante || "Não informado",
+          valorOriginal: null,
+          valorAcordo: null,
+          savingValor: null,
+          savingPercent: null,
+          funcao: p.funcao_reclamante || "Não informada",
+          usouProvisaoAcordo: false
         })
+        return;
       }
+
+      const acordado = toNumber(p.valor_acordo)
+      const provNum = toNumber(p.provisao_acordo)
+      // Se provisao_acordo for nula, em branco ou zero, usar valor_causa
+      const hasProvisao = p.provisao_acordo !== null && p.provisao_acordo !== undefined && String(p.provisao_acordo).trim() !== "" && provNum !== 0;
+      const valorBaseSaving = hasProvisao ? provNum : toNumber(p.valor_causa)
+      
+      const savingVal = valorBaseSaving - acordado
+      const savingPerc = valorBaseSaving > 0 ? (savingVal / valorBaseSaving) * 100 : 0
+      
+      totalCausa += valorBaseSaving
+      totalAcordado += acordado
+      
+      validScatterData.push({
+        x: valorBaseSaving,
+        y: acordado,
+        economia: savingVal
+      })
 
       mappedAcordos.push({
         numero: p.numero_processo,
         reclamante: p.nome_reclamante || "Não informado",
         juizo: `${p.vara || "?"} VARA DE ${p.comarca || "?"}`.toUpperCase(),
         advogado: p.advogado_reclamante || "Não informado",
-        valorOriginal: causa,
+        valorOriginal: valorBaseSaving,
         valorAcordo: acordado,
         savingValor: savingVal,
         savingPercent: savingPerc,
         funcao: p.funcao_reclamante || "Não informada",
-        usouRiscoProvavel: riscoProvavel > 0
+        usouProvisaoAcordo: hasProvisao
       })
     })
 
@@ -106,11 +101,12 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
     
     const economiaTotal = totalCausa - totalAcordado
     const taxaEconomia = totalCausa > 0 ? (economiaTotal / totalCausa) * 100 : 0
-    const qtdAcordos = acordos.length
+    // Usar apenas os acordos que possuem valor de acordo válido para o total de acordos nos cards e médias
+    const qtdCalculados = mappedAcordos.filter(a => a.valorAcordo !== null).length
     
-    const mediaCausa = qtdAcordos > 0 ? totalCausa / qtdAcordos : 0
-    const mediaAcordado = qtdAcordos > 0 ? totalAcordado / qtdAcordos : 0
-    const mediaEconomia = qtdAcordos > 0 ? economiaTotal / qtdAcordos : 0
+    const mediaCausa = qtdCalculados > 0 ? totalCausa / qtdCalculados : 0
+    const mediaAcordado = qtdCalculados > 0 ? totalAcordado / qtdCalculados : 0
+    const mediaEconomia = qtdCalculados > 0 ? economiaTotal / qtdCalculados : 0
 
     return {
       metrics: {
@@ -118,7 +114,7 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
         totalAcordado,
         economiaTotal,
         taxaEconomia,
-        qtdAcordos,
+        qtdAcordos: qtdCalculados,
         mediaDesconto: taxaEconomia
       },
       chartData: [
@@ -131,35 +127,37 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
     }
   }, [processos, valores, searchQuery])
   
+  const isNegativeSaving = metrics.economiaTotal < 0;
+  
   return (
     <div className="space-y-6">
       
-      {/* Big Green Banner */}
-      <Card className="bg-emerald-50 border-emerald-100 overflow-hidden relative">
-        <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-emerald-100/50 to-transparent pointer-events-none" />
+      {/* Big Green/Red Banner */}
+      <Card className={`${isNegativeSaving ? "bg-rose-50 border-rose-100" : "bg-emerald-50 border-emerald-100"} overflow-hidden relative`}>
+        <div className={`absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l ${isNegativeSaving ? "from-rose-100/50" : "from-emerald-100/50"} to-transparent pointer-events-none`} />
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-2">
-              <div className="flex items-center text-emerald-700 font-bold gap-2 text-[12px] uppercase tracking-[0.04em]">
+              <div className={`flex items-center ${isNegativeSaving ? "text-rose-700" : "text-emerald-700"} font-bold gap-2 text-[12px] uppercase tracking-[0.04em]`}>
                 <TrendingDown className="h-4 w-4" strokeWidth={3} />
                 <span>Economia Total Gerada</span>
               </div>
-              <div className="text-[clamp(2rem,6vw,3rem)] font-bold text-emerald-700 tracking-tighter leading-none whitespace-nowrap tabular-nums">
+              <div className={`text-[clamp(2rem,6vw,3rem)] font-bold ${isNegativeSaving ? "text-rose-700" : "text-emerald-700"} tracking-tighter leading-none whitespace-nowrap tabular-nums`}>
                 {formatCurrency(metrics.economiaTotal)}
               </div>
-              <p className="text-emerald-700/80 text-[11px] font-bold uppercase tracking-tight">Diferença entre valor da causa e valor acordado</p>
+              <p className={`${isNegativeSaving ? "text-rose-700/80" : "text-emerald-700/80"} text-[11px] font-bold uppercase tracking-tight`}>Diferença entre o valor de referência e o valor acordado</p>
             </div>
             
             <div className="flex gap-4">
-              <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
-                <Percent className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
-                <span className="text-[10px] text-emerald-600/80 font-bold mb-2 tracking-tight">Taxa de economia</span>
-                <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{formatPercent(metrics.taxaEconomia)}</span>
+              <div className={`bg-white rounded-xl p-5 shadow-sm border ${isNegativeSaving ? "border-rose-100/50" : "border-emerald-100/50"} flex flex-col items-center justify-center min-w-[140px]`}>
+                <Percent className={`h-5 w-5 ${isNegativeSaving ? "text-rose-600" : "text-emerald-600"} mb-2`} strokeWidth={3} />
+                <span className={`text-[10px] ${isNegativeSaving ? "text-rose-600/80" : "text-emerald-600/80"} font-bold mb-2 tracking-tight`}>Taxa de economia</span>
+                <span className={`text-[32px] font-bold ${isNegativeSaving ? "text-rose-700" : "text-emerald-700"} leading-none tracking-tight`}>{formatPercent(metrics.taxaEconomia)}</span>
               </div>
-              <div className="bg-white rounded-xl p-5 shadow-sm border border-emerald-100/50 flex flex-col items-center justify-center min-w-[140px]">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600 mb-2" strokeWidth={3} />
-                <span className="text-[10px] text-emerald-600/80 font-bold mb-2 tracking-tight">Acordos fechados</span>
-                <span className="text-[32px] font-bold text-emerald-700 leading-none tracking-tight">{metrics.qtdAcordos}</span>
+              <div className={`bg-white rounded-xl p-5 shadow-sm border ${isNegativeSaving ? "border-rose-100/50" : "border-emerald-100/50"} flex flex-col items-center justify-center min-w-[140px]`}>
+                <CheckCircle2 className={`h-5 w-5 ${isNegativeSaving ? "text-rose-600" : "text-emerald-600"} mb-2`} strokeWidth={3} />
+                <span className={`text-[10px] ${isNegativeSaving ? "text-rose-600/80" : "text-emerald-600/80"} font-bold mb-2 tracking-tight`}>Acordos calculados</span>
+                <span className={`text-[32px] font-bold ${isNegativeSaving ? "text-rose-700" : "text-emerald-700"} leading-none tracking-tight`}>{metrics.qtdAcordos}</span>
               </div>
             </div>
           </div>
@@ -341,18 +339,26 @@ export function AcordosTab({ processos = [], valores = [] }: { processos: any[],
                         {formatLabel(acordo.advogado)}
                       </TableCell>
                       <TableCell className="py-2.5 text-right pr-6">
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                             <span className="line-through">{formatCurrency(acordo.valorOriginal)}</span>
-                             <ArrowDownRight className="h-3 w-3" />
-                             <span className="text-slate-900 font-bold">{formatCurrency(acordo.valorAcordo)}</span>
+                        {acordo.valorAcordo !== null ? (
+                          <div className="flex flex-col items-end gap-1">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                               <span className="line-through">{formatCurrency(acordo.valorOriginal)}</span>
+                               <ArrowDownRight className="h-3 w-3" />
+                               <span className="text-slate-900 font-bold">{formatCurrency(acordo.valorAcordo)}</span>
+                            </div>
+                            <Badge className={`${
+                              acordo.savingValor >= 0
+                                ? "bg-emerald-500/10 text-emerald-700 border-emerald-200/50 hover:bg-emerald-500/20"
+                                : "bg-red-500/10 text-red-700 border-red-200/50 hover:bg-red-500/20"
+                            } gap-1 px-2 py-0 h-6 text-[10px] uppercase tracking-tight`}>
+                              <TrendingDown className="h-3 w-3" />
+                              <span className="font-bold">{formatPercent(acordo.savingPercent)}</span>
+                              <span className="font-bold">({formatCurrency(acordo.savingValor)})</span>
+                            </Badge>
                           </div>
-                          <Badge className={`bg-emerald-500/10 text-emerald-700 border-emerald-200/50 hover:bg-emerald-500/20 gap-1 px-2 py-0 h-6 text-[10px] uppercase tracking-tight`}>
-                            <TrendingDown className="h-3 w-3" />
-                            <span className="font-bold">{formatPercent(acordo.savingPercent)}</span>
-                            <span className="font-bold">({formatCurrency(acordo.savingValor)})</span>
-                          </Badge>
-                        </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">Valor do acordo ausente</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

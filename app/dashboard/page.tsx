@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       'honorario_pericia, testemunha_reclamante, testemunha_reclamada, ' +
       'perito_medico_psiquiatra, perito_medico_geral, perito_ergonomico, perito_tecnico, ' +
       'assistente_medico, assistente_tecnico, ' +
-      'liminar, tipo_processo_apenso, numero_processo_apenso'
+      'liminar, tipo_processo_apenso, numero_processo_apenso, provisao_acordo'
     ),
     supabase.from('tb_pedidos_inicial').select('*'),
     supabase.from('tb_pedidos_sentenca').select('*'),
